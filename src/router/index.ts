@@ -9,11 +9,17 @@ const router = createRouter({
       path: "/",
       name: "home",
       component: HomeView,
+      meta: {
+        title: 'Home'
+      }
     },
     {
       path: "/gallery",
       name: "gallery",
-      component: GalleryView
+      component: GalleryView,
+      meta: {
+        title: 'Gallery'
+      }
     }
   ],
 });
