@@ -1,4 +1,18 @@
-# cmcdashboard
+# CMC MC Dashboard
+
+A dashboard to show various bits of data from the CMC MC server.
+
+<br><br>
+
+# Useful links
+* [Vue Docs](https://vuejs.org/guide/introduction.html)
+* [Tailwind Docs](https://tailwindcss.com/docs/styling-with-utility-classes)
+* [Tailwind templates](https://tailwindcss.com/plus/ui-blocks/application-ui/application-shells/stacked)
+
+
+<br><br><br>
+
+# Vue Stuff
 
 This template should help get you started developing with Vue 3 in Vite.
 
