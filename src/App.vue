@@ -8,7 +8,7 @@
           <div class="flex p-4 items-center justify-between">
             <div class="flex items-center flex-wrap justify-center gap-4">
               <div>
-                <img class="h-8" src="/public/favicon.png"></img>
+                <img class="h-8" src="/favicon.png"></img>
               </div>
               <div class="shrink-0 text-white">
                 SMPOnline Dashboard (Unofficial)
