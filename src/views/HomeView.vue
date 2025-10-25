@@ -15,7 +15,7 @@ interface RecentSale {
 }
 
 const recentSales = ref([] as RecentSale[]);
-const pageNumber = ref(1);
+const lastItemDate = ref(null as string | null);
 const noMoreResults = ref(false);
 
 onMounted(async () => {
@@ -25,12 +25,11 @@ onMounted(async () => {
 async function loadSales() {
   if (noMoreResults.value) return;
 
-  let httpResponse = await fetch(
-    `${Config.APIURL}/api/sales/recent?page=${pageNumber.value}`,
-    {
-      method: "get",
-    }
-  );
+  let url =
+    `${Config.APIURL}/api/sales/recent?` +
+    (lastItemDate.value != null ? `before=${lastItemDate.value}` : "");
+
+  let httpResponse = await fetch(url, { method: "get" });
 
   if (httpResponse.status !== 200)
     throw new Error("Failed to retrieve recent sales");
@@ -38,11 +37,13 @@ async function loadSales() {
   let response = await httpResponse.json();
   recentSales.value.push(...response.items);
 
-  noMoreResults.value = response.items.length == 0;
+  if (recentSales.value.length != 0)
+    lastItemDate.value = recentSales.value.slice(-1)[0]!.occurredAt;
+
+  noMoreResults.value = response.items.length === 0;
 }
 
 async function loadNextPage() {
-  pageNumber.value++;
   await loadSales();
 }
 </script>

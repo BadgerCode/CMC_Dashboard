@@ -6,10 +6,15 @@ interface Painting {
   id: string;
   data: string;
   size: string;
+  title: string;
+  authorName: string;
+  firstSeenAt: string;
+  collectionId: string | null;
+  collectionPosition: string | null;
 }
 
 const paintings = ref([] as Painting[]);
-const pageNumber = ref(1);
+const lastItemDate = ref(null as string | null);
 const noMoreResults = ref(false);
 
 onMounted(async () => {
@@ -19,12 +24,11 @@ onMounted(async () => {
 async function loadPaintings() {
   if (noMoreResults.value) return;
 
-  let httpResponse = await fetch(
-    `${Config.APIURL}/api/paintings?page=${pageNumber.value}`,
-    {
-      method: "get",
-    }
-  );
+  let url =
+    `${Config.APIURL}/api/paintings?` +
+    (lastItemDate.value != null ? `before=${lastItemDate.value}` : "");
+
+  let httpResponse = await fetch(url, { method: "get" });
 
   if (httpResponse.status !== 200)
     throw new Error("Failed to retrieve paintings");
@@ -32,11 +36,13 @@ async function loadPaintings() {
   let response = await httpResponse.json();
   paintings.value.push(...response.items);
 
-  noMoreResults.value = response.items.length == 0;
+  if (paintings.value.length != 0)
+    lastItemDate.value = paintings.value.slice(-1)[0]!.firstSeenAt;
+
+  noMoreResults.value = response.items.length === 0;
 }
 
 async function loadNextPage() {
-  pageNumber.value++;
   await loadPaintings();
 }
 
@@ -91,12 +97,18 @@ function renderPainting(canvas: Element | any, painting: Painting) {
   <div class="flex flex-row flex-wrap w-full gap-4 justify-center">
     <div
       v-for="painting in paintings"
-      class="painting flex justify-center items-center"
+      class="painting flex justify-center items-center flex-col gap-2 mb-4"
     >
-      <canvas
-        :class="[painting.size.toLowerCase()]"
-        :ref="(el) => renderPainting(el, painting)"
-      ></canvas>
+      <div class="w-full text-left pl-1">
+        <div>{{ painting.title }}</div>
+        <div class="text-sm text-gray-300">By {{ painting.authorName }}</div>
+      </div>
+      <div class="painting-wrapper flex justify-center items-center">
+        <canvas
+          :class="[painting.size.toLowerCase()]"
+          :ref="(el) => renderPainting(el, painting)"
+        ></canvas>
+      </div>
     </div>
   </div>
 
@@ -114,22 +126,22 @@ function renderPainting(canvas: Element | any, painting: Painting) {
 </template>
 
 <style lang="css" scoped>
-.painting {
+.painting-wrapper {
   width: 256px;
   height: 256px;
 }
 
-.painting canvas {
+.painting-wrapper canvas {
   image-rendering: pixelated;
   width: 100%;
   height: 100%;
 }
 
-.painting canvas.tall {
+.painting-wrapper canvas.tall {
   width: 50%;
 }
 
-.painting canvas.wide {
+.painting-wrapper canvas.wide {
   height: 50%;
 }
 </style>
