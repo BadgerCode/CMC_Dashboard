@@ -15,7 +15,6 @@ interface RecentSale {
 }
 
 const recentSales = ref([] as RecentSale[]);
-const lastItemDate = ref(null as string | null);
 const noMoreResults = ref(false);
 
 onMounted(async () => {
@@ -25,9 +24,11 @@ onMounted(async () => {
 async function loadSales() {
   if (noMoreResults.value) return;
 
+  let lastItem = recentSales.value.slice(-1)[0];
+
   let url =
     `${Config.APIURL}/api/sales/recent?` +
-    (lastItemDate.value != null ? `before=${lastItemDate.value}` : "");
+    (lastItem != null ? `before=${lastItem.occurredAt}&lastID=${lastItem.id}` : "");
 
   let httpResponse = await fetch(url, { method: "get" });
 
@@ -36,9 +37,6 @@ async function loadSales() {
 
   let response = await httpResponse.json();
   recentSales.value.push(...response.items);
-
-  if (recentSales.value.length != 0)
-    lastItemDate.value = recentSales.value.slice(-1)[0]!.occurredAt;
 
   noMoreResults.value = response.items.length === 0;
 }

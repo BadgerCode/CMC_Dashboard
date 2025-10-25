@@ -14,7 +14,6 @@ interface Painting {
 }
 
 const paintings = ref([] as Painting[]);
-const lastItemDate = ref(null as string | null);
 const noMoreResults = ref(false);
 
 onMounted(async () => {
@@ -24,9 +23,11 @@ onMounted(async () => {
 async function loadPaintings() {
   if (noMoreResults.value) return;
 
+  let lastItem = paintings.value.slice(-1)[0];
+
   let url =
     `${Config.APIURL}/api/paintings?` +
-    (lastItemDate.value != null ? `before=${lastItemDate.value}` : "");
+    (lastItem != null ? `before=${lastItem.firstSeenAt}&lastID=${lastItem.id}` : "");
 
   let httpResponse = await fetch(url, { method: "get" });
 
@@ -35,9 +36,6 @@ async function loadPaintings() {
 
   let response = await httpResponse.json();
   paintings.value.push(...response.items);
-
-  if (paintings.value.length != 0)
-    lastItemDate.value = paintings.value.slice(-1)[0]!.firstSeenAt;
 
   noMoreResults.value = response.items.length === 0;
 }
