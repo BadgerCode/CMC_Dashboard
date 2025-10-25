@@ -27,7 +27,7 @@ async function loadSales() {
   let lastItem = recentSales.value.slice(-1)[0];
 
   let url =
-    `${Config.APIURL}/api/sales/recent?` +
+    `${Config.APIURL}/api/sales?` +
     (lastItem != null ? `before=${lastItem.occurredAt}&lastID=${lastItem.id}` : "");
 
   let httpResponse = await fetch(url, { method: "get" });
