@@ -32,6 +32,8 @@ function toRGBA(num: number) {
 }
 
 function renderPainting(canvas: Element | any, painting: Painting) {
+  if (canvas == null) return; // When the page is unloaded
+
   console.log(`Rendering painting ${painting.id}`);
 
   let imageSize = painting.size.toLowerCase(); // Large, Tall, Wide, Small
@@ -68,39 +70,36 @@ function renderPainting(canvas: Element | any, painting: Painting) {
     <p class="text-gray-300">Created by the players of the server</p>
   </div>
 
-  <div>
-    <div v-for="painting in paintings">
-      <div>{{ painting.id }}</div>
-
-      <div class="painting">
-        <canvas
-          :class="[painting.size.toLowerCase()]"
-          :ref="(el) => renderPainting(el, painting)"
-        ></canvas>
-      </div>
+  <div class="flex flex-row flex-wrap w-full gap-4">
+    <div
+      v-for="painting in paintings"
+      class="painting flex justify-center items-center"
+    >
+      <canvas
+        :class="[painting.size.toLowerCase()]"
+        :ref="(el) => renderPainting(el, painting)"
+      ></canvas>
     </div>
   </div>
 </template>
 
 <style lang="css" scoped>
-.painting canvas {
-  image-rendering: pixelated;
+.painting {
   width: 256px;
   height: 256px;
 }
 
-.painting canvas.large {
-  width: 512px;
-  height: 512px;
+.painting canvas {
+  image-rendering: pixelated;
+  width: 100%;
+  height: 100%;
 }
 
 .painting canvas.tall {
-  width: 256px;
-  height: 512px;
+  width: 50%;
 }
 
 .painting canvas.wide {
-  width: 512px;
-  height: 256px;
+  height: 50%;
 }
 </style>
