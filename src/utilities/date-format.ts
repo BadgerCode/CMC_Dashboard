@@ -4,7 +4,7 @@ export function formatDate(dateTime: string | null | undefined, defaultValue?: s
   let date = new Date(dateTime);
   const dateFormatOptions: Intl.DateTimeFormatOptions = {
     year: "numeric",
-    month: "long",
+    month: "short",
     day: "numeric",
     hour: "2-digit",
     minute: "2-digit",

@@ -5,8 +5,8 @@
     <div class="min-h-full">
       <nav class="bg-gray-800/50">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div class="flex h-16 items-center justify-between">
-            <div class="flex items-center">
+          <div class="flex p-4 items-center justify-between">
+            <div class="flex items-center flex-wrap justify-center gap-4">
               <div class="shrink-0 text-white">
                 SMPOnline Dashboard (Unofficial)
               </div>

@@ -25,9 +25,12 @@ onMounted(async () => {
 async function loadSales() {
   if (noMoreResults.value) return;
 
-  let httpResponse = await fetch(`${Config.APIURL}/api/sales/recent?page=${pageNumber.value}`, {
-    method: "get",
-  });
+  let httpResponse = await fetch(
+    `${Config.APIURL}/api/sales/recent?page=${pageNumber.value}`,
+    {
+      method: "get",
+    }
+  );
 
   if (httpResponse.status !== 200)
     throw new Error("Failed to retrieve recent sales");
@@ -53,21 +56,29 @@ async function loadNextPage() {
   </div>
 
   <div class="relative overflow-x-auto">
-    <table class="w-full text-left rtl:text-right text-gray-400">
+    <table
+      class="w-full text-left rtl:text-right text-gray-400 text-xs md:text-base"
+    >
       <thead class="text-white">
         <tr>
           <th class="p-4">Time</th>
           <th class="p-4">Type</th>
           <th class="p-4">Item</th>
-          <th class="p-4">Quantity</th>
-          <th class="p-4">Price</th>
+          <th class="p-4">
+            <span class="hidden md:inline">Quantity</span
+            ><span class="md:hidden">#</span>
+          </th>
+          <th class="p-4">
+            <span class="hidden md:inline">Price</span
+            ><span class="md:hidden">$</span>
+          </th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="sale in recentSales" class="border-t border-gray-700">
-          <td class="p-4">{{ formatDate(sale.occurredAt) }}</td>
+          <td class="p-4 text-wrap">{{ formatDate(sale.occurredAt) }}</td>
           <td class="p-4">{{ sale.type }}</td>
-          <td class="p-4">{{ sale.itemType }}</td>
+          <td class="p-4 break-all">{{ sale.itemType }}</td>
           <td class="p-4">{{ sale.quantity }}</td>
           <td class="p-4">{{ sale.totalPrice }}</td>
         </tr>
