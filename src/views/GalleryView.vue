@@ -1,9 +1,106 @@
 <script setup lang="ts">
+import { Config } from "@/config";
+import { onMounted, ref } from "vue";
 
+interface Painting {
+  id: string;
+  data: string;
+  size: string;
+}
+
+const paintings = ref([] as Painting[]);
+
+onMounted(async () => {
+  let httpResponse = await fetch(`${Config.APIURL}/api/paintings`, {
+    method: "get",
+  });
+
+  if (httpResponse.status !== 200)
+    throw new Error("Failed to retrieve paintings");
+
+  let response = await httpResponse.json();
+  paintings.value = response.items;
+});
+
+function toRGBA(num: number) {
+  num >>>= 0;
+  var b = num & 0xff,
+    g = (num & 0xff00) >>> 8,
+    r = (num & 0xff0000) >>> 16,
+    a = (num & 0xff000000) >>> 24;
+  return [r, g, b, a];
+}
+
+function renderPainting(canvas: Element | any, painting: Painting) {
+  console.log(`Rendering painting ${painting.id}`);
+
+  let imageSize = painting.size.toLowerCase(); // Large, Tall, Wide, Small
+  // Small: 16x16, Large: 32x32, Tall: 16x32, Wide/Long: 32x16
+  let width = imageSize == "large" || imageSize == "wide" ? 32 : 16;
+  let height = imageSize == "large" || imageSize == "tall" ? 32 : 16;
+
+  canvas.width = width;
+  canvas.height = height;
+
+  let ctx = canvas.getContext("2d");
+  let canvasImageData = ctx.createImageData(width, height);
+
+  let imageData = painting.data.split(",");
+
+  for (let i = 0; i < imageData.length; i++) {
+    let rgba = toRGBA(Number(imageData[i]));
+
+    // Modify pixel data
+    let index = i * 4;
+    canvasImageData.data[index + 0] = rgba[0]; // R value
+    canvasImageData.data[index + 1] = rgba[1]; // G value
+    canvasImageData.data[index + 2] = rgba[2]; // B value
+    canvasImageData.data[index + 3] = rgba[3]; // A value
+  }
+
+  ctx.putImageData(canvasImageData, 0, 0);
+}
 </script>
 
 <template>
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold">Paintings</h1>
+    <p class="text-gray-300">Created by the players of the server</p>
+  </div>
+
   <div>
-    This is the gallery page
+    <div v-for="painting in paintings">
+      <div>{{ painting.id }}</div>
+
+      <div class="painting">
+        <canvas
+          :class="[painting.size.toLowerCase()]"
+          :ref="(el) => renderPainting(el, painting)"
+        ></canvas>
+      </div>
+    </div>
   </div>
 </template>
+
+<style lang="css" scoped>
+.painting canvas {
+  image-rendering: pixelated;
+  width: 256px;
+  height: 256px;
+}
+
+.painting canvas.large {
+  width: 512px;
+  height: 512px;
+}
+
+.painting canvas.tall {
+  width: 256px;
+  height: 512px;
+}
+
+.painting canvas.wide {
+  width: 512px;
+  height: 256px;
+}
+</style>

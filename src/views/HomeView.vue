@@ -33,7 +33,7 @@ onMounted(async () => {
   <div class="mb-8">
     <h1 class="text-3xl font-bold">Recent Sales</h1>
     <p class="text-gray-300">
-      Recent transactions that have taken place on the server
+      Sales and auctions that have taken place on the server
     </p>
   </div>
 
