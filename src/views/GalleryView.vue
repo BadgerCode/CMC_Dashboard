@@ -97,15 +97,18 @@ function renderPainting(canvas: Element | any, painting: Painting) {
       v-for="painting in paintings"
       class="painting flex justify-center items-center flex-col gap-2 mb-4"
     >
-      <div class="w-full text-left pl-1">
+      <div class="w-full text-center pl-1">
         <div>{{ painting.title }}</div>
-        <div class="text-sm text-gray-300">By {{ painting.authorName }}</div>
       </div>
       <div class="painting-wrapper flex justify-center items-center">
         <canvas
           :class="[painting.size.toLowerCase()]"
           :ref="(el) => renderPainting(el, painting)"
         ></canvas>
+      </div>
+
+      <div class="w-full text-center pl-1">
+        <div class="text-sm text-gray-300">By {{ painting.authorName }}</div>
       </div>
     </div>
   </div>
