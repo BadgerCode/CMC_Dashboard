@@ -15,9 +15,17 @@ interface RecentSale {
 }
 
 const recentSales = ref([] as RecentSale[]);
+const pageNumber = ref(1);
+const noMoreResults = ref(false);
 
 onMounted(async () => {
-  let httpResponse = await fetch(`${Config.APIURL}/api/sales/recent`, {
+  await loadSales();
+});
+
+async function loadSales() {
+  if (noMoreResults.value) return;
+
+  let httpResponse = await fetch(`${Config.APIURL}/api/sales/recent?page=${pageNumber.value}`, {
     method: "get",
   });
 
@@ -25,8 +33,15 @@ onMounted(async () => {
     throw new Error("Failed to retrieve recent sales");
 
   let response = await httpResponse.json();
-  recentSales.value = response.items;
-});
+  recentSales.value.push(...response.items);
+
+  noMoreResults.value = response.items.length == 0;
+}
+
+async function loadNextPage() {
+  pageNumber.value++;
+  await loadSales();
+}
 </script>
 
 <template>
@@ -58,5 +73,17 @@ onMounted(async () => {
         </tr>
       </tbody>
     </table>
+  </div>
+
+  <div class="mt-8 text-center">
+    <button
+      type="button"
+      class="button"
+      v-on:click="loadNextPage"
+      v-if="!noMoreResults"
+    >
+      More
+    </button>
+    <div v-else>No more results</div>
   </div>
 </template>

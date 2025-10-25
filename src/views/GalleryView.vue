@@ -9,18 +9,36 @@ interface Painting {
 }
 
 const paintings = ref([] as Painting[]);
+const pageNumber = ref(1);
+const noMoreResults = ref(false);
 
 onMounted(async () => {
-  let httpResponse = await fetch(`${Config.APIURL}/api/paintings`, {
-    method: "get",
-  });
+  await loadPaintings();
+});
+
+async function loadPaintings() {
+  if (noMoreResults.value) return;
+
+  let httpResponse = await fetch(
+    `${Config.APIURL}/api/paintings?page=${pageNumber.value}`,
+    {
+      method: "get",
+    }
+  );
 
   if (httpResponse.status !== 200)
     throw new Error("Failed to retrieve paintings");
 
   let response = await httpResponse.json();
-  paintings.value = response.items;
-});
+  paintings.value.push(...response.items);
+
+  noMoreResults.value = response.items.length == 0;
+}
+
+async function loadNextPage() {
+  pageNumber.value++;
+  await loadPaintings();
+}
 
 function toRGBA(num: number) {
   num >>>= 0;
@@ -70,7 +88,7 @@ function renderPainting(canvas: Element | any, painting: Painting) {
     <p class="text-gray-300">Created by the players of the server</p>
   </div>
 
-  <div class="flex flex-row flex-wrap w-full gap-4">
+  <div class="flex flex-row flex-wrap w-full gap-4 justify-center">
     <div
       v-for="painting in paintings"
       class="painting flex justify-center items-center"
@@ -80,6 +98,18 @@ function renderPainting(canvas: Element | any, painting: Painting) {
         :ref="(el) => renderPainting(el, painting)"
       ></canvas>
     </div>
+  </div>
+
+  <div class="mt-8 text-center">
+    <button
+      type="button"
+      class="button"
+      v-on:click="loadNextPage"
+      v-if="!noMoreResults"
+    >
+      More
+    </button>
+    <div v-else>No more results</div>
   </div>
 </template>
 
