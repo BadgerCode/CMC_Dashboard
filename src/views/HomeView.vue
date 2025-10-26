@@ -28,7 +28,9 @@ async function loadSales() {
 
   let url =
     `${Config.APIURL}/api/sales?` +
-    (lastItem != null ? `before=${lastItem.occurredAt}&lastID=${lastItem.id}` : "");
+    (lastItem != null
+      ? `before=${lastItem.occurredAt}&lastID=${lastItem.id}`
+      : "");
 
   let httpResponse = await fetch(url, { method: "get" });
 
@@ -48,10 +50,8 @@ async function loadNextPage() {
 
 <template>
   <div class="mb-8">
-    <h1 class="text-3xl font-bold">Recent Sales</h1>
-    <p class="text-gray-300">
-      Sales and auctions that have taken place on the server
-    </p>
+    <h1 class="text-3xl font-bold">Recent Transactions</h1>
+    <p class="text-gray-300">Shops and auctions</p>
   </div>
 
   <div class="relative overflow-x-auto">

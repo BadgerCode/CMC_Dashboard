@@ -88,8 +88,8 @@ function renderPainting(canvas: Element | any, painting: Painting) {
 
 <template>
   <div class="mb-8">
-    <h1 class="text-3xl font-bold">Paintings</h1>
-    <p class="text-gray-300">Created by the players of the server</p>
+    <h1 class="text-3xl font-bold">Recent</h1>
+    <p class="text-gray-300">Paintings created by the players of the server</p>
   </div>
 
   <div class="flex flex-row flex-wrap w-full gap-4 justify-center">
