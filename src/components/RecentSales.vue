@@ -13,8 +13,8 @@ defineProps<Props>()
   <table class="w-full text-left rtl:text-right text-gray-400 text-xs md:text-base">
     <thead class="text-white">
       <tr>
-        <th></th>
         <th class="table-cell">Time</th>
+        <th></th>
         <th></th>
         <th></th>
         <th class="table-cell">Item</th>
@@ -29,12 +29,12 @@ defineProps<Props>()
     </thead>
     <tbody>
       <tr v-for="sale in recentSales" class="border-t border-gray-700">
+        <td class="table-cell wrap-anywhere">{{ formatDate(sale.occurredAt) }}</td>
         <td class="table-cell" :title="sale.type">
           <font-awesome-icon icon="fa-solid fa-shop" v-if="sale.type == 'Shop'" />
           <font-awesome-icon icon="fa-solid fa-gavel" v-else-if="sale.type == 'Auction'" />
           <font-awesome-icon icon="fa-solid fa-question" v-else title="Unknown" />
         </td>
-        <td class="table-cell wrap-anywhere">{{ formatDate(sale.occurredAt) }}</td>
         <td class="table-cell" title="Custom name">
           <font-awesome-icon icon="fa-solid fa-quote-left" v-if="sale.isRenamed" />
         </td>
