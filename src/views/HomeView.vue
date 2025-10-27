@@ -73,7 +73,7 @@ async function loadNextPage() {
       </thead>
       <tbody>
         <tr v-for="sale in recentSales" class="border-t border-gray-700">
-          <td :title="sale.type">
+          <td class="text-center" :title="sale.type">
             <font-awesome-icon icon="fa-solid fa-shop" v-if="sale.type == 'Shop'" />
             <font-awesome-icon icon="fa-solid fa-gavel" v-else-if="sale.type == 'Auction'" />
             <font-awesome-icon icon="fa-solid fa-question" v-else title="Unknown" />

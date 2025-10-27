@@ -21,6 +21,7 @@
     "@fortawesome/vue-fontawesome": "^3.1.2",
     "@tailwindcss/vite": "^4.1.16",
     "@tailwindplus/elements": "^1.0.18",
+    "flowbite": "^3.1.2",
     "tailwindcss": "^4.1.16",
     "vue": "^3.5.22",
     "vue-router": "^4.6.3"
