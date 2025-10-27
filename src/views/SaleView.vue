@@ -144,6 +144,10 @@ let paintingOriginality = computed(() => {
         Contents
       </h4>
 
+      <div class="mb-6 text-gray-400">
+        The items inside the shulker box or bundle
+      </div>
+
       <div class="mb-3 font-normal text-gray-400">
         <table class="w-full text-left rtl:text-right text-gray-400 text-xs md:text-base">
           <thead class="text-white">
