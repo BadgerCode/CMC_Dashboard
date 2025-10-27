@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { Painting } from "@/api/paintings/painting";
+import RenderPainting from "@/components/RenderPainting.vue";
 import { Config } from "@/config";
 import { formatDate } from "@/utilities/date-format";
 import { formatItemType } from "@/utilities/item-type-format";
@@ -35,6 +37,7 @@ interface ItemAttribute {
 }
 
 let saleData = ref(null as SaleData | null);
+let paintingData = ref(null as Painting | null);
 
 onMounted(async () => {
   let url = `${Config.APIURL}/api/sales/${props.id}`;
@@ -45,7 +48,23 @@ onMounted(async () => {
 
   let response = await httpResponse.json();
   saleData.value = response.result;
+
+  let paintingID = saleData.value?.itemAttributes.find(a => a.key == 'PAINTING_ID')?.value;
+  if (paintingID) {
+    paintingData.value = await fetchPainting(paintingID);
+  }
 });
+
+async function fetchPainting(paintingID: string) : Promise<Painting | null> {
+  let url = `${Config.APIURL}/api/paintings/${paintingID}`;
+  let httpResponse = await fetch(url, { method: "get" });
+
+  if (httpResponse.status !== 200)
+    return null;
+
+  let response = await httpResponse.json();
+  return response.result;
+}
 </script>
 
 <template>
@@ -86,6 +105,17 @@ onMounted(async () => {
             </tbody>
           </table>
         </div>
+      </div>
+    </div>
+
+    <div class="p-6 bg-gray-800 border border-gray-700 rounded-lg shadow-sm" v-if="paintingData != null">
+      <h4 class="mb-2 text-2xl font-bold tracking-tight text-white">
+        Painting - {{ paintingData.title }}
+      </h4>
+
+      <div class="mb-3 font-normal text-gray-400 flex flex-col gap-4">
+        <div>By {{ paintingData.authorName }}</div>
+        <RenderPainting :painting="paintingData"></RenderPainting>
       </div>
     </div>
 

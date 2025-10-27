@@ -1,17 +1,8 @@
 <script setup lang="ts">
+import type { Painting } from "@/api/paintings/painting";
+import RenderPainting from "@/components/RenderPainting.vue";
 import { Config } from "@/config";
 import { onMounted, ref } from "vue";
-
-interface Painting {
-  id: string;
-  data: string;
-  size: string;
-  title: string;
-  authorName: string;
-  firstSeenAt: string;
-  collectionId: string | null;
-  collectionPosition: string | null;
-}
 
 const paintings = ref([] as Painting[]);
 const noMoreResults = ref(false);
@@ -93,19 +84,11 @@ function renderPainting(canvas: Element | any, painting: Painting) {
   </div>
 
   <div class="flex flex-row flex-wrap w-full gap-4 justify-center">
-    <div
-      v-for="painting in paintings"
-      class="painting flex justify-center items-center flex-col gap-2 mb-4"
-    >
+    <div v-for="painting in paintings" class="painting flex justify-center items-center flex-col gap-2 mb-4">
       <div class="w-full text-center pl-1">
         <div>{{ painting.title }}</div>
       </div>
-      <div class="painting-wrapper flex justify-center items-center">
-        <canvas
-          :class="[painting.size.toLowerCase()]"
-          :ref="(el) => renderPainting(el, painting)"
-        ></canvas>
-      </div>
+      <RenderPainting :painting="painting"></RenderPainting>
 
       <div class="w-full text-center pl-1">
         <div class="text-sm text-gray-300">By {{ painting.authorName }}</div>
@@ -114,12 +97,7 @@ function renderPainting(canvas: Element | any, painting: Painting) {
   </div>
 
   <div class="mt-8 text-center">
-    <button
-      type="button"
-      class="button"
-      v-on:click="loadNextPage"
-      v-if="!noMoreResults"
-    >
+    <button type="button" class="button" v-on:click="loadNextPage" v-if="!noMoreResults">
       More
     </button>
     <div v-else>No more results</div>
