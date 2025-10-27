@@ -1,5 +1,6 @@
 import GalleryView from "@/views/GalleryView.vue";
 import HomeView from "@/views/HomeView.vue";
+import SaleView from "@/views/SaleView.vue";
 import { createRouter, createWebHistory } from "vue-router";
 
 const router = createRouter({
@@ -19,6 +20,15 @@ const router = createRouter({
       component: GalleryView,
       meta: {
         title: 'Gallery'
+      }
+    },
+    {
+      path: "/sale/:id",
+      name: "sale",
+      component: SaleView,
+      props: true,
+      meta: {
+        title: 'Sale Info'
       }
     }
   ],

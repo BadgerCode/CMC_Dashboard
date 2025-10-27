@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Config } from "@/config";
 import { formatDate } from "@/utilities/date-format";
+import { formatItemType } from "@/utilities/item-type-format";
 import { onMounted, ref } from "vue";
 
 interface RecentSale {
@@ -55,43 +56,40 @@ async function loadNextPage() {
   </div>
 
   <div class="relative overflow-x-auto">
-    <table
-      class="w-full text-left rtl:text-right text-gray-400 text-xs md:text-base"
-    >
+    <table class="w-full text-left rtl:text-right text-gray-400 text-xs md:text-base">
       <thead class="text-white">
         <tr>
           <th class="p-4">Time</th>
           <th class="p-4">Type</th>
           <th class="p-4">Item</th>
           <th class="p-4">
-            <span class="hidden md:inline">Quantity</span
-            ><span class="md:hidden">#</span>
+            <span class="hidden md:inline">Quantity</span><span class="md:hidden">#</span>
           </th>
           <th class="p-4">
-            <span class="hidden md:inline">Price</span
-            ><span class="md:hidden">$</span>
+            <span class="hidden md:inline">Price</span><span class="md:hidden">$</span>
           </th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="sale in recentSales" class="border-t border-gray-700">
           <td class="p-4 text-wrap">{{ formatDate(sale.occurredAt) }}</td>
           <td class="p-4">{{ sale.type }}</td>
-          <td class="p-4 break-all">{{ sale.itemType }}</td>
+          <td class="p-4 break-all">{{ formatItemType(sale.itemType) }}</td>
           <td class="p-4">{{ sale.quantity }}</td>
           <td class="p-4">{{ sale.totalPrice }}</td>
+          <td class="p-4">
+            <RouterLink :to="{ name: 'sale', params: { id: sale.id } }" tag="button" class="button">
+              View
+            </RouterLink>
+          </td>
         </tr>
       </tbody>
     </table>
   </div>
 
   <div class="mt-8 text-center">
-    <button
-      type="button"
-      class="button"
-      v-on:click="loadNextPage"
-      v-if="!noMoreResults"
-    >
+    <button type="button" class="button" v-on:click="loadNextPage" v-if="!noMoreResults">
       More
     </button>
     <div v-else>No more results</div>
