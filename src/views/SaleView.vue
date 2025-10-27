@@ -6,6 +6,9 @@ import { formatDate } from "@/utilities/date-format";
 import { formatItemType } from "@/utilities/item-type-format";
 import { formatNumber } from "@/utilities/number-format";
 import { computed, onMounted, ref } from "vue";
+import * as SalesAPI from "@/api/sales/api"
+import type { SaleSummary } from "@/api/sales/saleSummary";
+import RecentSales from "@/components/RecentSales.vue";
 
 const props = defineProps({
   id: String
@@ -36,8 +39,9 @@ interface ItemAttribute {
   value: string;
 }
 
-let saleData = ref(null as SaleData | null);
-let paintingData = ref(null as Painting | null);
+const saleData = ref(null as SaleData | null);
+const paintingData = ref(null as Painting | null);
+const otherSales = ref([] as SaleSummary[]);
 
 onMounted(async () => {
   let url = `${Config.APIURL}/api/sales/${props.id}`;
@@ -49,9 +53,15 @@ onMounted(async () => {
   let response = await httpResponse.json();
   saleData.value = response.result;
 
-  let paintingID = saleData.value?.itemAttributes.find(a => a.key == 'PAINTING_ID')?.value;
-  if (paintingID) {
-    paintingData.value = await fetchPainting(paintingID);
+  if (saleData.value) {
+    // Load painting data
+    let paintingID = saleData.value.itemAttributes.find(a => a.key == 'PAINTING_ID')?.value;
+    if (paintingID) {
+      paintingData.value = await fetchPainting(paintingID);
+    }
+
+    // Load sales data for the item type
+    otherSales.value.push(...(await SalesAPI.loadSalesForItemType(saleData.value.itemType)));
   }
 });
 
@@ -159,6 +169,16 @@ let paintingOriginality = computed(() => {
             </tr>
           </tbody>
         </table>
+      </div>
+    </div>
+
+    <div class="p-6 bg-gray-800 border border-gray-700 rounded-lg shadow-sm">
+      <h4 class="mb-2 text-2xl font-bold tracking-tight text-white">
+        Other Sales of {{ formatItemType(saleData.itemType) }}
+      </h4>
+
+      <div class="mb-3 font-normal text-gray-400">
+        <RecentSales :recent-sales="otherSales"></RecentSales>
       </div>
     </div>
   </div>
