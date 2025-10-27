@@ -59,8 +59,8 @@ async function loadNextPage() {
     <table class="w-full text-left rtl:text-right text-gray-400 text-xs md:text-base">
       <thead class="text-white">
         <tr>
+          <th></th>
           <th class="p-4">Time</th>
-          <th class="p-4">Type</th>
           <th class="p-4">Item</th>
           <th class="p-4">
             <span class="hidden md:inline">Quantity</span><span class="md:hidden">#</span>
@@ -73,8 +73,12 @@ async function loadNextPage() {
       </thead>
       <tbody>
         <tr v-for="sale in recentSales" class="border-t border-gray-700">
+          <td :title="sale.type">
+            <font-awesome-icon icon="fa-solid fa-shop" v-if="sale.type == 'Shop'" />
+            <font-awesome-icon icon="fa-solid fa-gavel" v-else-if="sale.type == 'Auction'" />
+            <font-awesome-icon icon="fa-solid fa-question" v-else title="Unknown" />
+          </td>
           <td class="p-4 text-wrap">{{ formatDate(sale.occurredAt) }}</td>
-          <td class="p-4">{{ sale.type }}</td>
           <td class="p-4 break-all">{{ formatItemType(sale.itemType) }}</td>
           <td class="p-4">{{ sale.quantity }}</td>
           <td class="p-4">{{ sale.totalPrice }}</td>
