@@ -14,12 +14,18 @@ onMounted(async () => {
 async function loadPaintings() {
   if (noMoreResults.value) return;
 
+  const params = new URLSearchParams();
+
+  // Add last item for pagination
   let lastItem = paintings.value.slice(-1)[0];
 
-  let url =
-    `${Config.APIURL}/api/paintings?` +
-    (lastItem != null ? `before=${lastItem.firstSeenAt}&lastID=${lastItem.id}` : "");
+  if (lastItem != null) {
+    params.append("before", lastItem.firstSeenAt);
+    params.append("lastID", lastItem.id);
+  }
 
+  // Send request
+  let url = `${Config.APIURL}/api/paintings?${params.toString()}`;
   let httpResponse = await fetch(url, { method: "get" });
 
   if (httpResponse.status !== 200)

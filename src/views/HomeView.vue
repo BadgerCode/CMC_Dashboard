@@ -1,51 +1,30 @@
 <script setup lang="ts">
-import { Config } from "@/config";
+import type { SaleSummary } from "@/api/sales/saleSummary";
 import { formatDate } from "@/utilities/date-format";
 import { formatItemType } from "@/utilities/item-type-format";
 import { onMounted, ref } from "vue";
+import * as SalesAPI from "@/api/sales/api"
 
-interface RecentSale {
-  occurredAt: string;
-  id: string;
-  type: string;
-  itemType: string;
-  quantity: number;
-  totalPrice: number;
-  isRenamed: boolean;
-  isEnchanted: boolean;
-}
-
-const recentSales = ref([] as RecentSale[]);
+const recentSales = ref([] as SaleSummary[]);
 const noMoreResults = ref(false);
 
 onMounted(async () => {
   await loadSales();
 });
 
+async function loadNextPage() {
+  await loadSales();
+}
+
 async function loadSales() {
   if (noMoreResults.value) return;
 
   let lastItem = recentSales.value.slice(-1)[0];
 
-  let url =
-    `${Config.APIURL}/api/sales?` +
-    (lastItem != null
-      ? `before=${lastItem.occurredAt}&lastID=${lastItem.id}`
-      : "");
+  let newSales = await SalesAPI.loadSales(lastItem);
 
-  let httpResponse = await fetch(url, { method: "get" });
-
-  if (httpResponse.status !== 200)
-    throw new Error("Failed to retrieve recent sales");
-
-  let response = await httpResponse.json();
-  recentSales.value.push(...response.items);
-
-  noMoreResults.value = response.items.length === 0;
-}
-
-async function loadNextPage() {
-  await loadSales();
+  recentSales.value.push(...newSales);
+  noMoreResults.value = newSales.length === 0;
 }
 </script>
 
