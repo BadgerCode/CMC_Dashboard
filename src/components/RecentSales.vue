@@ -41,7 +41,11 @@ defineProps<Props>()
         <td class="table-cell" title="Enchanted">
           <font-awesome-icon icon="fa-solid fa-wand-sparkles" v-if="sale.isEnchanted" />
         </td>
-        <td class="table-cell wrap-anywhere"><span>{{ formatItemType(sale.itemType) }}</span></td>
+        <td class="table-cell wrap-anywhere">
+          <RouterLink :to="{ name: 'itemSales', params: { itemType: sale.itemType } }" class="text-blue-500 hover:underline">
+            {{ formatItemType(sale.itemType) }}
+          </RouterLink>
+        </td>
         <td class="table-cell">{{ sale.quantity }}</td>
         <td class="table-cell">{{ sale.totalPrice }}</td>
         <td class="table-cell">

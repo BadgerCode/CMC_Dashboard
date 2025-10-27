@@ -1,5 +1,6 @@
 import GalleryView from "@/views/GalleryView.vue";
 import HomeView from "@/views/HomeView.vue";
+import ItemTypeView from "@/views/ItemTypeView.vue";
 import SaleView from "@/views/SaleView.vue";
 import { createRouter, createWebHistory } from "vue-router";
 
@@ -29,6 +30,15 @@ const router = createRouter({
       props: true,
       meta: {
         title: 'Sale Info'
+      }
+    },
+    {
+      path: "/items/:itemType",
+      name: "itemSales",
+      component: ItemTypeView,
+      props: true,
+      meta: {
+        title: 'Item Sales'
       }
     }
   ],
