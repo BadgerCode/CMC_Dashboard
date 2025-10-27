@@ -60,12 +60,14 @@ async function loadNextPage() {
       <thead class="text-white">
         <tr>
           <th></th>
-          <th class="p-4">Time</th>
-          <th class="p-4">Item</th>
-          <th class="p-4">
+          <th class="table-cell">Time</th>
+          <th></th>
+          <th></th>
+          <th class="table-cell">Item</th>
+          <th class="table-cell">
             <span class="hidden md:inline">Quantity</span><span class="md:hidden">#</span>
           </th>
-          <th class="p-4">
+          <th class="table-cell">
             <span class="hidden md:inline">Price</span><span class="md:hidden">$</span>
           </th>
           <th></th>
@@ -73,18 +75,24 @@ async function loadNextPage() {
       </thead>
       <tbody>
         <tr v-for="sale in recentSales" class="border-t border-gray-700">
-          <td class="text-center" :title="sale.type">
+          <td class="table-cell" :title="sale.type">
             <font-awesome-icon icon="fa-solid fa-shop" v-if="sale.type == 'Shop'" />
             <font-awesome-icon icon="fa-solid fa-gavel" v-else-if="sale.type == 'Auction'" />
             <font-awesome-icon icon="fa-solid fa-question" v-else title="Unknown" />
           </td>
-          <td class="p-4 text-wrap">{{ formatDate(sale.occurredAt) }}</td>
-          <td class="p-4 break-all">{{ formatItemType(sale.itemType) }}</td>
-          <td class="p-4">{{ sale.quantity }}</td>
-          <td class="p-4">{{ sale.totalPrice }}</td>
-          <td class="p-4">
+          <td class="table-cell wrap-anywhere">{{ formatDate(sale.occurredAt) }}</td>
+          <td class="table-cell" title="Custom name">
+            <font-awesome-icon icon="fa-solid fa-quote-left" v-if="sale.isRenamed" />
+          </td>
+          <td class="table-cell" title="Enchanted">
+            <font-awesome-icon icon="fa-solid fa-wand-sparkles" v-if="sale.isEnchanted" />
+          </td>
+          <td class="table-cell wrap-anywhere"><span>{{ formatItemType(sale.itemType) }}</span></td>
+          <td class="table-cell">{{ sale.quantity }}</td>
+          <td class="table-cell">{{ sale.totalPrice }}</td>
+          <td class="table-cell">
             <RouterLink :to="{ name: 'sale', params: { id: sale.id } }" tag="button" class="button">
-              View
+              <font-awesome-icon icon="fa-solid fa-magnifying-glass" />
             </RouterLink>
           </td>
         </tr>

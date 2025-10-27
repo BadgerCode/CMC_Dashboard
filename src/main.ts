@@ -4,17 +4,8 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
 
-// Font awesome
-import { library } from '@fortawesome/fontawesome-svg-core'
+import "./font-awesome"
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-
-// Add icons
-// Solid icons
-import { faShop, faGavel, faQuestion } from '@fortawesome/free-solid-svg-icons'
-library.add(faShop, faGavel);
-// Regular icons
-// import { farThumbsUp } from '@fortawesome/free-regular-svg-icons'
-// library.add(farThumbsUp);
 
 
 const app = createApp(App)

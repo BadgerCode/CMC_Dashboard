@@ -5,7 +5,7 @@ import { Config } from "@/config";
 import { formatDate } from "@/utilities/date-format";
 import { formatItemType } from "@/utilities/item-type-format";
 import { formatNumber } from "@/utilities/number-format";
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 
 const props = defineProps({
   id: String
@@ -55,7 +55,7 @@ onMounted(async () => {
   }
 });
 
-async function fetchPainting(paintingID: string) : Promise<Painting | null> {
+async function fetchPainting(paintingID: string): Promise<Painting | null> {
   let url = `${Config.APIURL}/api/paintings/${paintingID}`;
   let httpResponse = await fetch(url, { method: "get" });
 
@@ -65,6 +65,15 @@ async function fetchPainting(paintingID: string) : Promise<Painting | null> {
   let response = await httpResponse.json();
   return response.result;
 }
+
+let filteredAttributes = computed(() => {
+  // Exclude painting attributes, as we'll render them separately
+  return saleData.value?.itemAttributes.filter(a => !a.key.startsWith("PAINTING_")) ?? [];
+});
+
+let paintingOriginality = computed(() => {
+  return saleData.value?.itemAttributes.find(a => a.key == "PAINTING_ORIGINALITY")?.value;
+});
 </script>
 
 <template>
@@ -86,7 +95,8 @@ async function fetchPainting(paintingID: string) : Promise<Painting | null> {
         </div>
 
         <div>
-          {{ saleData.quantity }} {{ formatItemType(saleData.itemType) }} sold for {{ saleData.totalPrice }} diamonds.
+          {{ saleData.quantity }} x {{ formatItemType(saleData.itemType) }} sold for {{ saleData.totalPrice }}
+          diamond(s).
         </div>
 
         <div>
@@ -94,13 +104,12 @@ async function fetchPainting(paintingID: string) : Promise<Painting | null> {
           <div>Items per diamond: {{ formatNumber(saleData.quantity / saleData.totalPrice, 4) }}</div>
         </div>
 
-        <div>
-          <div v-if="Object.keys(saleData.itemAttributes).length === 0">No item attributes</div>
-          <table v-else class="w-full text-left rtl:text-right text-gray-400 text-xs md:text-base mt-2">
+        <div v-if="filteredAttributes.length > 0">
+          <table class="w-full text-left rtl:text-right text-gray-400 text-xs md:text-base mt-2">
             <tbody>
-              <tr v-for="attribute in saleData.itemAttributes" class="border-t border-gray-700">
-                <td class="p-4">{{ attribute.key }}</td>
-                <td class="p-4">{{ attribute.value }}</td>
+              <tr v-for="attribute in filteredAttributes" class="border-t border-gray-700">
+                <td class="table-cell wrap-anywhere">{{ formatItemType(attribute.key) }}</td>
+                <td class="table-cell wrap-anywhere">{{ attribute.value }}</td>
               </tr>
             </tbody>
           </table>
@@ -116,6 +125,7 @@ async function fetchPainting(paintingID: string) : Promise<Painting | null> {
       <div class="mb-3 font-normal text-gray-400 flex flex-col gap-4">
         <div>By {{ paintingData.authorName }}</div>
         <RenderPainting :painting="paintingData"></RenderPainting>
+        <div>Originality: {{ paintingOriginality }}</div>
       </div>
     </div>
 
@@ -128,20 +138,20 @@ async function fetchPainting(paintingID: string) : Promise<Painting | null> {
         <table class="w-full text-left rtl:text-right text-gray-400 text-xs md:text-base">
           <thead class="text-white">
             <tr>
-              <th>Slot</th>
-              <th class="p-4">Item</th>
-              <th class="p-4">
+              <th class="table-cell">Slot</th>
+              <th class="table-cell">Item</th>
+              <th class="table-cell">
                 <span class="hidden md:inline">Quantity</span><span class="md:hidden">#</span>
               </th>
-              <th>Attributes</th>
+              <th class="table-cell">Attributes</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="subItem in saleData.containedItems" class="border-t border-gray-700">
-              <td class="p-4">{{ subItem.slot != null ? subItem.slot + 1 : '' }}</td>
-              <td class="p-4">{{ formatItemType(subItem.itemType) }}</td>
-              <td class="p-4">{{ subItem.quantity }}</td>
-              <td class="p-4">
+              <td class="table-cell">{{ subItem.slot != null ? subItem.slot + 1 : '' }}</td>
+              <td class="table-cell wrap-anywhere">{{ formatItemType(subItem.itemType) }}</td>
+              <td class="table-cell">{{ subItem.quantity }}</td>
+              <td class="table-cell wrap-anywhere">
                 <div v-for="attribute in subItem.itemAttributes">
                   {{ attribute.key }} : {{ attribute.value }}
                 </div>
