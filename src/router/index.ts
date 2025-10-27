@@ -16,9 +16,10 @@ const router = createRouter({
       }
     },
     {
-      path: "/gallery",
+      path: "/gallery/:authorName?",
       name: "gallery",
       component: GalleryView,
+      props: true,
       meta: {
         title: 'Gallery'
       }

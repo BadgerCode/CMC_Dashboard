@@ -1,14 +1,15 @@
 <script setup lang="ts">
 import { formatItemType } from "@/utilities/item-type-format";
-import { computed, onMounted, ref } from "vue";
+import { onMounted, ref } from "vue";
 import * as SalesAPI from "@/api/sales/api"
 import type { SaleSummary } from "@/api/sales/saleSummary";
 import RecentSales from "@/components/RecentSales.vue";
 import { formatNumber } from "@/utilities/number-format";
 
-const props = defineProps({
-  itemType: String
-});
+interface Props {
+  itemType: string
+}
+const props = defineProps<Props>()
 
 const sales = ref([] as SaleSummary[]);
 const averagePricePerItem = ref(null as number | null);
