@@ -10,6 +10,7 @@ import * as SalesAPI from "@/api/sales/api"
 import type { SaleSummary } from "@/api/sales/saleSummary";
 import RecentSales from "@/components/RecentSales.vue";
 import type { PaintingSaleSummary } from "@/api/paintings/paintingSaleSummary";
+import { normalisePrice, type NormalisedPrice } from "@/utilities/normalise-price";
 
 const props = defineProps({
   id: String
@@ -41,6 +42,7 @@ interface ItemAttribute {
 }
 
 const saleData = ref(null as SaleData | null);
+const averagePrice = ref(null as NormalisedPrice | null);
 const paintingData = ref(null as Painting | null);
 const paintingSales = ref([] as SaleSummary[]);
 const otherSales = ref([] as SaleSummary[]);
@@ -56,6 +58,9 @@ onMounted(async () => {
   saleData.value = response.result;
 
   if (saleData.value) {
+    // Calculate normalised prices
+    averagePrice.value = normalisePrice(saleData.value.totalPrice, saleData.value.quantity);
+
     // Load painting data
     let paintingID = saleData.value.itemAttributes.find(a => a.key == 'PAINTING_ID')?.value;
     if (paintingID) {
@@ -129,14 +134,19 @@ let paintingOriginality = computed(() => {
           <span>{{ formatDate(saleData.occurredAt) }}</span>
         </div>
 
-        <div>
-          {{ saleData.quantity }} x {{ formatItemType(saleData.itemType) }} sold for {{ saleData.totalPrice }}
-          diamond(s).
+        <div class="text-white">
+          <div>
+            {{ saleData.quantity }} x {{ formatItemType(saleData.itemType) }} sold for {{ saleData.totalPrice }}
+            diamond(s).
+          </div>
         </div>
-
         <div>
-          <div>Price per item: {{ formatNumber(saleData.totalPrice / saleData.quantity, 4) }}</div>
-          <div>Items per diamond: {{ formatNumber(saleData.quantity / saleData.totalPrice, 4) }}</div>
+          <div class="text-gray-400">Normalised price</div>
+          <div>
+            <span>{{ formatNumber(averagePrice?.quantity, 2) }} '{{ formatItemType(saleData.itemType) }}' </span>
+            <span>is worth </span>
+            <span>{{ formatNumber(averagePrice?.price, 2) }} diamond(s)</span>
+          </div>
         </div>
 
         <div v-if="filteredAttributes.length > 0">
@@ -213,7 +223,7 @@ let paintingOriginality = computed(() => {
 
     <div class="p-6 bg-gray-800 border border-gray-700 rounded-lg shadow-sm">
       <h4 class="mb-2 text-2xl font-bold tracking-tight text-white">
-        Sales of {{ formatItemType(saleData.itemType) }} item
+        Sales of {{ formatItemType(saleData.itemType) }}
       </h4>
 
       <div class="mb-3 font-normal text-gray-400">

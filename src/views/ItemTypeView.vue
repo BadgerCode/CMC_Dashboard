@@ -5,6 +5,7 @@ import * as SalesAPI from "@/api/sales/api"
 import type { SaleSummary } from "@/api/sales/saleSummary";
 import RecentSales from "@/components/RecentSales.vue";
 import { formatNumber } from "@/utilities/number-format";
+import { normalisePrice, type NormalisedPrice } from "@/utilities/normalise-price";
 
 interface Props {
   itemType: string
@@ -12,10 +13,8 @@ interface Props {
 const props = defineProps<Props>()
 
 const sales = ref([] as SaleSummary[]);
-const averagePricePerItem = ref(null as number | null);
-const averageItemsPerDiamond = ref(null as number | null);
-const averagePricePerItemNoRenames = ref(null as number | null);
-const averageItemsPerDiamondNoRenames = ref(null as number | null);
+const averagePrice = ref(null as NormalisedPrice | null);
+const averagePriceNoRenames = ref(null as NormalisedPrice | null);
 
 onMounted(async () => {
   if (!props.itemType) return;
@@ -23,15 +22,15 @@ onMounted(async () => {
   // Load sales data for the item type
   sales.value.push(...(await SalesAPI.loadSalesForItemType(props.itemType)));
 
+  // Calculate average price
   let totalPrice = sales.value.reduce((total, s) => total + s.totalPrice, 0);
   let totalQuantity = sales.value.reduce((total, s) => total + s.quantity, 0);
-  averagePricePerItem.value = totalPrice / totalQuantity;
-  averageItemsPerDiamond.value = totalQuantity / totalPrice;
+  averagePrice.value = normalisePrice(totalPrice, totalQuantity);
 
+  // Calculate average price without renamed items
   let totalPriceNoRenames = sales.value.filter(s => s.isRenamed == false).reduce((total, s) => total + s.totalPrice, 0);
   let totalQuantityNoRenames = sales.value.filter(s => s.isRenamed == false).reduce((total, s) => total + s.quantity, 0);
-  averagePricePerItemNoRenames.value = totalPriceNoRenames / totalQuantityNoRenames;
-  averageItemsPerDiamondNoRenames.value = totalQuantityNoRenames / totalPriceNoRenames;
+  averagePriceNoRenames.value = normalisePrice(totalPriceNoRenames, totalQuantityNoRenames);
 });
 </script>
 
@@ -44,56 +43,20 @@ onMounted(async () => {
         Average Prices
       </h4>
 
-      <div class="mb-6 text-gray-400">
-        Based on {{ sales.length }} sales shown below.
-      </div>
-
       <div>
-        <table class="w-full text-left rtl:text-right text-gray-400 text-xs md:text-base mt-2">
-          <tbody>
-            <tr class="border-t border-gray-700">
-              <td class="table-cell wrap-anywhere">
-                <div>1 '{{ formatItemType(itemType) }}'</div>
-              </td>
-              <td>costs</td>
-              <td class="table-cell wrap-anywhere">
-                {{ formatNumber(averagePricePerItem, 4) }} diamond(s)
-              </td>
-            </tr>
+        <div class="text-gray-400">Based on {{ sales.length }} sales shown below.</div>
+        <div>
+          <span>{{ formatNumber(averagePrice?.quantity, 2) }} '{{ formatItemType(itemType) }}' </span>
+          <span>is worth </span>
+          <span>{{ formatNumber(averagePrice?.price, 2) }} diamond(s)</span>
+        </div>
 
-            <tr class="border-t border-gray-700">
-              <td class="table-cell wrap-anywhere">
-                <div>1 diamond</div>
-              </td>
-              <td>gives</td>
-              <td class="table-cell wrap-anywhere">
-                {{ formatNumber(averageItemsPerDiamond, 4) }} '{{ formatItemType(itemType) }}'
-              </td>
-            </tr>
-
-            <tr class="border-t border-gray-700">
-              <td class="table-cell wrap-anywhere">
-                <div>1 '{{ formatItemType(itemType) }}'</div>
-                <div>(Excluding renamed items)</div>
-              </td>
-              <td>costs</td>
-              <td class="table-cell wrap-anywhere">
-                {{ formatNumber(averagePricePerItemNoRenames, 4) }} diamond(s)
-              </td>
-            </tr>
-
-            <tr class="border-t border-gray-700">
-              <td class="table-cell wrap-anywhere">
-                <div>1 diamond</div>
-                <div>(Excluding renamed items)</div>
-              </td>
-              <td>gives</td>
-              <td class="table-cell wrap-anywhere">
-                {{ formatNumber(averageItemsPerDiamondNoRenames, 4) }} '{{ formatItemType(itemType) }}'
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="text-gray-400 mt-4">Excluding renamed items</div>
+        <div>
+          <span>{{ formatNumber(averagePriceNoRenames?.quantity, 2) }} '{{ formatItemType(itemType) }}' </span>
+          <span>is worth </span>
+          <span>{{ formatNumber(averagePriceNoRenames?.price, 2) }} diamond(s)</span>
+        </div>
       </div>
     </div>
 
