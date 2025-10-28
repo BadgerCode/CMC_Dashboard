@@ -9,6 +9,7 @@ import { computed, onMounted, ref } from "vue";
 import * as SalesAPI from "@/api/sales/api"
 import type { SaleSummary } from "@/api/sales/saleSummary";
 import RecentSales from "@/components/RecentSales.vue";
+import type { PaintingSaleSummary } from "@/api/paintings/paintingSaleSummary";
 
 const props = defineProps({
   id: String
@@ -41,6 +42,7 @@ interface ItemAttribute {
 
 const saleData = ref(null as SaleData | null);
 const paintingData = ref(null as Painting | null);
+const paintingSales = ref([] as SaleSummary[]);
 const otherSales = ref([] as SaleSummary[]);
 
 onMounted(async () => {
@@ -58,6 +60,18 @@ onMounted(async () => {
     let paintingID = saleData.value.itemAttributes.find(a => a.key == 'PAINTING_ID')?.value;
     if (paintingID) {
       paintingData.value = await fetchPainting(paintingID);
+
+      // Load other sales
+      paintingSales.value = (await fetchPaintingSales(paintingID)).map(s => ({
+        id: s.id,
+        occurredAt: s.occurredAt,
+        type: s.type,
+        itemType: "PAINTING",
+        quantity: s.quantity,
+        totalPrice: s.totalPrice,
+        isEnchanted: false,
+        isRenamed: false
+      } as SaleSummary));
     }
 
     // Load sales data for the item type
@@ -74,6 +88,17 @@ async function fetchPainting(paintingID: string): Promise<Painting | null> {
 
   let response = await httpResponse.json();
   return response.result;
+}
+
+async function fetchPaintingSales(paintingID: string): Promise<PaintingSaleSummary[]> {
+  let url = `${Config.APIURL}/api/paintings/${paintingID}/sales`;
+  let httpResponse = await fetch(url, { method: "get" });
+
+  if (httpResponse.status !== 200)
+    return [];
+
+  let response = await httpResponse.json();
+  return response.items;
 }
 
 let filteredAttributes = computed(() => {
@@ -139,6 +164,16 @@ let paintingOriginality = computed(() => {
       </div>
     </div>
 
+    <div class="p-6 bg-gray-800 border border-gray-700 rounded-lg shadow-sm" v-if="paintingData != null">
+      <h4 class="mb-2 text-2xl font-bold tracking-tight text-white">
+        Sales of '{{ paintingData.title }}' painting
+      </h4>
+
+      <div class="mb-3 font-normal text-gray-400 flex flex-col gap-4">
+        <RecentSales :recent-sales="paintingSales"></RecentSales>
+      </div>
+    </div>
+
     <div class="p-6 bg-gray-800 border border-gray-700 rounded-lg shadow-sm" v-if="saleData.containedItems.length">
       <h4 class="mb-2 text-2xl font-bold tracking-tight text-white">
         Contents
@@ -178,7 +213,7 @@ let paintingOriginality = computed(() => {
 
     <div class="p-6 bg-gray-800 border border-gray-700 rounded-lg shadow-sm">
       <h4 class="mb-2 text-2xl font-bold tracking-tight text-white">
-        Other Sales of {{ formatItemType(saleData.itemType) }}
+        Sales of {{ formatItemType(saleData.itemType) }} item
       </h4>
 
       <div class="mb-3 font-normal text-gray-400">
