@@ -36,7 +36,7 @@ onMounted(async () => {
 
 <template>
   <div class="relative overflow-x-auto text-white flex flex-col gap-2">
-    <h1 class="text-3xl font-bold">{{ itemType }} sales</h1>
+    <h1 class="text-3xl font-bold">{{ itemType }}</h1>
 
     <div class="p-6 bg-gray-800 border border-gray-700 rounded-lg shadow-sm">
       <h4 class="mb-2 text-2xl font-bold tracking-tight text-white">

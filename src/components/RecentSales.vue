@@ -24,7 +24,6 @@ defineProps<Props>()
         <th class="table-cell">
           <span class="hidden md:inline">Price</span><span class="md:hidden">$</span>
         </th>
-        <th></th>
       </tr>
     </thead>
     <tbody>
@@ -42,17 +41,12 @@ defineProps<Props>()
           <font-awesome-icon icon="fa-solid fa-wand-sparkles" v-if="sale.isEnchanted" />
         </td>
         <td class="table-cell wrap-anywhere">
-          <RouterLink :to="{ name: 'itemSales', params: { itemType: sale.itemType } }" class="text-blue-500 hover:underline">
+          <RouterLink :to="{ name: 'sale', params: { id: sale.id } }" class="text-blue-500 hover:underline">
             {{ formatItemType(sale.itemType) }}
           </RouterLink>
         </td>
         <td class="table-cell">{{ sale.quantity }}</td>
         <td class="table-cell">{{ sale.totalPrice }}</td>
-        <td class="table-cell">
-          <RouterLink :to="{ name: 'sale', params: { id: sale.id } }" tag="button" class="button">
-            <font-awesome-icon icon="fa-solid fa-magnifying-glass" />
-          </RouterLink>
-        </td>
       </tr>
     </tbody>
   </table>

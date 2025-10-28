@@ -149,6 +149,13 @@ let paintingOriginality = computed(() => {
           </div>
         </div>
 
+        <div>
+          <RouterLink :to="{ name: 'itemSales', params: { itemType: saleData.itemType } }"
+            class="text-blue-500 hover:underline">
+            View '{{ formatItemType(saleData.itemType) }}' statistics
+          </RouterLink>
+        </div>
+
         <div v-if="filteredAttributes.length > 0">
           <table class="w-full text-left rtl:text-right text-gray-400 text-xs md:text-base mt-2">
             <tbody>

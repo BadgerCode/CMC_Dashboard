@@ -39,7 +39,7 @@ const router = createRouter({
       component: ItemTypeView,
       props: true,
       meta: {
-        title: 'Item Sales'
+        title: 'Item Statistics'
       }
     }
   ],
