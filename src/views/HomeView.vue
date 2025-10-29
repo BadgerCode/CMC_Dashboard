@@ -3,6 +3,7 @@ import type { SaleSummary } from "@/api/sales/saleSummary";
 import { onMounted, ref } from "vue";
 import * as SalesAPI from "@/api/sales/api"
 import RecentSales from "@/components/RecentSales.vue";
+import ItemTypeSearch from "@/components/ItemTypeSearch.vue";
 
 const recentSales = ref([] as SaleSummary[]);
 const noMoreResults = ref(false);
@@ -28,9 +29,14 @@ async function loadSales() {
 </script>
 
 <template>
-  <div class="mb-8">
-    <h1 class="text-3xl font-bold">Recent Transactions</h1>
-    <p class="text-gray-300">Shops and auctions</p>
+  <div class="mb-8 flex flex-row justify-between items-end">
+    <div>
+      <h1 class="text-3xl font-bold">Recent Transactions</h1>
+      <p class="text-gray-300">Shops and auctions</p>
+    </div>
+    <div class="text-right">
+      <ItemTypeSearch></ItemTypeSearch>
+    </div>
   </div>
 
   <div class="relative overflow-x-auto">
