@@ -41,7 +41,7 @@ defineProps<Props>()
           <font-awesome-icon icon="fa-solid fa-wand-sparkles" v-if="sale.isEnchanted" />
         </td>
         <td class="table-cell wrap-anywhere">
-          <RouterLink :to="{ name: 'sale', params: { id: sale.id } }" class="text-blue-500 hover:underline">
+          <RouterLink :to="{ name: 'sale', params: { id: sale.id } }" class="hyperlink">
             {{ formatItemType(sale.itemType) }}
           </RouterLink>
         </td>

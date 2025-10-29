@@ -226,8 +226,7 @@ let paintingOriginality = computed(() => {
         Sales of {{ formatItemType(saleData.itemType) }}
       </h4>
 
-      <RouterLink :to="{ name: 'itemSales', params: { itemType: saleData.itemType } }"
-        class="text-blue-500 hover:underline">
+      <RouterLink :to="{ name: 'itemSales', params: { itemType: saleData.itemType } }" class="hyperlink">
         View '{{ formatItemType(saleData.itemType) }}' statistics
       </RouterLink>
 

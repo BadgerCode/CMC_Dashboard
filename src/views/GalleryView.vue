@@ -54,7 +54,7 @@ async function loadNextPage() {
 
 <template>
   <div class="mb-8">
-    <RouterLink :to="{ name: 'gallery' }" class="text-blue-500 hover:underline" v-if="authorName != null">
+    <RouterLink :to="{ name: 'gallery' }" class="hyperlink" v-if="authorName != null">
       Back to all paintings
     </RouterLink>
     <h1 class="text-3xl font-bold">Recent</h1>
@@ -72,8 +72,7 @@ async function loadNextPage() {
       <div class="w-full text-center pl-1">
         <div class="text-sm text-gray-300">
           <span>By </span>
-          <RouterLink :to="{ name: 'gallery', params: { authorName: painting.authorName } }"
-            class="text-blue-500 hover:underline">
+          <RouterLink :to="{ name: 'gallery', params: { authorName: painting.authorName } }" class="hyperlink">
             {{ painting.authorName }}
           </RouterLink>
         </div>

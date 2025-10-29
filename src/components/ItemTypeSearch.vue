@@ -58,7 +58,7 @@ const filter = debounce(async (input: string) => {
     </div>
     <ul class="h-48 px-3 pb-3 overflow-y-auto text-sm text-gray-200" aria-labelledby="itemTypeSearchButton">
       <li v-for="itemType in itemTypes">
-        <RouterLink :to="{ name: 'itemSales', params: { itemType: itemType } }" class="text-blue-500 hover:underline">
+        <RouterLink :to="{ name: 'itemSales', params: { itemType: itemType } }" class="hyperlink">
           <div class="flex items-center px-4 py-2 ps-2 rounded-sm hover:bg-gray-600 text-gray-300 text-sm font-medium">
             {{ itemType }}
           </div>
