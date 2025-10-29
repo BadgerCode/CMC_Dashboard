@@ -119,21 +119,21 @@ let paintingOriginality = computed(() => {
 <template>
   <div class="relative overflow-x-auto text-white flex flex-col gap-2" v-if="saleData != null">
 
+    <h1 class="text-3xl font-bold">
+      <span class="mr-2" :title="saleData.type">
+        <font-awesome-icon icon="fa-solid fa-shop" v-if="saleData.type == 'Shop'" />
+        <font-awesome-icon icon="fa-solid fa-gavel" v-else-if="saleData.type == 'Auction'" />
+        <font-awesome-icon icon="fa-solid fa-question" v-else title="Unknown" />
+      </span>
+      <span>{{ formatDate(saleData.occurredAt) }}</span>
+    </h1>
+
     <div class="p-6 bg-gray-800 border border-gray-700 rounded-lg shadow-sm">
       <h4 class="mb-2 text-2xl font-bold tracking-tight text-white">
         Overview
       </h4>
 
       <div class="mb-3 font-normal text-gray-400 flex flex-col gap-4">
-        <div>
-          <span class="mr-2" :title="saleData.type">
-            <font-awesome-icon icon="fa-solid fa-shop" v-if="saleData.type == 'Shop'" />
-            <font-awesome-icon icon="fa-solid fa-gavel" v-else-if="saleData.type == 'Auction'" />
-            <font-awesome-icon icon="fa-solid fa-question" v-else title="Unknown" />
-          </span>
-          <span>{{ formatDate(saleData.occurredAt) }}</span>
-        </div>
-
         <div class="text-white">
           <div>
             {{ saleData.quantity }} x {{ formatItemType(saleData.itemType) }} sold for {{ saleData.totalPrice }}
