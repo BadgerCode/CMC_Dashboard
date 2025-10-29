@@ -8,6 +8,7 @@ A dashboard to show various bits of data from the CMC MC server.
 * [Vue Docs](https://vuejs.org/guide/introduction.html)
 * [Tailwind Docs](https://tailwindcss.com/docs/styling-with-utility-classes)
 * [Tailwind templates](https://tailwindcss.com/plus/ui-blocks/application-ui/application-shells/stacked)
+* [Flowbite components](https://flowbite.com/docs/components/buttons/)
 
 
 <br><br><br>
