@@ -153,7 +153,16 @@ let paintingOriginality = computed(() => {
           <table class="w-full text-left rtl:text-right text-gray-400 text-xs md:text-base mt-2">
             <tbody>
               <tr v-for="attribute in filteredAttributes" class="border-t border-gray-700">
-                <td class="table-cell wrap-anywhere">{{ formatItemType(attribute.key) }}</td>
+                <td class="table-cell wrap-anywhere">
+                  <span v-if="attribute.key.startsWith('ENCHANTMENT_')">
+                    <RouterLink
+                      :to="{ name: 'itemSales', params: { itemType: saleData.itemType }, query: { enchantment: `${attribute.key}_${attribute.value}` } }"
+                      class="hyperlink">
+                      {{ formatItemType(attribute.key) }}
+                    </RouterLink>
+                  </span>
+                  <span v-else>{{ formatItemType(attribute.key) }}</span>
+                </td>
                 <td class="table-cell wrap-anywhere">{{ attribute.value }}</td>
               </tr>
             </tbody>
