@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Painting } from "@/api/paintings/painting";
+import Loading from "@/components/Loading.vue";
 import RenderPainting from "@/components/RenderPainting.vue";
 import { Config } from "@/config";
 import { onMounted, ref } from "vue";
@@ -9,6 +10,7 @@ interface Props {
 }
 const props = defineProps<Props>()
 
+const loading = ref(true);
 const paintings = ref([] as Painting[]);
 const noMoreResults = ref(false);
 
@@ -42,9 +44,10 @@ async function loadPaintings() {
     throw new Error("Failed to retrieve paintings");
 
   let response = await httpResponse.json();
-  paintings.value.push(...response.items);
 
+  paintings.value.push(...response.items);
   noMoreResults.value = response.items.length === 0;
+  loading.value = false;
 }
 
 async function loadNextPage() {
@@ -61,6 +64,8 @@ async function loadNextPage() {
     <p class="text-gray-300" v-if="authorName == null">Paintings created by the players of the server</p>
     <p class="text-gray-300" v-else>Paintings created by {{ authorName }}</p>
   </div>
+
+  <Loading v-if="loading" :fill-space="true"></Loading>
 
   <div class="flex flex-row flex-wrap w-full gap-4 justify-center">
     <div v-for="painting in paintings" class="painting flex justify-center items-center flex-col gap-2 mb-4">
@@ -80,7 +85,7 @@ async function loadNextPage() {
     </div>
   </div>
 
-  <div class="mt-8 text-center">
+  <div class="mt-8 text-center" v-if="!loading">
     <button type="button" class="button" v-on:click="loadNextPage" v-if="!noMoreResults">
       More
     </button>

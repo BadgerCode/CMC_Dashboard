@@ -11,6 +11,7 @@ import type { SaleSummary } from "@/api/sales/saleSummary";
 import RecentSales from "@/components/RecentSales.vue";
 import type { PaintingSaleSummary } from "@/api/paintings/paintingSaleSummary";
 import { normalisePrice, type NormalisedPrice } from "@/utilities/normalise-price";
+import Loading from "@/components/Loading.vue";
 
 const props = defineProps({
   id: String
@@ -41,6 +42,8 @@ interface ItemAttribute {
   value: string;
 }
 
+const loading = ref(true);
+const loadingSales = ref(true);
 const saleData = ref(null as SaleData | null);
 const averagePrice = ref(null as NormalisedPrice | null);
 const paintingData = ref(null as Painting | null);
@@ -56,6 +59,7 @@ onMounted(async () => {
 
   let response = await httpResponse.json();
   saleData.value = response.result;
+  loading.value = false;
 
   if (saleData.value) {
     // Calculate normalised prices
@@ -81,6 +85,7 @@ onMounted(async () => {
 
     // Load sales data for the item type
     otherSales.value.push(...(await SalesAPI.loadSalesForItemType(saleData.value.itemType)));
+    loadingSales.value = false;
   }
 });
 
@@ -117,9 +122,9 @@ let paintingOriginality = computed(() => {
 </script>
 
 <template>
-  <div class="relative overflow-x-auto text-white flex flex-col gap-2" v-if="saleData != null">
+  <div class="relative overflow-x-auto text-white flex flex-col gap-2">
 
-    <h1 class="text-3xl font-bold">
+    <h1 class="text-3xl font-bold" v-if="saleData != null">
       <span class="mr-2" :title="saleData.type">
         <font-awesome-icon icon="fa-solid fa-shop" v-if="saleData.type == 'Shop'" />
         <font-awesome-icon icon="fa-solid fa-gavel" v-else-if="saleData.type == 'Auction'" />
@@ -133,7 +138,9 @@ let paintingOriginality = computed(() => {
         Overview
       </h4>
 
-      <div class="mb-3 font-normal text-gray-400 flex flex-col gap-4">
+      <Loading v-if="loading" :fill-space="true"></Loading>
+
+      <div class="mb-3 font-normal text-gray-400 flex flex-col gap-4" v-if="saleData != null">
         <div class="text-white">
           <div>
             {{ saleData.quantity }} x {{ formatItemType(saleData.itemType) }} sold for {{ saleData.totalPrice }}
@@ -193,7 +200,7 @@ let paintingOriginality = computed(() => {
       </div>
     </div>
 
-    <div class="p-6 bg-gray-800 border border-gray-700 rounded-lg shadow-sm" v-if="saleData.containedItems.length">
+    <div class="p-6 bg-gray-800 border border-gray-700 rounded-lg shadow-sm" v-if="saleData?.containedItems.length">
       <h4 class="mb-2 text-2xl font-bold tracking-tight text-white">
         Contents
       </h4>
@@ -231,16 +238,17 @@ let paintingOriginality = computed(() => {
     </div>
 
     <div class="p-6 bg-gray-800 border border-gray-700 rounded-lg shadow-sm">
-      <h4 class="mb-2 text-2xl font-bold tracking-tight text-white">
+      <h4 class="mb-2 text-2xl font-bold tracking-tight text-white" v-if="saleData != null">
         Sales of {{ formatItemType(saleData.itemType) }}
       </h4>
 
-      <RouterLink :to="{ name: 'itemSales', params: { itemType: saleData.itemType } }" class="hyperlink">
+      <RouterLink v-if="saleData != null" :to="{ name: 'itemSales', params: { itemType: saleData.itemType } }"
+        class="hyperlink">
         View '{{ formatItemType(saleData.itemType) }}' statistics
       </RouterLink>
 
       <div class="mb-3 font-normal text-gray-400">
-        <RecentSales :recent-sales="otherSales"></RecentSales>
+        <RecentSales :loading="loadingSales" :recent-sales="otherSales"></RecentSales>
       </div>
     </div>
   </div>

@@ -5,6 +5,7 @@ import * as SalesAPI from "@/api/sales/api"
 import RecentSales from "@/components/RecentSales.vue";
 import ItemTypeSearch from "@/components/ItemTypeSearch.vue";
 
+const loading = ref(true);
 const recentSales = ref([] as SaleSummary[]);
 const noMoreResults = ref(false);
 
@@ -25,6 +26,7 @@ async function loadSales() {
 
   recentSales.value.push(...newSales);
   noMoreResults.value = newSales.length === 0;
+  loading.value = false;
 }
 </script>
 
@@ -40,10 +42,10 @@ async function loadSales() {
   </div>
 
   <div class="relative overflow-x-auto">
-    <RecentSales :recent-sales="recentSales"></RecentSales>
+    <RecentSales :recent-sales="recentSales" :loading="loading"></RecentSales>
   </div>
 
-  <div class="mt-8 text-center">
+  <div class="mt-8 text-center" v-if="!loading">
     <button type="button" class="button" v-on:click="loadNextPage" v-if="!noMoreResults">
       More
     </button>

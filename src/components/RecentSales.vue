@@ -2,9 +2,11 @@
 import type { SaleSummary } from "@/api/sales/saleSummary";
 import { formatDate } from "@/utilities/date-format";
 import { formatItemType } from "@/utilities/item-type-format";
+import Loading from "./Loading.vue";
 
 interface Props {
-  recentSales: SaleSummary[]
+  recentSales: SaleSummary[],
+  loading?: boolean
 }
 defineProps<Props>()
 </script>
@@ -50,4 +52,6 @@ defineProps<Props>()
       </tr>
     </tbody>
   </table>
+
+  <Loading v-if="loading" :fill-space="true"></Loading>
 </template>
