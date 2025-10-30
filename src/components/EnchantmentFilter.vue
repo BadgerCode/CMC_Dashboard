@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { formatEnchantment } from '@/utilities/enchantment-format';
 import { initFlowbite } from 'flowbite';
 import { onMounted } from 'vue';
 
@@ -11,6 +12,7 @@ defineProps<Props>()
 onMounted(() => {
   initFlowbite(); // Include on any component where you need flowbite JS functionality
 });
+
 </script>
 
 <template>
@@ -30,7 +32,7 @@ onMounted(() => {
         <RouterLink :to="{ name: 'itemSales', params: { itemType: itemType }, query: { enchantment: enchantment } }"
           class="hyperlink">
           <div class="flex items-center px-4 py-2 ps-2 rounded-sm hover:bg-gray-600 text-gray-300 text-sm font-medium">
-            {{ enchantment }}
+            {{ formatEnchantment(enchantment) }}
           </div>
         </RouterLink>
       </li>

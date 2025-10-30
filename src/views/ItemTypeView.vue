@@ -9,6 +9,7 @@ import { normalisePrice, type NormalisedPrice } from "@/utilities/normalise-pric
 import { useRoute } from "vue-router";
 import { Config } from "@/config";
 import EnchantmentFilter from "@/components/EnchantmentFilter.vue";
+import { formatEnchantment } from "@/utilities/enchantment-format";
 
 interface Props {
   itemType: string
@@ -59,7 +60,7 @@ async function loadEnchantments(): Promise<string[]> {
 <template>
   <div class="relative overflow-x-auto text-white flex flex-col gap-2">
     <h1 class="text-3xl font-bold">{{ itemType }}</h1>
-    <h2 class="text-xl font-bold text-gray-400" v-if="enchantment != null">{{ enchantment }}</h2>
+    <h2 class="text-xl font-bold text-gray-400" v-if="enchantment != null">{{ formatEnchantment(enchantment) }}</h2>
 
     <div class="p-6 bg-gray-800 border border-gray-700 rounded-lg shadow-sm">
       <h4 class="mb-2 text-2xl font-bold tracking-tight text-white">
@@ -96,7 +97,7 @@ async function loadEnchantments(): Promise<string[]> {
         Sales of {{ formatItemType(itemType) }}
       </h4>
 
-      <div class="text-gray-400" v-if="enchantment != null">With {{ enchantment }}</div>
+      <div class="text-gray-400" v-if="enchantment != null">With enchantment '{{ formatEnchantment(enchantment) }}''</div>
 
 
       <div class="mb-3 font-normal text-gray-400">

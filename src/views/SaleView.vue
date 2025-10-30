@@ -12,6 +12,7 @@ import RecentSales from "@/components/RecentSales.vue";
 import type { PaintingSaleSummary } from "@/api/paintings/paintingSaleSummary";
 import { normalisePrice, type NormalisedPrice } from "@/utilities/normalise-price";
 import Loading from "@/components/Loading.vue";
+import { formatEnchantment } from "@/utilities/enchantment-format";
 
 const props = defineProps({
   id: String
@@ -165,7 +166,7 @@ let paintingOriginality = computed(() => {
                     <RouterLink
                       :to="{ name: 'itemSales', params: { itemType: saleData.itemType }, query: { enchantment: `${attribute.key}_${attribute.value}` } }"
                       class="hyperlink">
-                      {{ formatItemType(attribute.key) }}
+                      {{ formatEnchantment(attribute.key) }}
                     </RouterLink>
                   </span>
                   <span v-else>{{ formatItemType(attribute.key) }}</span>
