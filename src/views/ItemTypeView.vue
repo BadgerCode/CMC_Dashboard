@@ -8,6 +8,7 @@ import { formatNumber } from "@/utilities/number-format";
 import { normalisePrice, type NormalisedPrice } from "@/utilities/normalise-price";
 import { useRoute } from "vue-router";
 import { Config } from "@/config";
+import EnchantmentFilter from "@/components/EnchantmentFilter.vue";
 
 interface Props {
   itemType: string
@@ -82,6 +83,14 @@ async function loadEnchantments(): Promise<string[]> {
       </div>
     </div>
 
+    <div class="p-6 bg-gray-800 border border-gray-700 rounded-lg shadow-sm" v-if="enchantments.length > 0">
+      <h4 class="mb-2 text-2xl font-bold tracking-tight text-white">
+        Filter
+      </h4>
+
+      <EnchantmentFilter :item-type="itemType" :enchantments="enchantments"></EnchantmentFilter>
+    </div>
+
     <div class="p-6 bg-gray-800 border border-gray-700 rounded-lg shadow-sm">
       <h4 class="mb-2 text-2xl font-bold tracking-tight text-white">
         Sales of {{ formatItemType(itemType) }}
@@ -92,20 +101,6 @@ async function loadEnchantments(): Promise<string[]> {
 
       <div class="mb-3 font-normal text-gray-400">
         <RecentSales :recent-sales="sales"></RecentSales>
-      </div>
-    </div>
-
-    <div class="p-6 bg-gray-800 border border-gray-700 rounded-lg shadow-sm" v-if="enchantments.length > 0">
-      <h4 class="mb-2 text-2xl font-bold tracking-tight text-white">
-        Enchantments
-      </h4>
-
-      <div class="mb-3 font-normal text-gray-400" v-for="enchantmentName in enchantments">
-        <RouterLink
-          :to="{ name: 'itemSales', params: { itemType: props.itemType }, query: { enchantment: enchantmentName } }"
-          class="hyperlink">
-          {{ enchantmentName }}
-        </RouterLink>
       </div>
     </div>
   </div>
