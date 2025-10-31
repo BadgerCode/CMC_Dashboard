@@ -193,7 +193,7 @@ let paintingOriginality = computed(() => {
 
     <div class="p-6 bg-gray-800 border border-gray-700 rounded-lg shadow-sm" v-if="paintingData != null">
       <h4 class="mb-2 text-2xl font-bold tracking-tight text-white">
-        Sales of '{{ paintingData.title }}' painting
+        Other sales of '{{ paintingData.title }}' painting
       </h4>
 
       <div class="mb-3 font-normal text-gray-400 flex flex-col gap-4">
@@ -240,7 +240,7 @@ let paintingOriginality = computed(() => {
 
     <div class="p-6 bg-gray-800 border border-gray-700 rounded-lg shadow-sm">
       <h4 class="mb-2 text-2xl font-bold tracking-tight text-white" v-if="saleData != null">
-        Sales of {{ formatItemType(saleData.itemType) }}
+        Other sales of {{ formatItemType(saleData.itemType) }}
       </h4>
 
       <RouterLink v-if="saleData != null" :to="{ name: 'itemSales', params: { itemType: saleData.itemType } }"
