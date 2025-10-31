@@ -185,7 +185,12 @@ let paintingOriginality = computed(() => {
       </h4>
 
       <div class="mb-3 font-normal text-gray-400 flex flex-col gap-4">
-        <div>By {{ paintingData.authorName }}</div>
+        <div>
+          <span>By </span>
+          <RouterLink :to="{ name: 'gallery', params: { authorName: paintingData.authorName } }" class="hyperlink">
+            {{ paintingData.authorName }}
+          </RouterLink>
+        </div>
         <RenderPainting :painting="paintingData"></RenderPainting>
         <div>Originality: {{ paintingOriginality }}</div>
       </div>
