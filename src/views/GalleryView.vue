@@ -3,7 +3,7 @@ import type { Painting } from "@/api/paintings/painting";
 import Loading from "@/components/Loading.vue";
 import RenderPainting from "@/components/RenderPainting.vue";
 import { Config } from "@/config";
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 
 interface Props {
   authorName: string | null
@@ -13,6 +13,10 @@ const props = defineProps<Props>()
 const loading = ref(true);
 const paintings = ref([] as Painting[]);
 const noMoreResults = ref(false);
+
+let showingArtistProfile = computed(() => {
+  return props.authorName && props.authorName.length > 0;
+});
 
 onMounted(async () => {
   await loadPaintings();
@@ -57,11 +61,13 @@ async function loadNextPage() {
 
 <template>
   <div class="mb-8">
-    <RouterLink :to="{ name: 'gallery' }" class="hyperlink" v-if="authorName != null">
+    <RouterLink :to="{ name: 'gallery' }" class="hyperlink" v-if="showingArtistProfile">
       Back to all paintings
     </RouterLink>
-    <h1 class="text-3xl font-bold">Recent</h1>
-    <p class="text-gray-300" v-if="authorName == null">Paintings created by the players of the server</p>
+    <h1 class="text-3xl font-bold" v-if="!showingArtistProfile">Recent</h1>
+    <h1 class="text-3xl font-bold" v-else>Recent {{ authorName }} paintings</h1>
+
+    <p class="text-gray-300" v-if="!showingArtistProfile">Paintings created by the players of the server</p>
     <p class="text-gray-300" v-else>Paintings created by {{ authorName }}</p>
   </div>
 
