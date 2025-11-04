@@ -1,36 +1,57 @@
 import { Config } from "@/config";
 import type { SaleSummary } from "./saleSummary";
 
-export async function loadSales(lastItem?: SaleSummary | null | undefined): Promise<SaleSummary[]> {
-    return await loadSalesInternal(null, null, lastItem);
+export interface SalesFilters {
+  enchantment?: string;
+  potionEffect?: string;
+  customDisc?: string;
 }
 
-export async function loadSalesForItemType(itemType: string, enchantment?: string, lastItem?: SaleSummary | null | undefined): Promise<SaleSummary[]> {
-    return await loadSalesInternal(itemType, enchantment, lastItem);
+export async function loadSales(
+  lastItem?: SaleSummary | null | undefined
+): Promise<SaleSummary[]> {
+  return await loadSalesInternal(null, null, lastItem);
 }
 
-async function loadSalesInternal(itemType: string | null, enchantment: string | null | undefined, lastItem: SaleSummary | null | undefined): Promise<SaleSummary[]> {
-    const params = new URLSearchParams();
+export async function loadSalesForItemType(
+  itemType: string,
+  filters?: SalesFilters,
+  lastItem?: SaleSummary | null | undefined
+): Promise<SaleSummary[]> {
+  return await loadSalesInternal(itemType, filters, lastItem);
+}
 
-    if (lastItem != null) {
-        params.append("before", lastItem.occurredAt);
-        params.append("lastID", lastItem.id);
-    }
+async function loadSalesInternal(
+  itemType: string | null,
+  filters: SalesFilters | null | undefined,
+  lastItem: SaleSummary | null | undefined
+): Promise<SaleSummary[]> {
+  const params = new URLSearchParams();
 
-    if (itemType != null) {
-        params.append("itemType", itemType);
-    }
+  if (lastItem != null) {
+    params.append("before", lastItem.occurredAt);
+    params.append("lastID", lastItem.id);
+  }
 
-    if (enchantment != null) {
-        params.append("enchantment", enchantment);
-    }
+  if (itemType != null) {
+    params.append("itemType", itemType);
+  }
 
-    let url = `${Config.APIURL}/api/sales?${params.toString()}`;
-    let httpResponse = await fetch(url, { method: "get" });
+  if (filters?.enchantment != null)
+    params.append("enchantment", filters?.enchantment);
 
-    if (httpResponse.status !== 200)
-        throw new Error("Failed to retrieve recent sales");
+  if (filters?.customDisc != null)
+    params.append("customDisc", filters?.customDisc);
 
-    let response = await httpResponse.json();
-    return response.items;
+  if (filters?.potionEffect != null)
+    params.append("potionEffect", filters?.potionEffect);
+
+  let url = `${Config.APIURL}/api/sales?${params.toString()}`;
+  let httpResponse = await fetch(url, { method: "get" });
+
+  if (httpResponse.status !== 200)
+    throw new Error("Failed to retrieve recent sales");
+
+  let response = await httpResponse.json();
+  return response.items;
 }

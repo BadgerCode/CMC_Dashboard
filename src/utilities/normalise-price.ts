@@ -1,21 +1,26 @@
 export interface NormalisedPrice {
-    price: number;
-    quantity: number;
+  price: number;
+  quantity: number;
 }
 
-export function normalisePrice(totalPrice: number, quantity: number): NormalisedPrice {
-    // E.g. 5 for 1 item
-    let normalPrice = {
-        price: totalPrice / quantity,
-        quantity: 1
-    };
+export function normalisePrice(
+  totalPrice: number,
+  quantity: number
+): NormalisedPrice {
+  if (quantity < 1) return { price: 0, quantity: 0 };
 
-    // Convert 0.125 for 1 item -> 1 for 8 items
-    if (normalPrice.price < 1) {
-        let multiplier = 1 / normalPrice.price;
-        normalPrice.price *= multiplier;
-        normalPrice.quantity *= multiplier;
-    }
+  // E.g. 5 for 1 item
+  let normalPrice = {
+    price: totalPrice / quantity,
+    quantity: 1,
+  };
 
-    return normalPrice;
+  // Convert 0.125 for 1 item -> 1 for 8 items
+  if (normalPrice.price < 1) {
+    let multiplier = 1 / normalPrice.price;
+    normalPrice.price *= multiplier;
+    normalPrice.quantity *= multiplier;
+  }
+
+  return normalPrice;
 }
