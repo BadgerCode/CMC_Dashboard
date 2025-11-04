@@ -122,7 +122,7 @@ async function loadDiscs(): Promise<string[]> {
 
 async function loadPotions(): Promise<string[]> {
   // TODO: Cache
-  let url = `${Config.APIURL}/api/potionTypes`;
+  let url = `${Config.APIURL}/api/itemtypes/${props.itemType}/potionTypes`;
   let httpResponse = await fetch(url, { method: "get" });
 
   if (httpResponse.status !== 200) return [];
