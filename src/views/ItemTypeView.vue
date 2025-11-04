@@ -55,7 +55,7 @@ onMounted(async () => {
   enchantments.value.push(...(await loadEnchantments()));
 
   // Custom music discs
-  if (props.itemType == "MUSIC_DISC_11")
+  if (props.itemType == "CUSTOM_MUSIC_DISC")
     customDiscs.value.push(...(await loadDiscs()));
 
   // Potion effects
@@ -134,7 +134,7 @@ async function loadPotions(): Promise<string[]> {
 
 <template>
   <div class="relative overflow-x-auto text-white flex flex-col gap-2">
-    <h1 class="text-3xl font-bold">{{ itemType }}</h1>
+    <h1 class="text-3xl font-bold">{{ formatItemType(itemType) }}</h1>
     <h2 class="text-xl font-bold text-gray-400" v-if="filtersText">
       {{ filtersText }}
     </h2>
