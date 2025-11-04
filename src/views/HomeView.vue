@@ -1,9 +1,41 @@
 <script setup lang="ts">
 import type { SaleSummary } from "@/api/sales/saleSummary";
 import { onMounted, ref } from "vue";
-import * as SalesAPI from "@/api/sales/api"
+import * as SalesAPI from "@/api/sales/api";
 import RecentSales from "@/components/RecentSales.vue";
 import ItemTypeSearch from "@/components/ItemTypeSearch.vue";
+
+interface SpecialItem {
+  itemType: string;
+  displayName: string;
+}
+
+const specialItems = [
+  {
+    itemType: "CUSTOM_MUSIC_DISC",
+    displayName: "Custom Music Discs",
+  },
+  {
+    itemType: "ENCHANTED_BOOK",
+    displayName: "Enchanted Books",
+  },
+  {
+    itemType: "POTION",
+    displayName: "Potion",
+  },
+  {
+    itemType: "SPLASH_POTION",
+    displayName: "Splash Potion",
+  },
+  {
+    itemType: "LINGERING_POTION",
+    displayName: "Lingering Potion",
+  },
+  {
+    itemType: "WAYSTONE",
+    displayName: "Waystone",
+  },
+] as SpecialItem[];
 
 const loading = ref(true);
 const recentSales = ref([] as SaleSummary[]);
@@ -31,6 +63,30 @@ async function loadSales() {
 </script>
 
 <template>
+  <div class="mb-8">
+    <div class="mb-3 flex flex-row justify-between items-end">
+      <div>
+        <h1 class="text-3xl font-bold">Special Items</h1>
+      </div>
+    </div>
+
+    <div class="text-left">
+      <ul>
+        <li v-for="item in specialItems">
+          <RouterLink
+            :to="{
+              name: 'itemSales',
+              params: { itemType: item.itemType },
+            }"
+            class="hyperlink"
+          >
+            {{ item.displayName }}
+          </RouterLink>
+        </li>
+      </ul>
+    </div>
+  </div>
+
   <div class="mb-8 flex flex-row justify-between items-end">
     <div>
       <h1 class="text-3xl font-bold">Recent Transactions</h1>
@@ -46,7 +102,12 @@ async function loadSales() {
   </div>
 
   <div class="mt-8 text-center" v-if="!loading">
-    <button type="button" class="button" v-on:click="loadNextPage" v-if="!noMoreResults">
+    <button
+      type="button"
+      class="button"
+      v-on:click="loadNextPage"
+      v-if="!noMoreResults"
+    >
       More
     </button>
     <div v-else>No more results</div>
