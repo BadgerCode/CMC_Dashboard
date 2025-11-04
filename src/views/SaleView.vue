@@ -46,10 +46,12 @@ interface ItemAttribute {
 const loading = ref(true);
 const loadingSales = ref(true);
 const saleData = ref(null as SaleData | null);
-const averagePrice = ref(null as NormalisedPrice | null);
+const normalisedPrice = ref(null as NormalisedPrice | null);
 const paintingData = ref(null as Painting | null);
 const paintingSales = ref([] as SaleSummary[]);
 const otherSales = ref([] as SaleSummary[]);
+const averagePrice = ref(null as NormalisedPrice | null);
+const averagePriceNoRenames = ref(null as NormalisedPrice | null);
 
 onMounted(async () => {
   let url = `${Config.APIURL}/api/sales/${props.id}`;
@@ -64,7 +66,7 @@ onMounted(async () => {
 
   if (saleData.value) {
     // Calculate normalised prices
-    averagePrice.value = normalisePrice(saleData.value.totalPrice, saleData.value.quantity);
+    normalisedPrice.value = normalisePrice(saleData.value.totalPrice, saleData.value.quantity);
 
     // Load painting data
     let paintingID = saleData.value.itemAttributes.find(a => a.key == 'PAINTING_ID')?.value;
@@ -86,6 +88,17 @@ onMounted(async () => {
 
     // Load sales data for the item type
     otherSales.value.push(...(await SalesAPI.loadSalesForItemType(saleData.value.itemType)));
+
+    // Calculate average price
+    let totalPrice = otherSales.value.reduce((total, s) => total + s.totalPrice, 0);
+    let totalQuantity = otherSales.value.reduce((total, s) => total + s.quantity, 0);
+    averagePrice.value = normalisePrice(totalPrice, totalQuantity);
+
+    // Calculate average price without renamed items
+    let totalPriceNoRenames = otherSales.value.filter(s => s.isRenamed == false).reduce((total, s) => total + s.totalPrice, 0);
+    let totalQuantityNoRenames = otherSales.value.filter(s => s.isRenamed == false).reduce((total, s) => total + s.quantity, 0);
+    averagePriceNoRenames.value = normalisePrice(totalPriceNoRenames, totalQuantityNoRenames);
+
     loadingSales.value = false;
   }
 });
@@ -136,7 +149,7 @@ let paintingOriginality = computed(() => {
 
     <div class="p-6 bg-gray-800 border border-gray-700 rounded-lg shadow-sm">
       <h4 class="mb-2 text-2xl font-bold tracking-tight text-white">
-        Overview
+        Sale Overview
       </h4>
 
       <Loading v-if="loading" :fill-space="true"></Loading>
@@ -151,31 +164,62 @@ let paintingOriginality = computed(() => {
         <div>
           <div class="text-gray-400">Normalised price</div>
           <div>
-            <span>{{ formatNumber(averagePrice?.quantity, 2) }} '{{ formatItemType(saleData.itemType) }}' </span>
+            <span>{{ formatNumber(normalisedPrice?.quantity, 2) }} '{{ formatItemType(saleData.itemType) }}' </span>
             <span>is worth </span>
-            <span>{{ formatNumber(averagePrice?.price, 2) }} diamond(s)</span>
+            <span>{{ formatNumber(normalisedPrice?.price, 2) }} diamond(s)</span>
           </div>
         </div>
+      </div>
+    </div>
 
-        <div v-if="filteredAttributes.length > 0">
-          <table class="w-full text-left rtl:text-right text-gray-400 text-xs md:text-base mt-2">
-            <tbody>
-              <tr v-for="attribute in filteredAttributes" class="border-t border-gray-700">
-                <td class="table-cell wrap-anywhere">
-                  <span v-if="attribute.key.startsWith('ENCHANTMENT_')">
-                    <RouterLink
-                      :to="{ name: 'itemSales', params: { itemType: saleData.itemType }, query: { enchantment: `${attribute.key}_${attribute.value}` } }"
-                      class="hyperlink">
-                      {{ formatEnchantment(attribute.key) }}
-                    </RouterLink>
-                  </span>
-                  <span v-else>{{ formatItemType(attribute.key) }}</span>
-                </td>
-                <td class="table-cell wrap-anywhere">{{ attribute.value }}</td>
-              </tr>
-            </tbody>
-          </table>
+    <div class="p-6 bg-gray-800 border border-gray-700 rounded-lg shadow-sm">
+      <h4 class="mb-2 text-2xl font-bold tracking-tight text-white">
+        Average '{{ saleData?.itemType }}' Prices
+      </h4>
+
+      <Loading v-if="loadingSales || saleData == null" :fill-space="true"></Loading>
+
+      <div v-else>
+        <div class="text-gray-400">Based on {{ otherSales.length }} sales shown below.</div>
+        <div>
+          <span>{{ formatNumber(averagePrice?.quantity, 2) }} '{{ formatItemType(saleData.itemType) }}' </span>
+          <span>is worth </span>
+          <span>{{ formatNumber(averagePrice?.price, 2) }} diamond(s)</span>
         </div>
+
+        <div class="text-gray-400 mt-4">Excluding renamed items</div>
+        <div>
+          <span>{{ formatNumber(averagePriceNoRenames?.quantity, 2) }} '{{ formatItemType(saleData.itemType) }}' </span>
+          <span>is worth </span>
+          <span>{{ formatNumber(averagePriceNoRenames?.price, 2) }} diamond(s)</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="p-6 bg-gray-800 border border-gray-700 rounded-lg shadow-sm"
+      v-if="!loading && filteredAttributes.length > 0 && saleData != null">
+      <h4 class="mb-2 text-2xl font-bold tracking-tight text-white">
+        Item Attributes
+      </h4>
+
+      <div class="mb-3 font-normal text-gray-400 flex flex-col gap-4">
+        <table class="w-full text-left rtl:text-right text-gray-400 text-xs md:text-base mt-2">
+          <tbody>
+            <tr v-for="attribute in filteredAttributes" class="border-t border-gray-700">
+              <td class="table-cell wrap-anywhere">
+                <span v-if="attribute.key.startsWith('ENCHANTMENT_')">
+                  <RouterLink
+                    :to="{ name: 'itemSales', params: { itemType: saleData.itemType }, query: { enchantment: `${attribute.key}_${attribute.value}` } }"
+                    class="hyperlink">
+                    {{ formatEnchantment(attribute.key) }}
+                  </RouterLink>
+                </span>
+                <span v-else>{{ formatItemType(attribute.key) }}</span>
+              </td>
+              <td class="table-cell wrap-anywhere">{{ attribute.value }}</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
 

@@ -30,7 +30,7 @@ const router = createRouter({
       component: SaleView,
       props: true,
       meta: {
-        title: 'Sale Info'
+        title: 'Sale'
       }
     },
     {
