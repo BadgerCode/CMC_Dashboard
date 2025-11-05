@@ -7,6 +7,8 @@ import ItemTypeSearch from "@/components/ItemTypeSearch.vue";
 import { initFlowbite } from "flowbite";
 import { formatItemType } from "@/utilities/item-type-format";
 import { parseSNBTData, type SNBTData } from "@/utilities/snbt-processor";
+import DropdownFilter, { type DropdownOption } from "@/components/DropdownFilter.vue";
+import { formatPotionEffect } from "@/utilities/potion-format";
 
 interface ShopData {
   id: string;
@@ -48,7 +50,14 @@ const filteredShops = ref([] as ShopData[]);
 const itemTypes = ref([] as string[]);
 const itemTypeFilter = ref("");
 
+const buySellOptions = [
+  { text: 'Shop is Selling', value: 'SELLING' },
+  { text: 'Shop is Buying', value: 'BUYING' },
+] as DropdownOption[];
 const buySellFilter = ref(["BUYING", "SELLING"]);
+
+const potionEffects = ref([] as DropdownOption[]);
+const potionEffectFilter = ref([] as string[]);
 
 onMounted(async () => {
   initFlowbite(); // Include on any component where you need flowbite JS functionality
@@ -76,8 +85,14 @@ async function loadShops() {
   shops.value.push(...responseItems);
   loading.value = false;
 
-  // Extract item types from the shops
+  // Extract info from the shops
   itemTypes.value = [...new Set(shops.value.map(s => s.item.type).sort())];
+  potionEffects.value = [...new Set(shops.value.map(s => s.item.parsedSNBT.potionEffect).filter(e => e != null).sort())].map(e => ({
+    text: formatPotionEffect(e),
+    value: e
+  })).sort((a, b) => a.text.localeCompare(b.text));
+
+  // Render list
   applyFilters();
 }
 
@@ -98,6 +113,9 @@ function applyFilters() {
     // Apply buying/selling filter
     if (!buySellFilter.value.includes(s.type)) return false;
 
+    // Apply potion filter
+    if (potionEffectFilter.value.length > 0 && (!s.item.parsedSNBT.potionEffect || !potionEffectFilter.value.includes(s.item.parsedSNBT.potionEffect))) return false;
+
     return true;
   }));
 
@@ -108,6 +126,10 @@ function applyFilters() {
 }
 
 watch(buySellFilter, async (_, __) => {
+  applyFilters();
+});
+
+watch(potionEffectFilter, async (_, __) => {
   applyFilters();
 })
 </script>
@@ -123,36 +145,12 @@ watch(buySellFilter, async (_, __) => {
   </div>
 
   <div class="flex flex-column sm:flex-row flex-wrap space-y-4 sm:space-y-0 items-center justify-between pb-4">
-    <div>
-      <button id="dropdownBuySellButton" data-dropdown-toggle="dropdownBuySell"
-        class="inline-flex items-center text-gray-500 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-3 py-1.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
-        type="button">
-        <font-awesome-icon icon="fa-solid fa-arrows-left-right" class="w-3 h-3 text-gray-400 me-3" />
-        Buy/Sell
-        <font-awesome-icon icon="fa-solid fa-chevron-down" class="w-2.5 h-2.5 ms-2.5" />
-      </button>
-      <!-- Dropdown menu -->
-      <div id="dropdownBuySell"
-        class="z-10 hidden w-48 bg-white divide-y divide-gray-100 rounded-lg shadow-sm dark:bg-gray-700 dark:divide-gray-600"
-        data-popper-reference-hidden="" data-popper-escaped="" data-popper-placement="top"
-        style="position: absolute; inset: auto auto 0px 0px; margin: 0px; transform: translate3d(522.5px, 3847.5px, 0px);">
-        <ul class="p-3 space-y-1 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownBuySellButton">
-          <li>
-            <div class="flex items-center p-2 rounded-sm hover:bg-gray-600">
-              <input id="filter-buysell-sell" type="checkbox" value="SELLING" v-model="buySellFilter" class="checkbox">
-              <label for="filter-buysell-sell" class="w-full ms-2 text-sm font-medium text-gray-300 rounded-sm p-2">Shop
-                is Selling</label>
-            </div>
-          </li>
-          <li>
-            <div class="flex items-center p-2 rounded-sm hover:bg-gray-600">
-              <input id="filter-buysell-buy" type="checkbox" value="BUYING" v-model="buySellFilter" class="checkbox">
-              <label for="filter-buysell-buy" class="w-full ms-2 text-sm font-medium text-gray-300 rounded-sm p-2">Shop
-                is Buying</label>
-            </div>
-          </li>
-        </ul>
-      </div>
+    <div class="flex flex-row gap-1">
+      <DropdownFilter :placeholder="'Buy/Sell'" :icon="'fa-solid fa-arrows-left-right'" :options="buySellOptions"
+        v-model="buySellFilter"></DropdownFilter>
+      <DropdownFilter :placeholder="'Potion Effect'" :icon="'fa-solid fa-flask'" :options="potionEffects"
+        v-model="potionEffectFilter">
+      </DropdownFilter>
     </div>
 
     <div>

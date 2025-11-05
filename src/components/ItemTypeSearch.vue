@@ -80,7 +80,7 @@ function clear() {
       <!-- Dropdown menu -->
       <div id="itemTypeSearch" class="absolute inset-y-0 z-10 w-60 mt-[40px] hidden group-focus-within:block" v-if="filteredItemTypes.length > 0">
 
-        <ul class="h-48 p-3 overflow-y-auto text-sm text-gray-200 bg-gray-700 rounded-lg shadow-sm"
+        <ul class="max-h-48 p-3 overflow-y-auto text-sm text-gray-200 bg-gray-700 rounded-lg shadow-sm"
           aria-labelledby="itemTypeSearchButton">
           <li v-for="itemType in filteredItemTypes" class="hyperlink" @click="emit('selection', itemType)">
             <div tabindex="0"
