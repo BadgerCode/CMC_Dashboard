@@ -2,6 +2,7 @@ import GalleryView from "@/views/GalleryView.vue";
 import HomeView from "@/views/HomeView.vue";
 import ItemTypeView from "@/views/ItemTypeView.vue";
 import SaleView from "@/views/SaleView.vue";
+import ShopsView from "@/views/ShopsView.vue";
 import { createRouter, createWebHistory } from "vue-router";
 
 const router = createRouter({
@@ -13,6 +14,14 @@ const router = createRouter({
       component: HomeView,
       meta: {
         title: 'Home'
+      }
+    },
+    {
+      path: "/shops",
+      name: "shops",
+      component: ShopsView,
+      meta: {
+        title: 'Shops'
       }
     },
     {

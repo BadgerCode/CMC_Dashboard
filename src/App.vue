@@ -28,6 +28,9 @@ const path = computed(() => {
                   <RouterLink to="/"
                     class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-white/5 hover:text-white">
                     Home</RouterLink>
+                  <RouterLink to="/shops"
+                    class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-white/5 hover:text-white">
+                    Shops</RouterLink>
                   <RouterLink to="/gallery"
                     class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-white/5 hover:text-white">
                     Gallery</RouterLink>
