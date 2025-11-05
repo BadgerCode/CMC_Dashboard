@@ -2,6 +2,7 @@
 import { onMounted, ref } from "vue";
 import { Config } from "@/config";
 import { normalisePrice } from "@/utilities/normalise-price";
+import { formatNumber } from "@/utilities/number-format";
 
 interface ShopData {
   id: string;
@@ -56,7 +57,7 @@ async function loadShops() {
 
 function getNormalisedPrice(shop: ShopData) {
   let price = normalisePrice(shop.price, shop.item.quantity);
-  return `${price.quantity} for ${price.price} diamonds`;
+  return `${formatNumber(price.quantity, 2)} for ${formatNumber(price.price, 2)} diamonds`;
 }
 </script>
 
