@@ -5,6 +5,7 @@ import { normalisePrice } from "@/utilities/normalise-price";
 import { formatNumber } from "@/utilities/number-format";
 import ItemTypeSearch from "@/components/ItemTypeSearch.vue";
 import { initFlowbite } from "flowbite";
+import { formatItemType } from "@/utilities/item-type-format";
 
 interface ShopData {
   id: string;
@@ -120,7 +121,7 @@ watch(buySellFilter, async (_, __) => {
       <button id="dropdownBuySellButton" data-dropdown-toggle="dropdownBuySell"
         class="inline-flex items-center text-gray-500 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-3 py-1.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
         type="button">
-        <font-awesome-icon icon="fa-solid fa-clock" class="w-3 h-3 text-gray-400 me-3" />
+        <font-awesome-icon icon="fa-solid fa-arrows-left-right" class="w-3 h-3 text-gray-400 me-3"/>
         Buy/Sell
         <font-awesome-icon icon="fa-solid fa-chevron-down" class="w-2.5 h-2.5 ms-2.5" />
       </button>
@@ -133,15 +134,15 @@ watch(buySellFilter, async (_, __) => {
           <li>
             <div class="flex items-center p-2 rounded-sm hover:bg-gray-600">
               <input id="filter-buysell-sell" type="checkbox" value="SELLING" v-model="buySellFilter" class="checkbox">
-              <label for="filter-buysell-sell"
-                class="w-full ms-2 text-sm font-medium text-gray-300 rounded-sm p-2">Shop is Selling</label>
+              <label for="filter-buysell-sell" class="w-full ms-2 text-sm font-medium text-gray-300 rounded-sm p-2">Shop
+                is Selling</label>
             </div>
           </li>
           <li>
             <div class="flex items-center p-2 rounded-sm hover:bg-gray-600">
               <input id="filter-buysell-buy" type="checkbox" value="BUYING" v-model="buySellFilter" class="checkbox">
-              <label for="filter-buysell-buy"
-                class="w-full ms-2 text-sm font-medium text-gray-300 rounded-sm p-2">Shop is Buying</label>
+              <label for="filter-buysell-buy" class="w-full ms-2 text-sm font-medium text-gray-300 rounded-sm p-2">Shop
+                is Buying</label>
             </div>
           </li>
         </ul>
@@ -161,18 +162,18 @@ watch(buySellFilter, async (_, __) => {
     <table class="w-full text-left rtl:text-right text-gray-400 text-xs md:text-base">
       <thead class="text-white">
         <tr>
-          <th class="table-cell"></th>
-          <th class="table-cell">Item</th>
-          <th class="table-cell">Price</th>
-          <th class="table-cell">Min Quantity</th>
-          <th class="table-cell">Remaining</th>
-          <th class="table-cell">Location</th>
-          <th class="table-cell">Owner</th>
+          <th class="table-cell text-center"><font-awesome-icon icon="fa-solid fa-arrows-left-right" /></th>
+          <th class="table-cell text-center">Item</th>
+          <th class="table-cell text-center">Price</th>
+          <th class="table-cell text-center">Amount</th>
+          <th class="table-cell text-center">Stock</th>
+          <th class="table-cell text-center"><font-awesome-icon icon="fa-solid fa-globe" /></th>
+          <th class="table-cell text-center">Owner</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="shop in filteredShops" class="border-t border-gray-700">
-          <td class="table-cell">{{ shop.type }}</td>
+          <td class="table-cell">{{ shop.type.replace(/ING/g, "") }}</td>
           <td class="table-cell">
             <div>
               <RouterLink :to="{
@@ -183,7 +184,7 @@ watch(buySellFilter, async (_, __) => {
               </RouterLink>
             </div>
             <div class="text-sm">
-              {{ shop.item.type }}
+              {{ formatItemType(shop.item.type) }}
             </div>
           </td>
           <td class="table-cell">{{ getNormalisedPrice(shop) }}</td>
