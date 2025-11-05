@@ -9,6 +9,7 @@ import { formatItemType } from "@/utilities/item-type-format";
 import { parseSNBTData, type SNBTData } from "@/utilities/snbt-processor";
 import DropdownFilter, { type DropdownOption } from "@/components/DropdownFilter.vue";
 import { formatPotionEffect } from "@/utilities/potion-format";
+import Loading from "@/components/Loading.vue";
 
 interface ShopData {
   id: string;
@@ -44,7 +45,6 @@ const loading = ref(true);
 const shops = ref([] as ShopData[]);
 const lastUpdated = ref("");
 
-const madeSelection = ref(false);
 const filteredShops = ref([] as ShopData[]);
 
 const itemTypes = ref([] as string[]);
@@ -121,8 +121,6 @@ function applyFilters() {
 
   // TODO: Pagination
   if (filteredShops.value.length > 500) filteredShops.value.splice(500);
-
-  madeSelection.value = true;
 }
 
 watch(buySellFilter, async (_, __) => {
@@ -159,7 +157,7 @@ watch(potionEffectFilter, async (_, __) => {
     </div>
   </div>
 
-  <div class="relative overflow-x-auto" v-if="madeSelection">
+  <div class="relative overflow-x-auto" v-if="!loading">
     <div class="text-gray-400">
       <span>{{ filteredShops.length }} of {{ shops.length }} shops</span>
     </div>
@@ -195,6 +193,10 @@ watch(potionEffectFilter, async (_, __) => {
             <div class="text-sm" v-if="shop.item.parsedSNBT.potionEffect">
               {{ formatPotionEffect(shop.item.parsedSNBT.potionEffect) }}
             </div>
+
+            <div class="text-sm" v-if="shop.item.parsedSNBT.paintingName">
+              {{ shop.item.parsedSNBT.paintingName }}
+            </div>
           </td>
           <td class="table-cell md:hidden">
             <div class="text-nowrap">{{ getNormalisedPrice(shop) }}</div>
@@ -217,4 +219,6 @@ watch(potionEffectFilter, async (_, __) => {
       </tbody>
     </table>
   </div>
+
+  <Loading v-if="loading" :fill-space="true"></Loading>
 </template>
