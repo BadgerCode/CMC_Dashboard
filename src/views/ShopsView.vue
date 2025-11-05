@@ -206,7 +206,7 @@ function applyFilters() {
         <tr v-for="shop in filteredShops" class="border-t border-gray-700">
           <td class="table-cell">{{ shop.type.replace(/ING/g, "") }}</td>
           <td class="table-cell">
-            <div>
+            <div class="text-white">
               {{ shop.item.name }}
             </div>
 
