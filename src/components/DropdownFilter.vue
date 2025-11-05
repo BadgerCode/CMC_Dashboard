@@ -36,7 +36,7 @@ onMounted(() => {
 
     <!-- Dropdown menu -->
     <div :id="id"
-      class="z-10 hidden w-48 bg-white divide-y divide-gray-100 rounded-lg shadow-sm dark:bg-gray-700 dark:divide-gray-600"
+      class="z-10 hidden w-60 bg-white divide-y divide-gray-100 rounded-lg shadow-sm dark:bg-gray-700 dark:divide-gray-600"
       data-popper-reference-hidden="" data-popper-escaped="" data-popper-placement="top"
       style="position: absolute; inset: auto auto 0px 0px; margin: 0px; transform: translate3d(522.5px, 3847.5px, 0px);">
       <ul class="max-h-48 overflow-y-auto p-3 space-y-1 text-sm text-gray-700 dark:text-gray-200" :aria-labelledby="`${id}Button`">

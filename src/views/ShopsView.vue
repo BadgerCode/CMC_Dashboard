@@ -98,7 +98,7 @@ async function loadShops() {
 
 function getNormalisedPrice(shop: ShopData) {
   let price = normalisePrice(shop.price, shop.item.quantity);
-  return `${formatNumber(price.quantity, 2)} for ${formatNumber(price.price, 2)} diamonds`;
+  return `${formatNumber(price.quantity, 2)} for ${formatNumber(price.price, 2)} 💎`;
 }
 
 function applyFilters() {
@@ -140,7 +140,7 @@ watch(potionEffectFilter, async (_, __) => {
   <div class="flex flex-row justify-between items-end mb-8">
     <div>
       <h1 class="text-3xl font-bold">Shop Explorer</h1>
-      <p class="text-gray-300">Browse shops selling and buying various items. Use the search on the right</p>
+      <p class="text-gray-300">Browse shops selling and buying various items.</p>
     </div>
   </div>
 
@@ -169,10 +169,12 @@ watch(potionEffectFilter, async (_, __) => {
           <th class="table-cell text-center"><font-awesome-icon icon="fa-solid fa-arrows-left-right" /></th>
           <th class="table-cell text-center">Item</th>
           <th class="table-cell text-center">Price</th>
-          <th class="table-cell text-center">Amount</th>
+          <th class="table-cell text-center">
+            <span class="hidden md:inline">Amount</span><span class="md:hidden">Min Buy</span>
+          </th>
           <th class="table-cell text-center">Stock</th>
           <th class="table-cell text-center"><font-awesome-icon icon="fa-solid fa-globe" /></th>
-          <th class="table-cell text-center">Owner</th>
+          <th class="hidden md:table-cell text-center">Owner</th>
         </tr>
       </thead>
       <tbody>
@@ -192,7 +194,7 @@ watch(potionEffectFilter, async (_, __) => {
             </div>
 
             <div class="text-sm" v-if="shop.item.parsedSNBT.potionEffect">
-              {{ shop.item.parsedSNBT.potionEffect }}
+              {{ formatPotionEffect(shop.item.parsedSNBT.potionEffect) }}
             </div>
           </td>
           <td class="table-cell">{{ getNormalisedPrice(shop) }}</td>
@@ -204,7 +206,7 @@ watch(potionEffectFilter, async (_, __) => {
             </div>
             <div>({{ shop.location.world }})</div>
           </td>
-          <td class="table-cell">{{ shop.owner.name }}</td>
+          <td class="hidden md:table-cell">{{ shop.owner.name }}</td>
         </tr>
       </tbody>
     </table>
