@@ -133,8 +133,6 @@ watch(potionEffectFilter, async (_, __) => {
 </script>
 
 <template>
-  <div class="mb-8 text-gray-400">This page is a work in progress</div>
-
   <div class="flex flex-row justify-between items-end mb-8">
     <div>
       <h1 class="text-3xl font-bold">Shop Explorer</h1>
@@ -167,11 +165,11 @@ watch(potionEffectFilter, async (_, __) => {
           <th class="table-cell text-center"><font-awesome-icon icon="fa-solid fa-arrows-left-right" /></th>
           <th class="table-cell text-center">Item</th>
           <th class="table-cell md:hidden text-center">Price &amp; Stock</th>
-          <th class="hidden md:table-cell text-center">Price</th>
-          <th class="hidden md:table-cell text-center">Minimum Amount</th>
-          <th class="hidden md:table-cell text-center">Stock</th>
+          <th class="hidden md:table-cell">Price</th>
+          <th class="hidden md:table-cell px-2">Min<br>Buy</th>
+          <th class="hidden md:table-cell">Stock</th>
           <th class="table-cell text-center"><font-awesome-icon icon="fa-solid fa-globe" /></th>
-          <th class="hidden md:table-cell text-center">Owner</th>
+          <th class="hidden md:table-cell">Owner</th>
         </tr>
       </thead>
       <tbody>
@@ -179,15 +177,16 @@ watch(potionEffectFilter, async (_, __) => {
           <td class="table-cell">{{ shop.type.replace(/ING/g, "") }}</td>
           <td class="table-cell">
             <div>
+              {{ shop.item.name }}
+            </div>
+
+            <div class="text-sm">
               <RouterLink :to="{
                 name: 'itemSales',
                 params: { itemType: shop.item.type },
               }" class="hyperlink">
-                {{ shop.item.name }}
+                {{ formatItemType(shop.item.type) }}
               </RouterLink>
-            </div>
-            <div class="text-sm">
-              {{ formatItemType(shop.item.type) }}
             </div>
 
             <div class="text-sm" v-if="shop.item.parsedSNBT.potionEffect">
