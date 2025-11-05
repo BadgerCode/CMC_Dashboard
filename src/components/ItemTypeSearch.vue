@@ -13,13 +13,16 @@ const emit = defineEmits<{
   (e: 'selection', itemType: string): void
 }>();
 
+const filterText = ref("");
 const filteredItemTypes = ref([] as string[]);
 
 onMounted(() => {
   initFlowbite(); // Include on any component where you need flowbite JS functionality
 });
 
-const filter = debounce(async (input: string) => {
+const filter = debounce(async () => {
+  let input = filterText.value;
+
   // Clear results
   if (!input) {
     filteredItemTypes.value.splice(0);
@@ -51,6 +54,12 @@ const filter = debounce(async (input: string) => {
   filteredItemTypes.value.push(...response.items);
 }, 350);
 
+function clear() {
+  emit('selection', '');
+  filterText.value = '';
+  filteredItemTypes.value.splice(0);
+}
+
 </script>
 
 <template>
@@ -61,12 +70,17 @@ const filter = debounce(async (input: string) => {
         <font-awesome-icon icon="fa-solid fa-magnifying-glass" class="w-5 h-5 text-gray-400" />
       </div>
       <input type="text" id="table-search" class="textbox" placeholder="Search item types. E.g. Diamond"
-        @input="event => filter((event.target as HTMLInputElement).value)">
+        :value="filterText" @input="event => { filterText = (event.target as HTMLInputElement).value; filter(); }">
+
+      <div class="absolute inset-y-0 right-0 rtl:inset-r-0 rtl:right-0 flex items-center pe-3 cursor-pointer"
+        tabindex="0" @click="clear">
+        <font-awesome-icon icon="fa-solid fa-xmark" class="w-5 h-5 text-gray-400" />
+      </div>
 
       <!-- Dropdown menu -->
-      <div id="itemTypeSearch" class="absolute inset-y-0 z-10 w-60 mt-[40px] hidden group-focus-within:block">
+      <div id="itemTypeSearch" class="absolute inset-y-0 z-10 w-60 mt-[40px] hidden group-focus-within:block" v-if="filteredItemTypes.length > 0">
 
-        <ul class="h-48 px-3 pb-3 overflow-y-auto text-sm text-gray-200 bg-gray-700 rounded-lg shadow-sm"
+        <ul class="h-48 p-3 overflow-y-auto text-sm text-gray-200 bg-gray-700 rounded-lg shadow-sm"
           aria-labelledby="itemTypeSearchButton">
           <li v-for="itemType in filteredItemTypes" class="hyperlink" @click="emit('selection', itemType)">
             <div tabindex="0"
