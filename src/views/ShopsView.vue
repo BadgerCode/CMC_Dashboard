@@ -132,16 +132,16 @@ watch(buySellFilter, async (_, __) => {
         <ul class="p-3 space-y-1 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownBuySellButton">
           <li>
             <div class="flex items-center p-2 rounded-sm hover:bg-gray-600">
-              <input id="filter-buysell-buy" type="checkbox" value="BUYING" v-model="buySellFilter" class="checkbox">
-              <label for="filter-buysell-buy"
-                class="w-full ms-2 text-sm font-medium text-gray-300 rounded-sm p-2">Buying</label>
+              <input id="filter-buysell-sell" type="checkbox" value="SELLING" v-model="buySellFilter" class="checkbox">
+              <label for="filter-buysell-sell"
+                class="w-full ms-2 text-sm font-medium text-gray-300 rounded-sm p-2">Shop is Selling</label>
             </div>
           </li>
           <li>
             <div class="flex items-center p-2 rounded-sm hover:bg-gray-600">
-              <input id="filter-buysell-sell" type="checkbox" value="SELLING" v-model="buySellFilter" class="checkbox">
-              <label for="filter-buysell-sell"
-                class="w-full ms-2 text-sm font-medium text-gray-300 rounded-sm p-2">Selling</label>
+              <input id="filter-buysell-buy" type="checkbox" value="BUYING" v-model="buySellFilter" class="checkbox">
+              <label for="filter-buysell-buy"
+                class="w-full ms-2 text-sm font-medium text-gray-300 rounded-sm p-2">Shop is Buying</label>
             </div>
           </li>
         </ul>
