@@ -54,34 +54,28 @@ const filter = debounce(async (input: string) => {
 </script>
 
 <template>
+  <div>
+    <label for="table-search" class="sr-only">Search</label>
+    <div class="relative group">
+      <div class="absolute inset-y-0 left-0 rtl:inset-r-0 rtl:right-0 flex items-center ps-3 pointer-events-none">
+        <font-awesome-icon icon="fa-solid fa-magnifying-glass" class="w-5 h-5 text-gray-400" />
+      </div>
+      <input type="text" id="table-search" class="textbox" placeholder="Search item types. E.g. Diamond"
+        @input="event => filter((event.target as HTMLInputElement).value)">
 
-  <button id="itemTypeSearchButton" data-dropdown-toggle="itemTypeSearch" data-dropdown-placement="bottom"
-    class="text-white bg-blue-600 hover:bg-blue-700 focus:ring-blue-800 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center"
-    type="button">Search <svg class="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
-      viewBox="0 0 10 6">
-      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4" />
-    </svg>
-  </button>
+      <!-- Dropdown menu -->
+      <div id="itemTypeSearch" class="absolute inset-y-0 z-10 w-60 mt-[40px] hidden group-focus-within:block">
 
-  <!-- Dropdown menu -->
-  <div id="itemTypeSearch" class="z-10 hidden bg-gray-700 rounded-lg shadow-sm w-60">
-    <div class="p-3">
-      <label for="input-group-search" class="sr-only">Search</label>
-      <div class="relative">
-        <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
-          <font-awesome-icon icon="fa-solid fa-magnifying-glass" />
-        </div>
-        <input type="text" id="input-group-search"
-          class="block w-full p-2 ps-10 text-sm text-white border border-gray-500 rounded-lg bg-gray-600 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-400"
-          placeholder="Item Type" @input="event => filter((event.target as HTMLInputElement).value)">
+        <ul class="h-48 px-3 pb-3 overflow-y-auto text-sm text-gray-200 bg-gray-700 rounded-lg shadow-sm"
+          aria-labelledby="itemTypeSearchButton">
+          <li v-for="itemType in filteredItemTypes" class="hyperlink" @click="emit('selection', itemType)">
+            <div tabindex="0"
+              class="flex items-center px-4 py-2 ps-2 rounded-sm hover:bg-gray-600 text-gray-300 text-sm font-medium">
+              {{ itemType }}
+            </div>
+          </li>
+        </ul>
       </div>
     </div>
-    <ul class="h-48 px-3 pb-3 overflow-y-auto text-sm text-gray-200" aria-labelledby="itemTypeSearchButton">
-      <li v-for="itemType in filteredItemTypes" class="hyperlink" @click="emit('selection', itemType)">
-        <div class="flex items-center px-4 py-2 ps-2 rounded-sm hover:bg-gray-600 text-gray-300 text-sm font-medium">
-          {{ itemType }}
-        </div>
-      </li>
-    </ul>
   </div>
 </template>

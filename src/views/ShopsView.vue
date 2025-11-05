@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { onMounted, onUpdated, ref, watch } from "vue";
 import { Config } from "@/config";
 import { normalisePrice } from "@/utilities/normalise-price";
 import { formatNumber } from "@/utilities/number-format";
 import ItemTypeSearch from "@/components/ItemTypeSearch.vue";
+import { initFlowbite } from "flowbite";
 
 interface ShopData {
   id: string;
@@ -44,8 +45,15 @@ const filteredShops = ref([] as ShopData[]);
 const itemTypes = ref([] as string[]);
 const itemTypeFilter = ref("");
 
+const buySellFilter = ref(["BUYING", "SELLING"]);
+
 onMounted(async () => {
+  initFlowbite(); // Include on any component where you need flowbite JS functionality
   await loadShops();
+});
+
+onUpdated(() => {
+  initFlowbite(); // Include on any component where you need flowbite JS functionality
 });
 
 async function loadShops() {
@@ -74,16 +82,27 @@ function getNormalisedPrice(shop: ShopData) {
 function applyFilters() {
   filteredShops.value.splice(0);
 
-  // If there are no filters (e.g. page load) just show the first 20
-  if (!itemTypeFilter.value) {
-    filteredShops.value.push(...shops.value.slice(0, 20));
-  }
-  else {
-    filteredShops.value.push(...shops.value.filter(s => s.item.type == itemTypeFilter.value));
-  }
+  let itemType = itemTypeFilter.value.trim();
+
+  filteredShops.value.push(...shops.value.filter(s => {
+    // Apply item type filter
+    if (itemType.length > 0 && s.item.type != itemType) return false;
+
+    // Apply buying/selling filter
+    if (!buySellFilter.value.includes(s.type)) return false;
+
+    return true;
+  }));
+
+  // TODO: Pagination
+  if (filteredShops.value.length > 500) filteredShops.value.splice(500);
 
   madeSelection.value = true;
 }
+
+watch(buySellFilter, async (_, __) => {
+  applyFilters();
+})
 </script>
 
 <template>
@@ -94,7 +113,42 @@ function applyFilters() {
       <h1 class="text-3xl font-bold">Shop Explorer</h1>
       <p class="text-gray-300">Browse shops selling and buying various items. Use the search on the right</p>
     </div>
-    <div class="text-right">
+  </div>
+
+  <div class="flex flex-column sm:flex-row flex-wrap space-y-4 sm:space-y-0 items-center justify-between pb-4">
+    <div>
+      <button id="dropdownBuySellButton" data-dropdown-toggle="dropdownBuySell"
+        class="inline-flex items-center text-gray-500 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-3 py-1.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
+        type="button">
+        <font-awesome-icon icon="fa-solid fa-clock" class="w-3 h-3 text-gray-400 me-3" />
+        Buy/Sell
+        <font-awesome-icon icon="fa-solid fa-chevron-down" class="w-2.5 h-2.5 ms-2.5" />
+      </button>
+      <!-- Dropdown menu -->
+      <div id="dropdownBuySell"
+        class="z-10 hidden w-48 bg-white divide-y divide-gray-100 rounded-lg shadow-sm dark:bg-gray-700 dark:divide-gray-600"
+        data-popper-reference-hidden="" data-popper-escaped="" data-popper-placement="top"
+        style="position: absolute; inset: auto auto 0px 0px; margin: 0px; transform: translate3d(522.5px, 3847.5px, 0px);">
+        <ul class="p-3 space-y-1 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownBuySellButton">
+          <li>
+            <div class="flex items-center p-2 rounded-sm hover:bg-gray-600">
+              <input id="filter-buysell-buy" type="checkbox" value="BUYING" v-model="buySellFilter" class="checkbox">
+              <label for="filter-buysell-buy"
+                class="w-full ms-2 text-sm font-medium text-gray-300 rounded-sm p-2">Buying</label>
+            </div>
+          </li>
+          <li>
+            <div class="flex items-center p-2 rounded-sm hover:bg-gray-600">
+              <input id="filter-buysell-sell" type="checkbox" value="SELLING" v-model="buySellFilter" class="checkbox">
+              <label for="filter-buysell-sell"
+                class="w-full ms-2 text-sm font-medium text-gray-300 rounded-sm p-2">Selling</label>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div>
       <ItemTypeSearch :item-types="itemTypes" @selection="itemType => { itemTypeFilter = itemType; applyFilters(); }">
       </ItemTypeSearch>
     </div>
@@ -102,7 +156,7 @@ function applyFilters() {
 
   <div class="relative overflow-x-auto" v-if="madeSelection">
     <div class="text-gray-400">
-      <span>{{ filteredShops.length }} of {{shops.length}} shops</span>
+      <span>{{ filteredShops.length }} of {{ shops.length }} shops</span>
     </div>
     <table class="w-full text-left rtl:text-right text-gray-400 text-xs md:text-base">
       <thead class="text-white">
