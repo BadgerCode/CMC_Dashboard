@@ -15,5 +15,5 @@
 }
 
 .hyperlink {
-  @apply text-blue-300 hover:underline;
+  @apply text-blue-300 hover:underline cursor-pointer;
 }

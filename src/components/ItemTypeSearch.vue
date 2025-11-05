@@ -4,18 +4,38 @@ import { onMounted, ref } from 'vue';
 import { debounce } from 'lodash'
 import { Config } from '@/config';
 
-const itemTypes = ref([] as string[]);
+interface Props {
+  itemTypes?: string[]
+}
+const props = defineProps<Props>()
+
+const emit = defineEmits<{
+  (e: 'selection', itemType: string): void
+}>();
+
+const filteredItemTypes = ref([] as string[]);
 
 onMounted(() => {
   initFlowbite(); // Include on any component where you need flowbite JS functionality
 });
 
 const filter = debounce(async (input: string) => {
+  // Clear results
   if (!input) {
-    itemTypes.value.splice(0);
+    filteredItemTypes.value.splice(0);
     return;
   }
 
+  // If item types have been passed in, use them
+  if (props.itemTypes != null) {
+    let lowerCaseInput = input.toLowerCase();
+    filteredItemTypes.value.splice(0);
+    filteredItemTypes.value.push(...props.itemTypes.filter(itemType => itemType.toLocaleLowerCase().includes(lowerCaseInput)));
+    return;
+  }
+
+
+  // If item types haven't been passed in, get them via the API
   const params = new URLSearchParams();
 
   params.append("itemType", input);
@@ -27,8 +47,8 @@ const filter = debounce(async (input: string) => {
     return null;
 
   let response = await httpResponse.json();
-  itemTypes.value.splice(0);
-  itemTypes.value.push(...response.items);
+  filteredItemTypes.value.splice(0);
+  filteredItemTypes.value.push(...response.items);
 }, 350);
 
 </script>
@@ -57,12 +77,10 @@ const filter = debounce(async (input: string) => {
       </div>
     </div>
     <ul class="h-48 px-3 pb-3 overflow-y-auto text-sm text-gray-200" aria-labelledby="itemTypeSearchButton">
-      <li v-for="itemType in itemTypes">
-        <RouterLink :to="{ name: 'itemSales', params: { itemType: itemType } }" class="hyperlink">
-          <div class="flex items-center px-4 py-2 ps-2 rounded-sm hover:bg-gray-600 text-gray-300 text-sm font-medium">
-            {{ itemType }}
-          </div>
-        </RouterLink>
+      <li v-for="itemType in filteredItemTypes" class="hyperlink" @click="emit('selection', itemType)">
+        <div class="flex items-center px-4 py-2 ps-2 rounded-sm hover:bg-gray-600 text-gray-300 text-sm font-medium">
+          {{ itemType }}
+        </div>
       </li>
     </ul>
   </div>

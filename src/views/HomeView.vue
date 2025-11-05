@@ -73,13 +73,10 @@ async function loadSales() {
     <div class="text-left">
       <ul>
         <li v-for="item in specialItems">
-          <RouterLink
-            :to="{
-              name: 'itemSales',
-              params: { itemType: item.itemType },
-            }"
-            class="hyperlink"
-          >
+          <RouterLink :to="{
+            name: 'itemSales',
+            params: { itemType: item.itemType },
+          }" class="hyperlink">
             {{ item.displayName }}
           </RouterLink>
         </li>
@@ -93,7 +90,8 @@ async function loadSales() {
       <p class="text-gray-300">Shops and auctions</p>
     </div>
     <div class="text-right">
-      <ItemTypeSearch></ItemTypeSearch>
+      <ItemTypeSearch @selection="itemType => $router.push({ name: 'itemSales', params: { itemType: itemType } })">
+      </ItemTypeSearch>
     </div>
   </div>
 
@@ -102,12 +100,7 @@ async function loadSales() {
   </div>
 
   <div class="mt-8 text-center" v-if="!loading">
-    <button
-      type="button"
-      class="button"
-      v-on:click="loadNextPage"
-      v-if="!noMoreResults"
-    >
+    <button type="button" class="button" v-on:click="loadNextPage" v-if="!noMoreResults">
       More
     </button>
     <div v-else>No more results</div>
