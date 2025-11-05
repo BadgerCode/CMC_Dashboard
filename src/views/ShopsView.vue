@@ -168,11 +168,10 @@ watch(potionEffectFilter, async (_, __) => {
         <tr>
           <th class="table-cell text-center"><font-awesome-icon icon="fa-solid fa-arrows-left-right" /></th>
           <th class="table-cell text-center">Item</th>
-          <th class="table-cell text-center">Price</th>
-          <th class="table-cell text-center">
-            <span class="hidden md:inline">Amount</span><span class="md:hidden">Min Buy</span>
-          </th>
-          <th class="table-cell text-center">Stock</th>
+          <th class="table-cell md:hidden text-center">Price &amp; Stock</th>
+          <th class="hidden md:table-cell text-center">Price</th>
+          <th class="hidden md:table-cell text-center">Minimum Amount</th>
+          <th class="hidden md:table-cell text-center">Stock</th>
           <th class="table-cell text-center"><font-awesome-icon icon="fa-solid fa-globe" /></th>
           <th class="hidden md:table-cell text-center">Owner</th>
         </tr>
@@ -197,13 +196,20 @@ watch(potionEffectFilter, async (_, __) => {
               {{ formatPotionEffect(shop.item.parsedSNBT.potionEffect) }}
             </div>
           </td>
-          <td class="table-cell">{{ getNormalisedPrice(shop) }}</td>
-          <td class="table-cell">{{ shop.item.quantity }}</td>
-          <td class="table-cell">x {{ shop.remaining }}</td>
+          <td class="table-cell md:hidden">
+            <div class="text-nowrap">{{ getNormalisedPrice(shop) }}</div>
+            <div class="mt-2">Min buy:</div>
+            <div>{{ shop.item.quantity }}</div>
+            <div class="mt-2">Stock:</div>
+            <div>x{{ shop.remaining }}</div>
+          </td>
+          <td class="hidden md:table-cell">{{ getNormalisedPrice(shop) }}</td>
+          <td class="hidden md:table-cell">{{ shop.item.quantity }}</td>
+          <td class="hidden md:table-cell">x {{ shop.remaining }}</td>
           <td class="table-cell">
-            <div>
-              {{ `${shop.location.x}, ${shop.location.y}, ${shop.location.z}` }}
-            </div>
+            <div class="block md:inline mr-1">{{ `${shop.location.x},` }}</div>
+            <div class="block md:inline mr-1">{{ `${shop.location.y},` }}</div>
+            <div class="block md:inline mr-1">{{ shop.location.z }}</div>
             <div>({{ shop.location.world }})</div>
           </td>
           <td class="hidden md:table-cell">{{ shop.owner.name }}</td>
