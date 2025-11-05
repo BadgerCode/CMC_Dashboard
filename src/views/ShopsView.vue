@@ -48,18 +48,42 @@ const lastUpdated = ref("");
 
 const filteredShops = ref([] as ShopData[]);
 
+// Filtering: Item types
 const itemTypes = ref([] as string[]);
 const itemTypeFilter = ref("");
 
+
+// Filtering: Buying vs selling
 const buySellOptions = [
   { text: 'Shop is Selling', value: 'SELLING' },
   { text: 'Shop is Buying', value: 'BUYING' },
 ] as DropdownOption[];
 const buySellFilter = ref(["BUYING", "SELLING"]);
 
+watch(buySellFilter, async (_, __) => {
+  applyFilters();
+});
+
+
+// Filtering: Potion effect
 const potionEffects = ref([] as DropdownOption[]);
 const potionEffectFilter = ref([] as string[]);
 
+watch(potionEffectFilter, async (_, __) => {
+  applyFilters();
+});
+
+
+// Filtering: Enchantments
+const enchantments = ref([] as DropdownOption[]);
+const enchantmentFilter = ref([] as string[]);
+
+watch(enchantmentFilter, async (_, __) => {
+  applyFilters();
+});
+
+
+// Setup
 onMounted(async () => {
   initFlowbite(); // Include on any component where you need flowbite JS functionality
   await loadShops();
@@ -88,8 +112,12 @@ async function loadShops() {
 
   // Extract info from the shops
   itemTypes.value = [...new Set(shops.value.map(s => s.item.type).sort())];
-  potionEffects.value = [...new Set(shops.value.map(s => s.item.parsedSNBT.potionEffect).filter(e => e != null).sort())].map(e => ({
+  potionEffects.value = [...new Set(shops.value.map(s => s.item.parsedSNBT.potionEffect).filter(e => e != null))].map(e => ({
     text: formatPotionEffect(e),
+    value: e
+  })).sort((a, b) => a.text.localeCompare(b.text));
+  enchantments.value = [...new Set(shops.value.flatMap(s => s.item.parsedSNBT.enchantments))].map(e => ({
+    text: e,
     value: e
   })).sort((a, b) => a.text.localeCompare(b.text));
 
@@ -117,20 +145,15 @@ function applyFilters() {
     // Apply potion filter
     if (potionEffectFilter.value.length > 0 && (!s.item.parsedSNBT.potionEffect || !potionEffectFilter.value.includes(s.item.parsedSNBT.potionEffect))) return false;
 
+    // Apply enchantments filter
+    if (enchantmentFilter.value.length > 0 && !enchantmentFilter.value.some(e => s.item.parsedSNBT.enchantments.includes(e))) return false;
+
     return true;
   }));
 
   // TODO: Pagination
   if (filteredShops.value.length > 500) filteredShops.value.splice(500);
 }
-
-watch(buySellFilter, async (_, __) => {
-  applyFilters();
-});
-
-watch(potionEffectFilter, async (_, __) => {
-  applyFilters();
-})
 </script>
 
 <template>
@@ -142,11 +165,16 @@ watch(potionEffectFilter, async (_, __) => {
   </div>
 
   <div class="flex flex-column sm:flex-row flex-wrap space-y-4 sm:space-y-0 items-center justify-between pb-4">
-    <div class="flex flex-row gap-1">
+    <div class="flex flex-row flex-wrap gap-1">
       <DropdownFilter :placeholder="'Buy/Sell'" :icon="'fa-solid fa-arrows-left-right'" :options="buySellOptions"
         v-model="buySellFilter"></DropdownFilter>
+
       <DropdownFilter :placeholder="'Potion Effect'" :icon="'fa-solid fa-flask'" :options="potionEffects"
         v-model="potionEffectFilter">
+      </DropdownFilter>
+
+      <DropdownFilter :placeholder="'Enchantments'" :icon="'fa-solid fa-wand-sparkles'" :options="enchantments"
+        v-model="enchantmentFilter">
       </DropdownFilter>
     </div>
 
