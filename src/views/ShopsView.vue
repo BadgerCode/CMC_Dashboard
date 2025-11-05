@@ -10,6 +10,7 @@ import { parseSNBTData, type SNBTData } from "@/utilities/snbt-processor";
 import DropdownFilter, { type DropdownOption } from "@/components/DropdownFilter.vue";
 import { formatPotionEffect } from "@/utilities/potion-format";
 import Loading from "@/components/Loading.vue";
+import { formatDate } from "@/utilities/date-format";
 
 interface ShopData {
   id: string;
@@ -157,7 +158,8 @@ watch(potionEffectFilter, async (_, __) => {
 
   <div class="relative overflow-x-auto" v-if="!loading">
     <div class="text-gray-400">
-      <span>{{ filteredShops.length }} of {{ shops.length }} shops</span>
+      <div>{{ filteredShops.length }} of {{ shops.length }} shops</div>
+      <div class="text-gray-500 text-xs" v-if="!loading">Last updated {{ formatDate(lastUpdated, "") }}</div>
     </div>
     <table class="w-full text-left rtl:text-right text-gray-400 text-xs md:text-base">
       <thead class="text-white">
@@ -195,6 +197,10 @@ watch(potionEffectFilter, async (_, __) => {
 
             <div class="text-sm" v-if="shop.item.parsedSNBT.paintingName">
               {{ shop.item.parsedSNBT.paintingName }}
+            </div>
+
+            <div class="text-sm" v-for="enchantment in shop.item.parsedSNBT.enchantments">
+              {{ enchantment }}
             </div>
           </td>
           <td class="table-cell md:hidden">
