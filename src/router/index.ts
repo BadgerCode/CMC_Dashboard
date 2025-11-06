@@ -3,6 +3,7 @@ import HomeView from "@/views/HomeView.vue";
 import ItemTypeView from "@/views/ItemTypeView.vue";
 import SaleView from "@/views/SaleView.vue";
 import ShopsView from "@/views/ShopsView.vue";
+import WaystonesView from "@/views/WaystonesView.vue";
 import { createRouter, createWebHistory } from "vue-router";
 
 const router = createRouter({
@@ -50,7 +51,15 @@ const router = createRouter({
       meta: {
         title: 'Item Statistics'
       }
-    }
+    },
+    {
+      path: "/waystones",
+      name: "waystones",
+      component: WaystonesView,
+      meta: {
+        title: 'Waystones'
+      }
+    },
   ],
 });
 

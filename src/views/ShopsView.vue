@@ -7,10 +7,13 @@ import ItemTypeSearch from "@/components/ItemTypeSearch.vue";
 import { initFlowbite } from "flowbite";
 import { formatItemType } from "@/utilities/item-type-format";
 import { parseSNBTData, type SNBTData } from "@/utilities/snbt-processor";
-import DropdownFilter, { type DropdownOption } from "@/components/DropdownFilter.vue";
+import DropdownFilter, {
+  type DropdownOption,
+} from "@/components/DropdownFilter.vue";
 import { formatPotionEffect } from "@/utilities/potion-format";
 import Loading from "@/components/Loading.vue";
 import { formatDate } from "@/utilities/date-format";
+import * as WaystoneAPI from "@/api/waystones/api";
 
 interface ShopData {
   id: string;
@@ -52,18 +55,16 @@ const filteredShops = ref([] as ShopData[]);
 const itemTypes = ref([] as string[]);
 const itemTypeFilter = ref("");
 
-
 // Filtering: Buying vs selling
 const buySellOptions = [
-  { text: 'Shop is Selling', value: 'SELLING' },
-  { text: 'Shop is Buying', value: 'BUYING' },
+  { text: "Shop is Selling", value: "SELLING" },
+  { text: "Shop is Buying", value: "BUYING" },
 ] as DropdownOption[];
 const buySellFilter = ref(["BUYING", "SELLING"]);
 
 watch(buySellFilter, async (_, __) => {
   applyFilters();
 });
-
 
 // Filtering: Potion effect
 const potionEffects = ref([] as DropdownOption[]);
@@ -73,7 +74,6 @@ watch(potionEffectFilter, async (_, __) => {
   applyFilters();
 });
 
-
 // Filtering: Enchantments
 const enchantments = ref([] as DropdownOption[]);
 const enchantmentFilter = ref([] as string[]);
@@ -81,7 +81,6 @@ const enchantmentFilter = ref([] as string[]);
 watch(enchantmentFilter, async (_, __) => {
   applyFilters();
 });
-
 
 // Setup
 onMounted(async () => {
@@ -94,6 +93,8 @@ onUpdated(() => {
 });
 
 async function loadShops() {
+  await loadWaystones();
+
   let url = `${Config.APIURL}/api/chestshops`;
   let httpResponse = await fetch(url, { method: "get" });
 
@@ -111,23 +112,48 @@ async function loadShops() {
   loading.value = false;
 
   // Extract info from the shops
-  itemTypes.value = [...new Set(shops.value.map(s => s.item.type).sort())];
-  potionEffects.value = [...new Set(shops.value.map(s => s.item.parsedSNBT.potionEffect).filter(e => e != null))].map(e => ({
-    text: formatPotionEffect(e),
-    value: e
-  })).sort((a, b) => a.text.localeCompare(b.text));
-  enchantments.value = [...new Set(shops.value.flatMap(s => s.item.parsedSNBT.enchantments))].map(e => ({
-    text: e,
-    value: e
-  })).sort((a, b) => a.text.localeCompare(b.text));
+  itemTypes.value = [...new Set(shops.value.map((s) => s.item.type).sort())];
+  potionEffects.value = [
+    ...new Set(
+      shops.value
+        .map((s) => s.item.parsedSNBT.potionEffect)
+        .filter((e) => e != null)
+    ),
+  ]
+    .map((e) => ({
+      text: formatPotionEffect(e),
+      value: e,
+    }))
+    .sort((a, b) => a.text.localeCompare(b.text));
+  enchantments.value = [
+    ...new Set(shops.value.flatMap((s) => s.item.parsedSNBT.enchantments)),
+  ]
+    .map((e) => ({
+      text: e,
+      value: e,
+    }))
+    .sort((a, b) => a.text.localeCompare(b.text));
 
   // Render list
   applyFilters();
 }
 
+async function loadWaystones() {
+  try {
+    let waystones = await WaystoneAPI.loadWaystones();
+    console.log(waystones);
+  } catch (error) {
+    // Prevent this error from stopping shops from loading
+    console.error(error);
+  }
+}
+
 function getNormalisedPrice(shop: ShopData) {
   let price = normalisePrice(shop.price, shop.item.quantity);
-  return `${formatNumber(price.quantity, 2)} for ${formatNumber(price.price, 2)} 💎`;
+  return `${formatNumber(price.quantity, 2)} for ${formatNumber(
+    price.price,
+    2
+  )} 💎`;
 }
 
 function applyFilters() {
@@ -135,21 +161,34 @@ function applyFilters() {
 
   let itemType = itemTypeFilter.value.trim();
 
-  filteredShops.value.push(...shops.value.filter(s => {
-    // Apply item type filter
-    if (itemType.length > 0 && s.item.type != itemType) return false;
+  filteredShops.value.push(
+    ...shops.value.filter((s) => {
+      // Apply item type filter
+      if (itemType.length > 0 && s.item.type != itemType) return false;
 
-    // Apply buying/selling filter
-    if (!buySellFilter.value.includes(s.type)) return false;
+      // Apply buying/selling filter
+      if (!buySellFilter.value.includes(s.type)) return false;
 
-    // Apply potion filter
-    if (potionEffectFilter.value.length > 0 && (!s.item.parsedSNBT.potionEffect || !potionEffectFilter.value.includes(s.item.parsedSNBT.potionEffect))) return false;
+      // Apply potion filter
+      if (
+        potionEffectFilter.value.length > 0 &&
+        (!s.item.parsedSNBT.potionEffect ||
+          !potionEffectFilter.value.includes(s.item.parsedSNBT.potionEffect))
+      )
+        return false;
 
-    // Apply enchantments filter
-    if (enchantmentFilter.value.length > 0 && !enchantmentFilter.value.some(e => s.item.parsedSNBT.enchantments.includes(e))) return false;
+      // Apply enchantments filter
+      if (
+        enchantmentFilter.value.length > 0 &&
+        !enchantmentFilter.value.some((e) =>
+          s.item.parsedSNBT.enchantments.includes(e)
+        )
+      )
+        return false;
 
-    return true;
-  }));
+      return true;
+    })
+  );
 
   // TODO: Pagination
   if (filteredShops.value.length > 500) filteredShops.value.splice(500);
@@ -160,26 +199,50 @@ function applyFilters() {
   <div class="flex flex-row justify-between items-end mb-8">
     <div>
       <h1 class="text-3xl font-bold">Shop Explorer</h1>
-      <p class="text-gray-300">Browse shops selling and buying various items.</p>
+      <p class="text-gray-300">
+        Browse shops selling and buying various items.
+      </p>
     </div>
   </div>
 
-  <div class="flex flex-column sm:flex-row flex-wrap space-y-4 sm:space-y-0 items-center justify-between pb-4">
+  <div
+    class="flex flex-column sm:flex-row flex-wrap space-y-4 sm:space-y-0 items-center justify-between pb-4"
+  >
     <div class="flex flex-row flex-wrap gap-1">
-      <DropdownFilter :placeholder="'Buy/Sell'" :icon="'fa-solid fa-arrows-left-right'" :options="buySellOptions"
-        v-model="buySellFilter"></DropdownFilter>
+      <DropdownFilter
+        :placeholder="'Buy/Sell'"
+        :icon="'fa-solid fa-arrows-left-right'"
+        :options="buySellOptions"
+        v-model="buySellFilter"
+      ></DropdownFilter>
 
-      <DropdownFilter :placeholder="'Potion Effect'" :icon="'fa-solid fa-flask'" :options="potionEffects"
-        v-model="potionEffectFilter">
+      <DropdownFilter
+        :placeholder="'Potion Effect'"
+        :icon="'fa-solid fa-flask'"
+        :options="potionEffects"
+        v-model="potionEffectFilter"
+      >
       </DropdownFilter>
 
-      <DropdownFilter :placeholder="'Enchantments'" :icon="'fa-solid fa-wand-sparkles'" :options="enchantments"
-        v-model="enchantmentFilter">
+      <DropdownFilter
+        :placeholder="'Enchantments'"
+        :icon="'fa-solid fa-wand-sparkles'"
+        :options="enchantments"
+        v-model="enchantmentFilter"
+      >
       </DropdownFilter>
     </div>
 
     <div>
-      <ItemTypeSearch :item-types="itemTypes" @selection="itemType => { itemTypeFilter = itemType; applyFilters(); }">
+      <ItemTypeSearch
+        :item-types="itemTypes"
+        @selection="
+          (itemType) => {
+            itemTypeFilter = itemType;
+            applyFilters();
+          }
+        "
+      >
       </ItemTypeSearch>
     </div>
   </div>
@@ -187,18 +250,26 @@ function applyFilters() {
   <div class="relative overflow-x-auto" v-if="!loading">
     <div class="text-gray-400">
       <div>{{ filteredShops.length }} of {{ shops.length }} shops</div>
-      <div class="text-gray-500 text-xs" v-if="!loading">Last updated {{ formatDate(lastUpdated, "") }}</div>
+      <div class="text-gray-500 text-xs" v-if="!loading">
+        Last updated {{ formatDate(lastUpdated, "") }}
+      </div>
     </div>
-    <table class="w-full text-left rtl:text-right text-gray-400 text-xs md:text-base">
+    <table
+      class="w-full text-left rtl:text-right text-gray-400 text-xs md:text-base"
+    >
       <thead class="text-white">
         <tr>
-          <th class="table-cell text-center"><font-awesome-icon icon="fa-solid fa-arrows-left-right" /></th>
+          <th class="table-cell text-center">
+            <font-awesome-icon icon="fa-solid fa-arrows-left-right" />
+          </th>
           <th class="table-cell text-center">Item</th>
           <th class="table-cell md:hidden text-center">Price &amp; Stock</th>
           <th class="hidden md:table-cell">Price</th>
-          <th class="hidden md:table-cell px-2">Min<br>Buy</th>
+          <th class="hidden md:table-cell px-2">Min<br />Buy</th>
           <th class="hidden md:table-cell">Stock</th>
-          <th class="table-cell text-center"><font-awesome-icon icon="fa-solid fa-globe" /></th>
+          <th class="table-cell text-center">
+            <font-awesome-icon icon="fa-solid fa-globe" />
+          </th>
           <th class="hidden md:table-cell">Owner</th>
         </tr>
       </thead>
@@ -211,10 +282,13 @@ function applyFilters() {
             </div>
 
             <div class="text-sm">
-              <RouterLink :to="{
-                name: 'itemSales',
-                params: { itemType: shop.item.type },
-              }" class="hyperlink">
+              <RouterLink
+                :to="{
+                  name: 'itemSales',
+                  params: { itemType: shop.item.type },
+                }"
+                class="hyperlink"
+              >
                 {{ formatItemType(shop.item.type) }}
               </RouterLink>
             </div>
@@ -227,7 +301,10 @@ function applyFilters() {
               {{ shop.item.parsedSNBT.paintingName }}
             </div>
 
-            <div class="text-sm" v-for="enchantment in shop.item.parsedSNBT.enchantments">
+            <div
+              class="text-sm"
+              v-for="enchantment in shop.item.parsedSNBT.enchantments"
+            >
               {{ enchantment }}
             </div>
           </td>
