@@ -140,8 +140,8 @@ async function loadShops() {
 
 async function loadWaystones() {
   try {
-    let waystones = await WaystoneAPI.loadWaystones();
-    console.log(waystones);
+    // TODO: Work out the closest waystones to each shop
+    // let waystones = await WaystoneAPI.loadWaystones();
   } catch (error) {
     // Prevent this error from stopping shops from loading
     console.error(error);
