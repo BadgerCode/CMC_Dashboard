@@ -1,4 +1,6 @@
-import { kdTree } from "@/libraries/kdTree.js";
+// God I love the typescript/node ecosystem
+import * as KDTreeModule from "@/libraries/kdTree.js";
+let kdTree = (KDTreeModule as any).kdTree;
 
 export interface Point<DataType> {
   x: number;

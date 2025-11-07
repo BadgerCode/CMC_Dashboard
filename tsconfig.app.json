@@ -7,6 +7,9 @@
 
     "paths": {
       "@/*": ["./src/*"]
-    }
+    },
+    "typeRoots": [
+      "./src/libraries/types/"
+    ]
   }
 }
