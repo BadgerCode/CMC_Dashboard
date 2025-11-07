@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { initFlowbite } from 'flowbite';
+import { computed, onMounted, onUpdated } from 'vue';
 import { useRoute } from 'vue-router';
 
 const route = useRoute();
@@ -7,111 +8,84 @@ const route = useRoute();
 const path = computed(() => {
   return route.fullPath.replace(route.hash, "");
 });
+
+onMounted(() => {
+  initFlowbite(); // Include on any component where you need flowbite JS functionality
+});
+
+onUpdated(() => {
+  initFlowbite(); // Include on any component where you need flowbite JS functionality
+});
+
 </script>
 
 <template>
   <div>
     <div class="min-h-full">
-      <nav class="bg-gray-800/50">
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div class="flex p-4 items-center justify-between">
-            <div class="flex items-center flex-wrap justify-center gap-4">
-              <div>
-                <img class="h-8" src="/enchanting_table.gif"></img>
-              </div>
-              <div class="shrink-0 text-white">
-                SMP Online Dashboard (unofficial)
-              </div>
-              <div class="">
-                <div class="ml-10 flex items-baseline space-x-4">
-                  <!-- Current: "bg-gray-950/50 text-white", Default: "text-gray-300 hover:bg-white/5 hover:text-white" -->
-                  <RouterLink to="/" class="navbarLink">
-                    Home
-                  </RouterLink>
 
-                  <RouterLink to="/shops" class="navbarLink">
-                    Shops
-                  </RouterLink>
+      <!-- Navbar -->
+      <nav class="bg-white border-gray-200 dark:bg-gray-900">
+        <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
 
-                  <RouterLink to="/gallery" class="navbarLink">
-                    Gallery
-                  </RouterLink>
-
-                  <RouterLink to="/waystones" class="navbarLink">
-                    Waystones
-                  </RouterLink>
-                </div>
-              </div>
+          <!-- Logo and name -->
+          <RouterLink :to="{ name: 'home' }" class="flex items-center space-x-3 rtl:space-x-reverse">
+            <img src="/enchanting_table.gif" class="h-8" alt="Logo" />
+            <div
+              class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white flex flex-col lg:flex-row lg:items-center gap-2">
+              <div>SMP Online</div>
+              <div>Dashboard</div>
+              <div class="text-gray-500 text-sm">(unofficial)</div>
             </div>
+          </RouterLink>
 
-            <div class="hidden md:block">
-              <div class="ml-4 flex items-center md:ml-6">
-                <!-- Notifications button -->
-                <!-- <button
-                  type="button"
-                  class="relative rounded-full p-1 text-gray-400 hover:text-white focus:outline-2 focus:outline-offset-2 focus:outline-indigo-500"
-                >
-                  <span class="absolute -inset-1.5"></span>
-                  <span class="sr-only">View notifications</span>
-                  <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="1.5"
-                    data-slot="icon"
-                    aria-hidden="true"
-                    class="size-6"
-                  >
-                    <path
-                      d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
-                  </svg>
-                </button> -->
+          <!-- Hamburger menu -->
+          <div>
+            <button data-collapse-toggle="navbar-default" type="button"
+              class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
+              aria-controls="navbar-default" aria-expanded="false">
+              <span class="sr-only">Open main menu</span>
+              <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                viewBox="0 0 17 14">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M1 1h15M1 7h15M1 13h15" />
+              </svg>
+            </button>
+          </div>
 
-                <!-- Profile dropdown -->
-                <!-- <el-dropdown class="relative ml-3">
-                  <button
-                    class="relative flex max-w-xs items-center rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
-                  >
-                    <span class="absolute -inset-1.5"></span>
-                    <span class="sr-only">Open user menu</span>
-                    <img
-                      src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                      alt=""
-                      class="size-8 rounded-full outline -outline-offset-1 outline-white/10"
-                    />
-                  </button>
+          <!-- Links -->
+          <div class="hidden w-full md:block md:w-auto" id="navbar-default">
+            <ul
+              class="font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
 
-                  <el-menu
-                    anchor="bottom end"
-                    popover
-                    class="w-48 origin-top-right rounded-md bg-gray-800 py-1 outline-1 -outline-offset-1 outline-white/10 transition transition-discrete [--anchor-gap:--spacing(2)] data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
-                  >
-                    <a
-                      href="#"
-                      class="block px-4 py-2 text-sm text-gray-300 focus:bg-white/5 focus:outline-hidden"
-                      >Your profile</a
-                    >
-                    <a
-                      href="#"
-                      class="block px-4 py-2 text-sm text-gray-300 focus:bg-white/5 focus:outline-hidden"
-                      >Settings</a
-                    >
-                    <a
-                      href="#"
-                      class="block px-4 py-2 text-sm text-gray-300 focus:bg-white/5 focus:outline-hidden"
-                      >Sign out</a
-                    >
-                  </el-menu>
-                </el-dropdown> -->
-              </div>
-            </div>
+              <li>
+                <RouterLink :to="{ name: 'home' }" class="navbarLink">
+                  Home
+                </RouterLink>
+              </li>
+
+              <li>
+                <RouterLink :to="{ name: 'shops' }" class="navbarLink">
+                  Shops
+                </RouterLink>
+              </li>
+
+              <li>
+                <RouterLink :to="{ name: 'gallery' }" class="navbarLink">
+                  Gallery
+                </RouterLink>
+              </li>
+
+              <li>
+                <RouterLink :to="{ name: 'waystones' }" class="navbarLink">
+                  Waystones
+                </RouterLink>
+              </li>
+            </ul>
           </div>
         </div>
       </nav>
 
+      <!-- Page header -->
       <header
         class="relative bg-gray-800 after:pointer-events-none after:absolute after:inset-x-0 after:inset-y-0 after:border-y after:border-white/10">
         <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
@@ -120,12 +94,15 @@ const path = computed(() => {
           </h1>
         </div>
       </header>
+
+      <!-- Page content -->
       <main>
         <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 text-white pb-[100px]">
           <router-view :key="path"></router-view>
         </div>
       </main>
 
+      <!-- Footer -->
       <footer
         class="relative bg-gray-800 after:pointer-events-none after:absolute after:inset-x-0 after:inset-y-0 after:border-y after:border-white/10">
         <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 text-gray-300 text-center">
