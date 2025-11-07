@@ -10,9 +10,9 @@ export async function loadWaystones(): Promise<ServerWaystones> {
 
   let response = await httpResponse.json();
 
-  let worlds = {} as { [world: string]: Waystone[] };
+  let waystones = [] as Waystone[];
   for (const world in response.worlds) {
-    worlds[world] = response.worlds[world].map((w: any) => {
+    waystones.push(...response.worlds[world].flatMap((w: any) => {
       let worldInfo =
         [
           ...w.options.popup.content.matchAll(
@@ -22,17 +22,18 @@ export async function loadWaystones(): Promise<ServerWaystones> {
 
       return {
         id: w.data.key,
+        world: world,
         name: w.options.tooltip.content,
         x: w.data.point.x,
         z: w.data.point.z,
         visitsThisWeek: worldInfo.length >= 1 ? worldInfo[1] : 0,
         visitsTotal: worldInfo.length >= 2 ? worldInfo[2] : 0,
       } as Waystone;
-    });
+    }));
   }
 
   return {
     lastUpdated: response.lastUpdated,
-    worlds: worlds,
+    waystones: waystones,
   };
 }

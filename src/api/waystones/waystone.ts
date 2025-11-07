@@ -1,10 +1,11 @@
 export interface ServerWaystones {
   lastUpdated: string;
-  worlds: { [world: string]: Waystone[] };
+  waystones: Waystone[];
 }
 
 export interface Waystone {
   id: string;
+  world: string;
   name: string;
   x: number;
   z: number;
