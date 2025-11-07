@@ -345,12 +345,7 @@ function applySort() {
             </div>
 
             <div class="text-sm">
-              <RouterLink :to="{
-                name: 'itemSales',
-                params: { itemType: shop.item.type },
-              }" class="hyperlink">
-                {{ formatItemType(shop.item.type) }}
-              </RouterLink>
+              {{ formatItemType(shop.item.type) }}
             </div>
 
             <div class="text-sm capitalize" v-if="shop.item.parsedSNBT.potionEffect">
