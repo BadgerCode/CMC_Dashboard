@@ -12,10 +12,11 @@ interface Props {
   icon: string;
   options: DropdownOption[];
   defaultSelection?: string[];
+  singleSelection?: boolean;
 }
 const props = defineProps<Props>();
 
-const model = defineModel({ default: [] as string[] })
+const model = defineModel({ default: [] as string[] | string })
 
 const id = useId()
 
@@ -37,7 +38,7 @@ function clear() {
       type="button">
       <font-awesome-icon :icon="icon" class="w-3 h-3 text-gray-400 me-3" />
       <span>{{ placeholder }}</span>
-      <span v-if="model.length > 0" class="ml-1">({{ model.length }})</span>
+      <span v-if="model.length > 0 && !singleSelection" class="ml-1">({{ model.length }})</span>
       <font-awesome-icon icon="fa-solid fa-chevron-down" class="w-2.5 h-2.5 ms-2.5" />
     </button>
 
@@ -46,19 +47,20 @@ function clear() {
       class="z-10 hidden w-60 bg-white divide-y divide-gray-100 rounded-lg shadow-sm dark:bg-gray-700 dark:divide-gray-600"
       data-popper-reference-hidden="" data-popper-escaped="" data-popper-placement="top"
       style="position: absolute; inset: auto auto 0px 0px; margin: 0px; transform: translate3d(522.5px, 3847.5px, 0px);">
-      <ul class="max-h-48 overflow-y-auto p-3 space-y-1 text-sm text-gray-700 dark:text-gray-200"
+      <ul class="max-h-48 overflow-y-auto space-y-1 text-sm text-gray-700 dark:text-gray-200"
         :aria-labelledby="`${id}Button`">
         <li v-for="option in options">
-          <div class="flex items-center p-2 rounded-sm hover:bg-gray-600">
-            <input :id="`${id}-${option.value}`" type="checkbox" :value="option.value" v-model="model" class="checkbox">
+          <div class="flex items-center rounded-sm hover:bg-gray-600">
+            <input :id="`${id}-${option.value}`" :type="singleSelection ? 'radio' : 'checkbox'" :value="option.value" v-model="model"
+              class="checkbox cursor-pointer ml-2" :class="{ 'hidden': singleSelection }">
             <label :for="`${id}-${option.value}`"
-              class="w-full ms-2 text-sm font-medium text-gray-300 rounded-sm p-2 wrap-anywhere">{{
+              class="w-full ms-2 text-sm font-medium text-gray-300 rounded-sm p-3 wrap-anywhere cursor-pointer capitalize">{{
                 option.text }}</label>
           </div>
         </li>
       </ul>
 
-      <div class="p-3">
+      <div class="p-3" v-if="!singleSelection">
         <a class="hyperlink" @click="clear()">Clear</a>
       </div>
     </div>

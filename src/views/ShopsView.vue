@@ -14,6 +14,7 @@ import { formatPotionEffect } from "@/utilities/potion-format";
 import Loading from "@/components/Loading.vue";
 import { formatDate } from "@/utilities/date-format";
 import * as WaystoneAPI from "@/api/waystones/api";
+import { formatEnchantment } from "@/utilities/enchantment-format";
 
 interface ShopData {
   id: string;
@@ -272,7 +273,7 @@ function applyFilters() {
               </RouterLink>
             </div>
 
-            <div class="text-sm" v-if="shop.item.parsedSNBT.potionEffect">
+            <div class="text-sm capitalize" v-if="shop.item.parsedSNBT.potionEffect">
               {{ formatPotionEffect(shop.item.parsedSNBT.potionEffect) }}
             </div>
 
@@ -280,8 +281,8 @@ function applyFilters() {
               {{ shop.item.parsedSNBT.paintingName }}
             </div>
 
-            <div class="text-sm" v-for="enchantment in shop.item.parsedSNBT.enchantments">
-              {{ enchantment }}
+            <div class="text-sm capitalize" v-for="enchantment in shop.item.parsedSNBT.enchantments">
+              {{ formatEnchantment(enchantment) }}
             </div>
           </td>
           <td class="table-cell md:hidden">
