@@ -239,7 +239,7 @@ function applyFilters() {
       </div>
     </div>
     <table class="w-full text-left rtl:text-right text-gray-400 text-xs md:text-base">
-      <thead class="text-white">
+      <thead class="table-head">
         <tr>
           <th class="table-cell text-center">
             <font-awesome-icon icon="fa-solid fa-arrows-left-right" />
@@ -247,7 +247,7 @@ function applyFilters() {
           <th class="table-cell text-center">Item</th>
           <th class="table-cell md:hidden text-center">Price &amp; Stock</th>
           <th class="hidden md:table-cell">Price</th>
-          <th class="hidden md:table-cell px-2">Min<br />Buy</th>
+          <th class="hidden md:table-cell pr-4">Min<br />Buy</th>
           <th class="hidden md:table-cell">Stock</th>
           <th class="table-cell text-center">
             <font-awesome-icon icon="fa-solid fa-globe" />
@@ -256,7 +256,7 @@ function applyFilters() {
         </tr>
       </thead>
       <tbody>
-        <tr v-for="shop in filteredShops" class="border-t border-gray-700">
+        <tr v-for="shop in filteredShops" class="stripped-row">
           <td class="table-cell">{{ shop.type.replace(/ING/g, "") }}</td>
           <td class="table-cell">
             <div class="text-white">

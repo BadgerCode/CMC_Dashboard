@@ -46,7 +46,6 @@ onMounted(async () => {
 
   // Render
   applyFilters();
-  sort("visitsThisWeek", false);
 
   loading.value = false;
 });
@@ -72,11 +71,13 @@ function applyFilters() {
       return true;
     })
   );
+
+  applySort();
 }
 
 
 // Sorting
-let sortProperty = "";
+let sortProperty = "visitsThisWeek";
 let sortAscending = false;
 function sort(property: string, ascendingByDefault: boolean) {
   if (sortProperty == property) sortAscending = !sortAscending;
@@ -85,9 +86,11 @@ function sort(property: string, ascendingByDefault: boolean) {
     sortAscending = ascendingByDefault;
   }
 
-  if (waystones.value == null) return;
+  applySort();
+}
 
-  waystones.value.sort((a, b) => {
+function applySort() {
+  filteredWaystones.value.sort((a, b) => {
     let first = sortAscending ? a : b;
     let second = sortAscending ? b : a;
 
@@ -137,7 +140,7 @@ function sort(property: string, ascendingByDefault: boolean) {
     </div>
 
     <table class="w-full text-left rtl:text-right text-gray-400 text-xs md:text-base">
-      <thead class="text-white">
+      <thead class="table-head">
         <tr>
           <th class="table-cell">World</th>
           <th class="table-cell">
@@ -159,7 +162,7 @@ function sort(property: string, ascendingByDefault: boolean) {
         </tr>
       </thead>
       <tbody>
-        <tr v-for="waystone in filteredWaystones" class="border-t border-gray-700">
+        <tr v-for="waystone in filteredWaystones" class="stripped-row">
           <td class="table-cell">{{ waystone.world }}</td>
           <td class="table-cell">{{ waystone.name }}</td>
           <td class="table-cell">{{ waystone.x }}, {{ waystone.z }}</td>

@@ -289,7 +289,7 @@ let paintingOriginality = computed(() => {
       </div>
     </div>
 
-    <div class="p-6 bg-gray-800 border border-gray-700 rounded-lg shadow-sm">
+    <div class="mt-6">
       <h4 class="mb-2 text-2xl font-bold tracking-tight text-white" v-if="saleData != null">
         Other sales of {{ formatItemType(saleData.itemType) }}
       </h4>

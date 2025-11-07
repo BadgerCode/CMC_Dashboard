@@ -18,8 +18,6 @@ function toRGBA(num: number) {
 function renderPainting(canvas: Element | any, painting: Painting) {
   if (canvas == null) return; // When the page is unloaded
 
-  console.log(`Rendering painting ${painting.id}`);
-
   let imageSize = painting.size.toLowerCase(); // Large, Tall, Wide, Small
   // Small: 16x16, Large: 32x32, Tall: 16x32, Wide/Long: 32x16
   let width = imageSize == "large" || imageSize == "wide" ? 32 : 16;

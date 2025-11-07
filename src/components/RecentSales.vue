@@ -13,7 +13,7 @@ defineProps<Props>()
 
 <template>
   <table class="w-full text-left rtl:text-right text-gray-400 text-xs md:text-base">
-    <thead class="text-white">
+    <thead class="table-head">
       <tr>
         <th class="table-cell">Time</th>
         <th></th>
@@ -29,7 +29,7 @@ defineProps<Props>()
       </tr>
     </thead>
     <tbody>
-      <tr v-for="sale in recentSales" class="border-t border-gray-700">
+      <tr v-for="sale in recentSales" class="stripped-row">
         <td class="table-cell wrap-anywhere">{{ formatDate(sale.occurredAt) }}</td>
         <td class="table-cell" :title="sale.type">
           <font-awesome-icon icon="fa-solid fa-shop" v-if="sale.type == 'Shop'" />

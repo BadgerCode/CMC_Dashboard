@@ -201,7 +201,7 @@ async function loadPotions(): Promise<string[]> {
       ></PotionFilter>
     </div>
 
-    <div class="p-6 bg-gray-800 border border-gray-700 rounded-lg shadow-sm">
+    <div class="mt-6">
       <h4 class="mb-2 text-2xl font-bold tracking-tight text-white">
         Sales of {{ formatItemType(itemType) }}
       </h4>
