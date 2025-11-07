@@ -153,7 +153,7 @@ let paintingOriginality = computed(() => {
         Sale Overview
       </h4>
 
-      <Loading v-if="loading" :fill-space="true"></Loading>
+      <Loading v-if="loading" :loader-type="'text'"></Loading>
 
       <div class="mb-3 font-normal text-gray-400 flex flex-col gap-4" v-if="saleData != null">
         <div class="text-white">
@@ -178,7 +178,7 @@ let paintingOriginality = computed(() => {
         Average '{{ saleData?.itemType }}' Prices
       </h4>
 
-      <Loading v-if="loadingSales || saleData == null" :fill-space="true"></Loading>
+      <Loading v-if="loadingSales || saleData == null" :loader-type="'text'"></Loading>
 
       <div v-else>
         <div class="text-gray-400">Based on {{ otherSales.length }} sales shown below.</div>
