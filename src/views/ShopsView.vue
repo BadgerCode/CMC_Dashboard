@@ -250,7 +250,7 @@ function applySort() {
     if (sortProperty == "price")
       sortResult = (first.item.quantity / first.price) - (second.item.quantity / second.price);
 
-    return sortResult || second.id - first.id;
+    return sortResult || first.id - second.id;
   });
 }
 
