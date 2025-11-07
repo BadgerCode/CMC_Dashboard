@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, onUpdated, ref, watch } from "vue";
+import { computed, onMounted, onUpdated, ref, watch } from "vue";
 import { Config } from "@/config";
 import { normalisePrice } from "@/utilities/normalise-price";
 import { formatNumber } from "@/utilities/number-format";
@@ -50,7 +50,9 @@ const loading = ref(true);
 const shops = ref([] as ShopData[]);
 const lastUpdated = ref("");
 
+const maxShops = 100;
 const filteredShops = ref([] as ShopData[]);
+const paginatedShops = computed(() => filteredShops.value.slice(0, Math.min(maxShops, filteredShops.value.length)));
 
 // Filtering: Item types
 const itemTypes = ref([] as string[]);
@@ -192,9 +194,6 @@ function applyFilters() {
     })
   );
 
-  // TODO: Pagination
-  if (filteredShops.value.length > 500) filteredShops.value.splice(500);
-
   applySort();
 }
 
@@ -263,7 +262,7 @@ function applySort() {
 
   <div class="relative overflow-x-auto" v-if="!loading">
     <div class="text-gray-400">
-      <div>{{ filteredShops.length }} of {{ shops.length }} shops</div>
+      <div>{{ filteredShops.length }} shops</div>
       <div class="text-gray-500 text-xs" v-if="!loading">
         Last updated {{ formatDate(lastUpdated, "") }}
       </div>
@@ -305,8 +304,8 @@ function applySort() {
         </tr>
       </thead>
       <tbody>
-        <tr v-for="shop in filteredShops" class="stripped-row">
-          <td class="table-cell">{{ shop.type}}</td>
+        <tr v-for="shop in paginatedShops" class="stripped-row">
+          <td class="table-cell">{{ shop.type }}</td>
 
           <!-- Item name & key attributes -->
           <td class="table-cell">
@@ -364,6 +363,10 @@ function applySort() {
         </tr>
       </tbody>
     </table>
+  </div>
+
+  <div v-if="filteredShops.length > maxShops" class="mt-8 text-center text-gray-400">
+    Only showing up to {{ maxShops }} shops
   </div>
 
   <Loading v-if="loading" :fill-space="true"></Loading>
