@@ -336,10 +336,10 @@ function applySort() {
       </thead>
       <tbody>
         <tr v-for="shop in paginatedShops" class="stripped-row">
-          <td class="table-cell">{{ shop.type }}</td>
+          <td class="table-cell">THEY {{ shop.type.replace(/ING/g, "") }}</td>
 
           <!-- Item name & key attributes -->
-          <td class="table-cell">
+          <td class="table-cell wrap-anywhere">
             <div class="text-white">
               {{ shop.item.name }}
             </div>

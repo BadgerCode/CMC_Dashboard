@@ -142,6 +142,7 @@ function applySort() {
     <table class="w-full text-left rtl:text-right text-gray-400 text-xs md:text-base">
       <thead class="table-head">
         <tr>
+          <th class="table-cell"></th>
           <th class="table-cell">World</th>
           <th class="table-cell">
             <span>Name</span>
@@ -162,9 +163,10 @@ function applySort() {
         </tr>
       </thead>
       <tbody>
-        <tr v-for="waystone in filteredWaystones" class="stripped-row">
+        <tr v-for="(waystone, index) in filteredWaystones" class="stripped-row">
+          <td class="table-cell">{{ index + 1 }}</td>
           <td class="table-cell">{{ waystone.world }}</td>
-          <td class="table-cell">{{ waystone.name }}</td>
+          <td class="table-cell wrap-anywhere">{{ waystone.name }}</td>
           <td class="table-cell">{{ waystone.x }}, {{ waystone.z }}</td>
           <td class="table-cell">{{ waystone.visitsThisWeek }}</td>
           <td class="table-cell">{{ waystone.visitsTotal }}</td>
