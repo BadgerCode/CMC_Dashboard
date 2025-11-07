@@ -127,7 +127,8 @@ async function fetchPaintingSales(paintingID: string): Promise<PaintingSaleSumma
 
 let filteredAttributes = computed(() => {
   // Exclude painting attributes, as we'll render them separately
-  return saleData.value?.itemAttributes.filter(a => !a.key.startsWith("PAINTING_")) ?? [];
+  return (saleData.value?.itemAttributes.filter(a => !a.key.startsWith("PAINTING_")) ?? [])
+    .sort((a, b) => a.key.localeCompare(b.key) || a.value.localeCompare(b.value));
 });
 
 let paintingOriginality = computed(() => {
@@ -277,8 +278,9 @@ let paintingOriginality = computed(() => {
               <td class="table-cell wrap-anywhere">{{ formatItemType(subItem.itemType) }}</td>
               <td class="table-cell">{{ subItem.quantity }}</td>
               <td class="table-cell wrap-anywhere">
-                <div v-for="attribute in subItem.itemAttributes">
-                  {{ attribute.key }} : {{ attribute.value }}
+                <div
+                  v-for="attribute in subItem.itemAttributes.sort((a, b) => a.key.localeCompare(b.key) || a.value.localeCompare(b.value))">
+                  {{ formatItemType(attribute.key) }} : {{ attribute.value }}
                 </div>
               </td>
             </tr>
