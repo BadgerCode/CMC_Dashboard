@@ -84,12 +84,13 @@ async function loadSales() {
     </div>
   </div>
 
-  <div class="mb-8 flex flex-row justify-between items-end">
-    <div>
+  <div class="flex flex-row flex-wrap justify-between items-end">
+    <div class="pb-4">
       <h1 class="text-3xl font-bold">Recent Transactions</h1>
       <p class="text-gray-300">Shops and auctions</p>
     </div>
-    <div class="text-right">
+
+    <div class="text-right pb-4">
       <ItemTypeSearch @selection="itemType => $router.push({ name: 'itemSales', params: { itemType: itemType } })">
       </ItemTypeSearch>
     </div>

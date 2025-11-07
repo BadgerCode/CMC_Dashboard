@@ -58,13 +58,13 @@ function sort(property: string, ascendingByDefault: boolean) {
 <template>
   <div class="text-gray-500">This page is a work in progress</div>
 
-  <div class="flex flex-row justify-between items-end mb-8">
-    <div>
+  <div class="flex flex-row flex-wrap justify-between items-end mb-8">
+    <div class="pb-4">
       <h1 class="text-3xl font-bold">Waystones</h1>
       <p class="text-gray-300">Public waystone information.</p>
     </div>
 
-    <div>
+    <div class="pb-4">
       <a
         href="https://callmecarson.live/subserver/map/"
         target="_blank"
