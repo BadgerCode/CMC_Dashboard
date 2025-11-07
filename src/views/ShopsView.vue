@@ -15,6 +15,8 @@ import Loading from "@/components/Loading.vue";
 import { formatDate } from "@/utilities/date-format";
 import * as WaystoneAPI from "@/api/waystones/api";
 import { formatEnchantment } from "@/utilities/enchantment-format";
+import { NearestNeighbour, type Point } from "../utilities/closest-point";
+import type { Waystone } from "@/api/waystones/waystone";
 
 interface ShopData {
   id: number;
@@ -24,6 +26,7 @@ interface ShopData {
   price: number;
   remaining: number;
   item: ShopItem;
+  nearestWaystones: NearbyWaystone[]
 }
 
 interface ShopOwner {
@@ -46,6 +49,11 @@ interface ShopItem {
   parsedSNBT: SNBTData;
 }
 
+interface NearbyWaystone {
+  name: string;
+  distance: number;
+};
+
 const loading = ref(true);
 const shops = ref([] as ShopData[]);
 const lastUpdated = ref("");
@@ -53,6 +61,9 @@ const lastUpdated = ref("");
 const maxShops = 100;
 const filteredShops = ref([] as ShopData[]);
 const paginatedShops = computed(() => filteredShops.value.slice(0, Math.min(maxShops, filteredShops.value.length)));
+
+// Waystones
+const nearestNeighbour = new NearestNeighbour<Waystone>();
 
 // Filtering: Item types
 const itemTypes = ref([] as string[]);
@@ -109,14 +120,22 @@ async function loadShops() {
   let responseItems = response.items as ShopData[];
   for (const shop of responseItems) {
     shop.item.parsedSNBT = parseSNBTData(shop.item.snbt);
+
+    // Work out nearest waystone
+    shop.nearestWaystones = nearestNeighbour
+      .findNearest(shop.location.x, shop.location.z, 1)
+      .map(r => ({ name: r.point.data.name, distance: r.distance } as NearbyWaystone))
+      .sort((a, b) => a.distance - b.distance);
   }
 
   lastUpdated.value = response.lastUpdated;
   shops.value.push(...responseItems);
   loading.value = false;
 
-  // Extract info from the shops
+  // Get item types list
   itemTypes.value = [...new Set(shops.value.map((s) => s.item.type).sort())];
+
+  // Get potion effects list
   potionEffects.value = [
     ...new Set(
       shops.value
@@ -129,6 +148,8 @@ async function loadShops() {
       value: e,
     }))
     .sort((a, b) => a.text.localeCompare(b.text));
+
+  // Get enchantments list
   enchantments.value = [
     ...new Set(shops.value.flatMap((s) => s.item.parsedSNBT.enchantments)),
   ]
@@ -144,8 +165,8 @@ async function loadShops() {
 
 async function loadWaystones() {
   try {
-    // TODO: Work out the closest waystones to each shop
-    // let waystones = await WaystoneAPI.loadWaystones();
+    let response = await WaystoneAPI.loadWaystones();
+    nearestNeighbour.setPoints(response.waystones.map(ws => ({ x: ws.x, y: ws.z, data: ws } as Point<Waystone>)));
   } catch (error) {
     // Prevent this error from stopping shops from loading
     console.error(error);
@@ -356,6 +377,10 @@ function applySort() {
             <div class="block md:inline mr-1">{{ `${shop.location.y},` }}</div>
             <div class="block md:inline mr-1">{{ shop.location.z }}</div>
             <div>({{ shop.location.world }})</div>
+            <div v-for="waystone in shop.nearestWaystones" class="text-xs mt-2">
+              <div>{{ waystone.distance }} blocks from</div>
+              <div>'{{ waystone.name }}'</div>
+            </div>
           </td>
 
           <!-- Owner -->
