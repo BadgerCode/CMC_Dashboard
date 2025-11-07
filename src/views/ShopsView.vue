@@ -17,7 +17,7 @@ import * as WaystoneAPI from "@/api/waystones/api";
 import { formatEnchantment } from "@/utilities/enchantment-format";
 
 interface ShopData {
-  id: string;
+  id: number;
   owner: ShopOwner;
   location: ShopLocation;
   type: string; // SELLING or BUYING
@@ -194,7 +194,36 @@ function applyFilters() {
 
   // TODO: Pagination
   if (filteredShops.value.length > 500) filteredShops.value.splice(500);
+
+  applySort();
 }
+
+// Sorting
+let sortProperty = "";
+let sortAscending = false;
+function sort(property: string, ascendingByDefault: boolean) {
+  if (sortProperty == property) sortAscending = !sortAscending;
+  else {
+    sortProperty = property;
+    sortAscending = ascendingByDefault;
+  }
+
+  applySort();
+}
+
+function applySort() {
+  filteredShops.value.sort((a, b) => {
+    let first = sortAscending ? a : b;
+    let second = sortAscending ? b : a;
+
+    let sortResult = 0;
+    if (sortProperty == "price")
+      sortResult = (first.item.quantity / first.price) - (second.item.quantity / second.price);
+
+    return sortResult || second.id - first.id;
+  });
+}
+
 </script>
 
 <template>
@@ -242,23 +271,44 @@ function applyFilters() {
     <table class="w-full text-left rtl:text-right text-gray-400 text-xs md:text-base">
       <thead class="table-head">
         <tr>
+          <!-- Basic details -->
           <th class="table-cell text-center">
             <font-awesome-icon icon="fa-solid fa-arrows-left-right" />
           </th>
           <th class="table-cell text-center">Item</th>
-          <th class="table-cell md:hidden text-center">Price &amp; Stock</th>
-          <th class="hidden md:table-cell">Price</th>
+
+          <!-- Price columns -->
+          <!-- Mobile -->
+          <th class="table-cell md:hidden text-center">
+            <span>Price &amp; Stock</span>
+            <font-awesome-icon icon="fa-solid fa-sort" class="text-xs ml-1 cursor-pointer"
+              @click="sort('price', false)" />
+          </th>
+
+
+          <!-- Desktop -->
+          <th class="hidden md:table-cell">
+            <span>Price</span>
+            <font-awesome-icon icon="fa-solid fa-sort" class="text-xs ml-1 cursor-pointer"
+              @click="sort('price', false)" />
+          </th>
           <th class="hidden md:table-cell pr-4">Min<br />Buy</th>
           <th class="hidden md:table-cell">Stock</th>
+
+          <!-- Location -->
           <th class="table-cell text-center">
             <font-awesome-icon icon="fa-solid fa-globe" />
           </th>
+
+          <!-- Owner -->
           <th class="hidden md:table-cell">Owner</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="shop in filteredShops" class="stripped-row">
-          <td class="table-cell">{{ shop.type.replace(/ING/g, "") }}</td>
+          <td class="table-cell">{{ shop.type}}</td>
+
+          <!-- Item name & key attributes -->
           <td class="table-cell">
             <div class="text-white">
               {{ shop.item.name }}
@@ -285,6 +335,9 @@ function applyFilters() {
               {{ formatEnchantment(enchantment) }}
             </div>
           </td>
+
+          <!-- Price columns -->
+          <!-- Mobile -->
           <td class="table-cell md:hidden">
             <div class="text-nowrap">{{ getNormalisedPrice(shop) }}</div>
             <div class="mt-2">Min buy:</div>
@@ -292,15 +345,21 @@ function applyFilters() {
             <div class="mt-2">Stock:</div>
             <div>x{{ shop.remaining }}</div>
           </td>
+
+          <!-- Desktop -->
           <td class="hidden md:table-cell">{{ getNormalisedPrice(shop) }}</td>
           <td class="hidden md:table-cell">{{ shop.item.quantity }}</td>
           <td class="hidden md:table-cell">x {{ shop.remaining }}</td>
+
+          <!-- Location -->
           <td class="table-cell">
             <div class="block md:inline mr-1">{{ `${shop.location.x},` }}</div>
             <div class="block md:inline mr-1">{{ `${shop.location.y},` }}</div>
             <div class="block md:inline mr-1">{{ shop.location.z }}</div>
             <div>({{ shop.location.world }})</div>
           </td>
+
+          <!-- Owner -->
           <td class="hidden md:table-cell">{{ shop.owner.name }}</td>
         </tr>
       </tbody>
