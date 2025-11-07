@@ -1,5 +1,6 @@
 export interface ServerWaystones {
   lastUpdated: string;
+  worlds: string[];
   waystones: Waystone[];
 }
 

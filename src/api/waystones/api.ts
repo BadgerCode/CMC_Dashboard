@@ -10,8 +10,11 @@ export async function loadWaystones(): Promise<ServerWaystones> {
 
   let response = await httpResponse.json();
 
+  let worlds = [] as string[];
   let waystones = [] as Waystone[];
   for (const world in response.worlds) {
+    worlds.push(world);
+
     waystones.push(...response.worlds[world].flatMap((w: any) => {
       let worldInfo =
         [
@@ -34,6 +37,7 @@ export async function loadWaystones(): Promise<ServerWaystones> {
 
   return {
     lastUpdated: response.lastUpdated,
+    worlds: worlds,
     waystones: waystones,
   };
 }

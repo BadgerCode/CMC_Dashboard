@@ -1,14 +1,35 @@
 <script setup lang="ts">
-import { onMounted, onUpdated, ref, withScopeId } from "vue";
+import { onMounted, onUpdated, ref, watch, withScopeId } from "vue";
 import { initFlowbite } from "flowbite";
 import Loading from "@/components/Loading.vue";
 import { formatDate } from "@/utilities/date-format";
 import * as WaystoneAPI from "@/api/waystones/api";
 import type { Waystone } from "@/api/waystones/waystone";
+import DropdownFilter, { type DropdownOption } from "@/components/DropdownFilter.vue";
+import SearchBox from "@/components/SearchBox.vue";
 
 const loading = ref(true);
 const waystones = ref([] as Waystone[]);
+const filteredWaystones = ref([] as Waystone[]);
 const lastUpdated = ref("");
+
+// Name filter
+const nameFilter = ref("");
+
+watch(nameFilter, async (_, __) => {
+  applyFilters();
+});
+
+
+// World filter
+const worldFilterOptions = ref([] as DropdownOption[]);
+const worldFilter = ref([] as string[]);
+const worldFilterDefaultSelection = ref([] as string[]);
+
+watch(worldFilter, async (_, __) => {
+  applyFilters();
+});
+
 
 // Setup
 onMounted(async () => {
@@ -18,6 +39,13 @@ onMounted(async () => {
   waystones.value = response.waystones;
   lastUpdated.value = response.lastUpdated;
 
+  // Initialise filters
+  worldFilterOptions.value = response.worlds.map(w => ({ text: w, value: w } as DropdownOption));
+  worldFilter.value = response.worlds;
+  worldFilterDefaultSelection.value = response.worlds;
+
+  // Render
+  applyFilters();
   sort("visitsThisWeek", false);
 
   loading.value = false;
@@ -27,6 +55,27 @@ onUpdated(() => {
   initFlowbite(); // Include on any component where you need flowbite JS functionality
 });
 
+
+// Filtering
+function applyFilters() {
+  filteredWaystones.value.splice(0);
+
+  filteredWaystones.value.push(
+    ...waystones.value.filter((w) => {
+      // Apply world filter
+      if (!worldFilter.value.includes(w.world)) return false;
+
+      // Apply name filter
+      let trimmedNameFilter = nameFilter.value.trim().toLocaleLowerCase();
+      if (trimmedNameFilter.length > 0 && !w.name.toLocaleLowerCase().includes(trimmedNameFilter)) return false;
+
+      return true;
+    })
+  );
+}
+
+
+// Sorting
 let sortProperty = "";
 let sortAscending = false;
 function sort(property: string, ascendingByDefault: boolean) {
@@ -67,13 +116,26 @@ function sort(property: string, ascendingByDefault: boolean) {
     </div>
   </div>
 
-  <div class="text-gray-400">
-    <div class="text-gray-500 text-xs" v-if="!loading">
-      Last updated {{ formatDate(lastUpdated, "") }}
+  <div class="flex flex-column sm:flex-row flex-wrap space-y-4 sm:space-y-0 items-center justify-between pb-4">
+    <div class="flex flex-row flex-wrap gap-1">
+      <DropdownFilter :placeholder="'World'" :icon="'fa-solid fa-globe'"
+        :default-selection="worldFilterDefaultSelection" :options="worldFilterOptions" v-model="worldFilter">
+      </DropdownFilter>
+    </div>
+
+    <div>
+      <SearchBox :placeholder="'Waystone name'" v-model="nameFilter"></SearchBox>
     </div>
   </div>
 
-  <div class="relative overflow-x-auto" v-if="!loading">
+  <Loading v-if="loading" :fill-space="true"></Loading>
+  <div v-else class="relative overflow-x-auto">
+    <div class="text-gray-400">
+      <div class="text-gray-500 text-xs">
+        Last updated {{ formatDate(lastUpdated, "") }}
+      </div>
+    </div>
+
     <table class="w-full text-left rtl:text-right text-gray-400 text-xs md:text-base">
       <thead class="text-white">
         <tr>
@@ -97,7 +159,7 @@ function sort(property: string, ascendingByDefault: boolean) {
         </tr>
       </thead>
       <tbody>
-        <tr v-for="waystone in waystones" class="border-t border-gray-700">
+        <tr v-for="waystone in filteredWaystones" class="border-t border-gray-700">
           <td class="table-cell">{{ waystone.world }}</td>
           <td class="table-cell">{{ waystone.name }}</td>
           <td class="table-cell">{{ waystone.x }}, {{ waystone.z }}</td>
@@ -107,6 +169,4 @@ function sort(property: string, ascendingByDefault: boolean) {
       </tbody>
     </table>
   </div>
-
-  <Loading v-if="loading" :fill-space="true"></Loading>
 </template>
