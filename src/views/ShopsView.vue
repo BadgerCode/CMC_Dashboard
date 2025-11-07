@@ -266,7 +266,7 @@ function applySort() {
     </div>
   </div>
 
-  <div class="flex flex-column sm:flex-row flex-wrap space-y-4 sm:space-y-0 items-center justify-between pb-4">
+  <div class="flex flex-column flex-wrap space-y-2 items-start justify-between">
     <div class="flex flex-row flex-wrap gap-1">
       <DropdownFilter :placeholder="'Buy/Sell'" :icon="'fa-solid fa-arrows-left-right'"
         :default-selection="buySellDefaultSelection" :options="buySellOptions" v-model="buySellFilter"></DropdownFilter>
