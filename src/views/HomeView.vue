@@ -8,32 +8,39 @@ import ItemTypeSearch from "@/components/ItemTypeSearch.vue";
 interface SpecialItem {
   itemType: string;
   displayName: string;
+  icon: string;
 }
 
 const specialItems = [
   {
     itemType: "CUSTOM_MUSIC_DISC",
     displayName: "Custom Music Discs",
+    icon: "fa-solid fa-record-vinyl",
   },
   {
     itemType: "ENCHANTED_BOOK",
     displayName: "Enchanted Books",
+    icon: "fa-solid fa-book-bookmark",
   },
   {
     itemType: "POTION",
-    displayName: "Potion",
+    displayName: "Potions",
+    icon: "fa-solid fa-flask",
   },
   {
     itemType: "SPLASH_POTION",
-    displayName: "Splash Potion",
+    displayName: "Splash Potions",
+    icon: "fa-solid fa-flask",
   },
   {
     itemType: "LINGERING_POTION",
-    displayName: "Lingering Potion",
+    displayName: "Lingering Potions",
+    icon: "fa-solid fa-flask",
   },
   {
     itemType: "WAYSTONE",
-    displayName: "Waystone",
+    displayName: "Waystones",
+    icon: "fa-solid fa-chess-rook",
   },
 ] as SpecialItem[];
 
@@ -70,17 +77,14 @@ async function loadSales() {
       </div>
     </div>
 
-    <div class="text-left">
-      <ul>
-        <li v-for="item in specialItems">
-          <RouterLink :to="{
-            name: 'itemSales',
-            params: { itemType: item.itemType },
-          }" class="hyperlink">
-            {{ item.displayName }}
-          </RouterLink>
-        </li>
-      </ul>
+    <div class="flex flex-row flex-wrap gap-2 md:gap-5">
+      <RouterLink v-for="item in specialItems" :to="{ name: 'itemSales', params: { itemType: item.itemType }, }">
+        <div
+          class="p-1 w-20 h-20 gap-1 md:p-3 md:w-25 md:h-25 md:gap-2 bg-gray-800 flex flex-col items-center text-center justify-start text-gray-300 border-1 border-gray-700 rounded-lg">
+          <div class="text-xl md:text-3xl"><font-awesome-icon :icon="item.icon" /></div>
+          <div class="text-xs md:text-sm">{{ item.displayName }}</div>
+        </div>
+      </RouterLink>
     </div>
   </div>
 
