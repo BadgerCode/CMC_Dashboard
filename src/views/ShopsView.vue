@@ -52,6 +52,7 @@ interface ShopItem {
 interface NearbyWaystone {
   name: string;
   distance: number;
+  directionRotation: number;
 };
 
 const loading = ref(true);
@@ -124,7 +125,16 @@ async function loadShops() {
     // Work out nearest waystone
     shop.nearestWaystones = nearestNeighbour
       .findNearest(shop.location.x, shop.location.z, 1)
-      .map(r => ({ name: r.point.data.name, distance: r.distance } as NearbyWaystone))
+      .map(r => {
+        let directionRotation = shop.location.z < r.point.y ? 0 : 180;
+        directionRotation += (directionRotation == 0 ? 1 : -1) * (shop.location.x < r.point.x ? -45 : 45);
+
+        return {
+          name: r.point.data.name,
+          distance: r.distance,
+          directionRotation: directionRotation
+        } as NearbyWaystone;
+      })
       .sort((a, b) => a.distance - b.distance);
   }
 
@@ -377,8 +387,10 @@ function applySort() {
             <div class="block md:inline mr-1">{{ `${shop.location.y},` }}</div>
             <div class="block md:inline mr-1">{{ shop.location.z }}</div>
             <div>({{ shop.location.world }})</div>
+
             <div v-for="waystone in shop.nearestWaystones" class="text-xs mt-2">
-              <div>{{ waystone.distance }} blocks from</div>
+              <div>{{ waystone.distance }} blocks <font-awesome-icon icon="fa-solid fa-arrow-up"
+                  :style="{ transform: 'rotate(' + waystone.directionRotation + 'deg)' }" /> of</div>
               <div>'{{ waystone.name }}'</div>
             </div>
           </td>

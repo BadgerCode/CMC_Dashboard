@@ -21,6 +21,7 @@ import {
   faRecordVinyl,
   faChessRook,
   faBookBookmark,
+  faArrowUp,
   // Don't forget to add it below too!
 } from "@fortawesome/free-solid-svg-icons";
 
@@ -40,7 +41,8 @@ library.add(
   faSort,
   faRecordVinyl,
   faChessRook,
-  faBookBookmark
+  faBookBookmark,
+  faArrowUp,
 );
 
 // Regular icons
