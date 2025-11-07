@@ -57,10 +57,11 @@ const itemTypeFilter = ref("");
 
 // Filtering: Buying vs selling
 const buySellOptions = [
-  { text: "Shop is Selling", value: "SELLING" },
-  { text: "Shop is Buying", value: "BUYING" },
+  { text: "I want to buy", value: "SELLING" },
+  { text: "I want to sell", value: "BUYING" },
 ] as DropdownOption[];
 const buySellFilter = ref(["BUYING", "SELLING"]);
+const buySellDefaultSelection = ['SELLING'];
 
 watch(buySellFilter, async (_, __) => {
   applyFilters();
@@ -205,44 +206,27 @@ function applyFilters() {
     </div>
   </div>
 
-  <div
-    class="flex flex-column sm:flex-row flex-wrap space-y-4 sm:space-y-0 items-center justify-between pb-4"
-  >
+  <div class="flex flex-column sm:flex-row flex-wrap space-y-4 sm:space-y-0 items-center justify-between pb-4">
     <div class="flex flex-row flex-wrap gap-1">
-      <DropdownFilter
-        :placeholder="'Buy/Sell'"
-        :icon="'fa-solid fa-arrows-left-right'"
-        :options="buySellOptions"
-        v-model="buySellFilter"
-      ></DropdownFilter>
+      <DropdownFilter :placeholder="'Buy/Sell'" :icon="'fa-solid fa-arrows-left-right'"
+        :default-selection="buySellDefaultSelection" :options="buySellOptions" v-model="buySellFilter"></DropdownFilter>
 
-      <DropdownFilter
-        :placeholder="'Potion Effect'"
-        :icon="'fa-solid fa-flask'"
-        :options="potionEffects"
-        v-model="potionEffectFilter"
-      >
+      <DropdownFilter :placeholder="'Potion Effect'" :icon="'fa-solid fa-flask'" :options="potionEffects"
+        v-model="potionEffectFilter">
       </DropdownFilter>
 
-      <DropdownFilter
-        :placeholder="'Enchantments'"
-        :icon="'fa-solid fa-wand-sparkles'"
-        :options="enchantments"
-        v-model="enchantmentFilter"
-      >
+      <DropdownFilter :placeholder="'Enchantments'" :icon="'fa-solid fa-wand-sparkles'" :options="enchantments"
+        v-model="enchantmentFilter">
       </DropdownFilter>
     </div>
 
     <div>
-      <ItemTypeSearch
-        :item-types="itemTypes"
-        @selection="
-          (itemType) => {
-            itemTypeFilter = itemType;
-            applyFilters();
-          }
-        "
-      >
+      <ItemTypeSearch :item-types="itemTypes" @selection="
+        (itemType) => {
+          itemTypeFilter = itemType;
+          applyFilters();
+        }
+      ">
       </ItemTypeSearch>
     </div>
   </div>
@@ -254,9 +238,7 @@ function applyFilters() {
         Last updated {{ formatDate(lastUpdated, "") }}
       </div>
     </div>
-    <table
-      class="w-full text-left rtl:text-right text-gray-400 text-xs md:text-base"
-    >
+    <table class="w-full text-left rtl:text-right text-gray-400 text-xs md:text-base">
       <thead class="text-white">
         <tr>
           <th class="table-cell text-center">
@@ -282,13 +264,10 @@ function applyFilters() {
             </div>
 
             <div class="text-sm">
-              <RouterLink
-                :to="{
-                  name: 'itemSales',
-                  params: { itemType: shop.item.type },
-                }"
-                class="hyperlink"
-              >
+              <RouterLink :to="{
+                name: 'itemSales',
+                params: { itemType: shop.item.type },
+              }" class="hyperlink">
                 {{ formatItemType(shop.item.type) }}
               </RouterLink>
             </div>
@@ -301,10 +280,7 @@ function applyFilters() {
               {{ shop.item.parsedSNBT.paintingName }}
             </div>
 
-            <div
-              class="text-sm"
-              v-for="enchantment in shop.item.parsedSNBT.enchantments"
-            >
+            <div class="text-sm" v-for="enchantment in shop.item.parsedSNBT.enchantments">
               {{ enchantment }}
             </div>
           </td>

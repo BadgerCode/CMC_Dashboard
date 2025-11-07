@@ -11,8 +11,9 @@ interface Props {
   placeholder: string;
   icon: string;
   options: DropdownOption[];
+  defaultSelection?: string[];
 }
-defineProps<Props>()
+const props = defineProps<Props>();
 
 const model = defineModel({ default: [] as string[] })
 
@@ -20,7 +21,12 @@ const id = useId()
 
 onMounted(() => {
   initFlowbite(); // Include on any component where you need flowbite JS functionality
+  clear();
 });
+
+function clear() {
+  model.value = props.defaultSelection ?? [];
+}
 
 </script>
 
@@ -30,7 +36,8 @@ onMounted(() => {
       class="inline-flex items-center text-gray-500 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-3 py-1.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
       type="button">
       <font-awesome-icon :icon="icon" class="w-3 h-3 text-gray-400 me-3" />
-      {{ placeholder }}
+      <span>{{ placeholder }}</span>
+      <span v-if="model.length > 0" class="ml-1">({{ model.length }})</span>
       <font-awesome-icon icon="fa-solid fa-chevron-down" class="w-2.5 h-2.5 ms-2.5" />
     </button>
 
@@ -39,7 +46,8 @@ onMounted(() => {
       class="z-10 hidden w-60 bg-white divide-y divide-gray-100 rounded-lg shadow-sm dark:bg-gray-700 dark:divide-gray-600"
       data-popper-reference-hidden="" data-popper-escaped="" data-popper-placement="top"
       style="position: absolute; inset: auto auto 0px 0px; margin: 0px; transform: translate3d(522.5px, 3847.5px, 0px);">
-      <ul class="max-h-48 overflow-y-auto p-3 space-y-1 text-sm text-gray-700 dark:text-gray-200" :aria-labelledby="`${id}Button`">
+      <ul class="max-h-48 overflow-y-auto p-3 space-y-1 text-sm text-gray-700 dark:text-gray-200"
+        :aria-labelledby="`${id}Button`">
         <li v-for="option in options">
           <div class="flex items-center p-2 rounded-sm hover:bg-gray-600">
             <input :id="`${id}-${option.value}`" type="checkbox" :value="option.value" v-model="model" class="checkbox">
@@ -49,6 +57,10 @@ onMounted(() => {
           </div>
         </li>
       </ul>
+
+      <div class="p-3">
+        <a class="hyperlink" @click="clear()">Clear</a>
+      </div>
     </div>
   </div>
 </template>
