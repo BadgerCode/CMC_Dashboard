@@ -98,7 +98,11 @@ onUpdated(() => {
       <!-- Page content -->
       <main>
         <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 text-white pb-[100px]">
-          <router-view :key="path"></router-view>
+          <router-view :key="path" v-slot="{ Component }">
+            <keep-alive>
+              <component :is="Component" />
+            </keep-alive>
+          </router-view>
         </div>
       </main>
 
