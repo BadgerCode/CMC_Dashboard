@@ -344,19 +344,19 @@ function applySort() {
               {{ shop.item.name }}
             </div>
 
-            <div class="text-sm">
+            <div class="text-xs md:text-sm">
               {{ formatItemType(shop.item.type) }}
             </div>
 
-            <div class="text-sm capitalize" v-if="shop.item.parsedSNBT.potionEffect">
+            <div class="text-xs md:text-sm capitalize" v-if="shop.item.parsedSNBT.potionEffect">
               {{ formatPotionEffect(shop.item.parsedSNBT.potionEffect) }}
             </div>
 
-            <div class="text-sm" v-if="shop.item.parsedSNBT.paintingName">
+            <div class="text-xs md:text-sm" v-if="shop.item.parsedSNBT.paintingName">
               {{ shop.item.parsedSNBT.paintingName }}
             </div>
 
-            <div class="text-sm capitalize" v-for="enchantment in shop.item.parsedSNBT.enchantments">
+            <div class="text-xs md:text-sm capitalize" v-for="enchantment in shop.item.parsedSNBT.enchantments">
               {{ formatEnchantment(enchantment) }}
             </div>
           </td>

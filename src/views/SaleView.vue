@@ -22,7 +22,6 @@ interface SoldItem {
   id: string;
   itemType: string;
   quantity: number;
-  isRenamed: boolean;
   isEnchanted: boolean;
   itemAttributes: ItemAttribute[];
 }
@@ -32,6 +31,7 @@ interface SaleData extends SoldItem {
   type: string;
   totalPrice: number;
   containedItems: ContainerItem[];
+  customName: string | null;
 }
 
 interface ContainerItem extends SoldItem {
@@ -81,8 +81,7 @@ onMounted(async () => {
         itemType: "PAINTING",
         quantity: s.quantity,
         totalPrice: s.totalPrice,
-        isEnchanted: false,
-        isRenamed: false
+        isEnchanted: false
       } as SaleSummary));
     }
 
@@ -95,8 +94,8 @@ onMounted(async () => {
     averagePrice.value = normalisePrice(totalPrice, totalQuantity);
 
     // Calculate average price without renamed items
-    let totalPriceNoRenames = otherSales.value.filter(s => s.isRenamed == false).reduce((total, s) => total + s.totalPrice, 0);
-    let totalQuantityNoRenames = otherSales.value.filter(s => s.isRenamed == false).reduce((total, s) => total + s.quantity, 0);
+    let totalPriceNoRenames = otherSales.value.filter(s => s.customName != null).reduce((total, s) => total + s.totalPrice, 0);
+    let totalQuantityNoRenames = otherSales.value.filter(s => s.customName != null).reduce((total, s) => total + s.quantity, 0);
     averagePriceNoRenames.value = normalisePrice(totalPriceNoRenames, totalQuantityNoRenames);
 
     loadingSales.value = false;

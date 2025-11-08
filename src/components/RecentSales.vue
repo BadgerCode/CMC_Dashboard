@@ -18,7 +18,6 @@ defineProps<Props>()
         <th class="table-cell">Time</th>
         <th></th>
         <th></th>
-        <th></th>
         <th class="table-cell">Item</th>
         <th class="table-cell">
           <span class="hidden md:inline">Quantity</span><span class="md:hidden">#</span>
@@ -36,16 +35,19 @@ defineProps<Props>()
           <font-awesome-icon icon="fa-solid fa-gavel" v-else-if="sale.type == 'Auction'" />
           <font-awesome-icon icon="fa-solid fa-question" v-else title="Unknown" />
         </td>
-        <td class="table-cell" title="Custom name">
-          <font-awesome-icon icon="fa-solid fa-quote-left" v-if="sale.isRenamed" />
-        </td>
         <td class="table-cell" title="Enchanted">
           <font-awesome-icon icon="fa-solid fa-wand-sparkles" v-if="sale.isEnchanted" />
         </td>
         <td class="table-cell wrap-anywhere">
-          <RouterLink :to="{ name: 'sale', params: { id: sale.id } }" class="hyperlink">
-            {{ formatItemType(sale.itemType) }}
-          </RouterLink>
+          <div>
+            <RouterLink :to="{ name: 'sale', params: { id: sale.id } }" class="hyperlink">
+              {{ formatItemType(sale.itemType) }}
+            </RouterLink>
+          </div>
+
+          <div v-if="sale.customName" class="text-xs md:text-sm">
+            {{ sale.customName }}
+          </div>
         </td>
         <td class="table-cell">{{ sale.quantity }}</td>
         <td class="table-cell">{{ sale.totalPrice }}</td>

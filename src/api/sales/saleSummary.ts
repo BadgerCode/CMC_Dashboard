@@ -5,6 +5,6 @@ export interface SaleSummary {
   itemType: string;
   quantity: number;
   totalPrice: number;
-  isRenamed: boolean;
   isEnchanted: boolean;
+  customName: string | null;
 }
