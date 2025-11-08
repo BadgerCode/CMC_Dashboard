@@ -94,8 +94,8 @@ onMounted(async () => {
     averagePrice.value = normalisePrice(totalPrice, totalQuantity);
 
     // Calculate average price without renamed items
-    let totalPriceNoRenames = otherSales.value.filter(s => s.customName != null).reduce((total, s) => total + s.totalPrice, 0);
-    let totalQuantityNoRenames = otherSales.value.filter(s => s.customName != null).reduce((total, s) => total + s.quantity, 0);
+    let totalPriceNoRenames = otherSales.value.filter(s => s.customName == null).reduce((total, s) => total + s.totalPrice, 0);
+    let totalQuantityNoRenames = otherSales.value.filter(s => s.customName == null).reduce((total, s) => total + s.quantity, 0);
     averagePriceNoRenames.value = normalisePrice(totalPriceNoRenames, totalQuantityNoRenames);
 
     loadingSales.value = false;
@@ -137,16 +137,6 @@ let paintingOriginality = computed(() => {
 
 <template>
   <div class="relative overflow-x-auto text-white flex flex-col gap-2">
-
-    <h1 class="text-3xl font-bold" v-if="saleData != null">
-      <span class="mr-2" :title="saleData.type">
-        <font-awesome-icon icon="fa-solid fa-shop" v-if="saleData.type == 'Shop'" />
-        <font-awesome-icon icon="fa-solid fa-gavel" v-else-if="saleData.type == 'Auction'" />
-        <font-awesome-icon icon="fa-solid fa-question" v-else title="Unknown" />
-      </span>
-      <span>{{ formatDate(saleData.occurredAt) }}</span>
-    </h1>
-
     <div class="p-6 bg-gray-800 border border-gray-700 rounded-lg shadow-sm">
       <h4 class="mb-2 text-2xl font-bold tracking-tight text-white">
         Sale Overview
@@ -155,7 +145,41 @@ let paintingOriginality = computed(() => {
       <Loading v-if="loading" :loader-type="'text'"></Loading>
 
       <div class="mb-3 font-normal text-gray-400 flex flex-col gap-4" v-if="saleData != null">
+
+        <!-- Basic info -->
+        <div class="text-gray-300">
+          <div class="flex flex-row gap-6">
+            <div>
+              <span>{{ formatDate(saleData.occurredAt) }}</span>
+            </div>
+
+            <div>
+              <span class="mr-2" :title="saleData.type">
+                <font-awesome-icon icon="fa-solid fa-shop" v-if="saleData.type == 'Shop'" />
+                <font-awesome-icon icon="fa-solid fa-gavel" v-else-if="saleData.type == 'Auction'" />
+                <font-awesome-icon icon="fa-solid fa-question" v-else title="Unknown" />
+              </span>
+              <span>{{ saleData.type }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Item info -->
+        <div>
+          <div>
+            <RouterLink :to="{ name: 'itemSales', params: { itemType: saleData.itemType } }" class="hyperlink">
+              {{ formatItemType(saleData.itemType) }}
+            </RouterLink>
+          </div>
+
+          <div v-if="saleData.customName" class="text-gray-400">
+            <span>{{ saleData.customName }}</span>
+          </div>
+        </div>
+
+        <!-- Price -->
         <div class="text-white">
+          <div>Price</div>
           <div>
             {{ saleData.quantity }} x {{ formatItemType(saleData.itemType) }} sold for {{ saleData.totalPrice }}
             diamond(s).

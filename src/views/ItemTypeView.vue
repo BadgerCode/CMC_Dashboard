@@ -72,10 +72,10 @@ onMounted(async () => {
 
   // Calculate average price without renamed items
   let totalPriceNoRenames = sales.value
-    .filter((s) => s.customName != null)
+    .filter((s) => s.customName == null)
     .reduce((total, s) => total + s.totalPrice, 0);
   let totalQuantityNoRenames = sales.value
-    .filter((s) => s.customName != null)
+    .filter((s) => s.customName == null)
     .reduce((total, s) => total + s.quantity, 0);
   averagePriceNoRenames.value = normalisePrice(
     totalPriceNoRenames,
