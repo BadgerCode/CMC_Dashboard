@@ -6,7 +6,7 @@ import { Config } from "@/config";
 import { computed, onMounted, ref } from "vue";
 
 interface Props {
-  authorName: string | null
+  authorName?: string
 }
 const props = defineProps<Props>()
 
