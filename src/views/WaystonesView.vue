@@ -142,20 +142,20 @@ function applySort() {
     <table class="w-full text-left rtl:text-right text-gray-400 text-xs md:text-base">
       <thead class="table-head">
         <tr>
-          <th class="table-cell"></th>
-          <th class="table-cell">World</th>
-          <th class="table-cell">
+          <th class="table-item"></th>
+          <th class="table-item">World</th>
+          <th class="table-item">
             <span>Name</span>
             <font-awesome-icon icon="fa-solid fa-sort" class="text-xs ml-1 cursor-pointer"
               @click="sort('name', true)" />
           </th>
-          <th class="table-cell">Location</th>
-          <th class="table-cell">
+          <th class="table-item">Location</th>
+          <th class="table-item">
             <span>Visits This Week</span>
             <font-awesome-icon icon="fa-solid fa-sort" class="text-xs ml-1 cursor-pointer"
               @click="sort('visitsThisWeek', false)" />
           </th>
-          <th class="table-cell">
+          <th class="table-item">
             <span>Visits</span>
             <font-awesome-icon icon="fa-solid fa-sort" class="text-xs ml-1 cursor-pointer"
               @click="sort('visitsTotal', false)" />
@@ -164,12 +164,12 @@ function applySort() {
       </thead>
       <tbody>
         <tr v-for="(waystone, index) in filteredWaystones" class="stripped-row">
-          <td class="table-cell">{{ index + 1 }}</td>
-          <td class="table-cell">{{ waystone.world }}</td>
-          <td class="table-cell wrap-anywhere">{{ waystone.name }}</td>
-          <td class="table-cell">{{ waystone.x }}, {{ waystone.z }}</td>
-          <td class="table-cell">{{ waystone.visitsThisWeek }}</td>
-          <td class="table-cell">{{ waystone.visitsTotal }}</td>
+          <td class="table-item">{{ index + 1 }}</td>
+          <td class="table-item">{{ waystone.world }}</td>
+          <td class="table-item wrap-anywhere">{{ waystone.name }}</td>
+          <td class="table-item">{{ waystone.x }}, {{ waystone.z }}</td>
+          <td class="table-item">{{ waystone.visitsThisWeek }}</td>
+          <td class="table-item">{{ waystone.visitsTotal }}</td>
         </tr>
       </tbody>
     </table>

@@ -40,7 +40,7 @@
   @apply text-xs text-gray-400 uppercase bg-gray-700;
 }
 
-.table-cell {
+.table-item {
   @apply p-4 px-1 md:px-4;
 }
 

@@ -231,7 +231,7 @@ let paintingOriginality = computed(() => {
         <table class="w-full text-left rtl:text-right text-gray-400 text-xs md:text-base mt-2">
           <tbody>
             <tr v-for="attribute in filteredAttributes" class="border-t border-gray-700">
-              <td class="table-cell wrap-anywhere">
+              <td class="table-item wrap-anywhere">
                 <span v-if="attribute.key.startsWith('ENCHANTMENT_')">
                   <RouterLink
                     :to="{
@@ -247,7 +247,7 @@ let paintingOriginality = computed(() => {
                 </span>
                 <span v-else>{{ formatItemType(attribute.key) }}</span>
               </td>
-              <td class="table-cell wrap-anywhere">{{ attribute.value }}</td>
+              <td class="table-item wrap-anywhere">{{ attribute.value }}</td>
             </tr>
           </tbody>
         </table>
@@ -291,22 +291,22 @@ let paintingOriginality = computed(() => {
         <table class="w-full text-left rtl:text-right text-gray-400 text-xs md:text-base">
           <thead class="text-white">
             <tr>
-              <th class="table-cell">Slot</th>
-              <th class="table-cell">Item</th>
-              <th class="table-cell"><span class="hidden md:inline">Quantity</span><span class="md:hidden">#</span></th>
-              <th class="table-cell">Attributes</th>
+              <th class="table-item">Slot</th>
+              <th class="table-item">Item</th>
+              <th class="table-item"><span class="hidden md:inline">Quantity</span><span class="md:hidden">#</span></th>
+              <th class="table-item">Attributes</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="subItem in saleData.containedItems" class="border-t border-gray-700">
-              <td class="table-cell">
+              <td class="table-item">
                 {{ subItem.slot != null ? subItem.slot + 1 : "" }}
               </td>
-              <td class="table-cell wrap-anywhere">
+              <td class="table-item wrap-anywhere">
                 {{ formatItemType(subItem.itemType) }}
               </td>
-              <td class="table-cell">{{ subItem.quantity }}</td>
-              <td class="table-cell wrap-anywhere">
+              <td class="table-item">{{ subItem.quantity }}</td>
+              <td class="table-item wrap-anywhere">
                 <div
                   v-for="attribute in subItem.itemAttributes.sort((a, b) => a.key.localeCompare(b.key) || a.value.localeCompare(b.value))">
                   {{ formatItemType(attribute.key) }} : {{ attribute.value }}

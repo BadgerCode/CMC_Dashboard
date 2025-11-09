@@ -51,43 +51,43 @@ function applySort(items: ShopData[]) {
     <thead class="table-head">
       <tr>
         <!-- Basic details -->
-        <th class="table-cell text-center">
+        <th class="table-item text-center">
           <font-awesome-icon icon="fa-solid fa-arrows-left-right" />
         </th>
-        <th class="table-cell text-center">Item</th>
+        <th class="table-item text-center">Item</th>
 
         <!-- Price columns -->
         <!-- Mobile -->
-        <th class="table-cell md:hidden text-center">
+        <th class="table-item md:hidden text-center">
           <span>Price &amp; Stock</span>
           <font-awesome-icon icon="fa-solid fa-sort" class="text-xs ml-1 cursor-pointer"
             @click="sort('price', false)" />
         </th>
 
         <!-- Desktop -->
-        <th class="hidden md:table-cell">
+        <th class="table-item hidden md:table-cell">
           <span>Price</span>
           <font-awesome-icon icon="fa-solid fa-sort" class="text-xs ml-1 cursor-pointer"
             @click="sort('price', false)" />
         </th>
-        <th class="hidden md:table-cell pr-4">Min<br />Buy</th>
-        <th class="hidden md:table-cell">Stock</th>
+        <th class="table-item hidden md:table-cell pr-4">Min<br />Buy</th>
+        <th class="table-item hidden md:table-cell">Stock</th>
 
         <!-- Location -->
-        <th class="table-cell text-center">
+        <th class="table-item text-center">
           <font-awesome-icon icon="fa-solid fa-globe" />
         </th>
 
         <!-- Owner -->
-        <th class="hidden md:table-cell">Owner</th>
+        <th class="table-item hidden md:table-cell">Owner</th>
       </tr>
     </thead>
     <tbody>
       <tr v-for="shop in paginatedShops" class="stripped-row">
-        <td class="table-cell">THEY {{ shop.type.replace(/ING/g, "") }}</td>
+        <td class="table-item">THEY {{ shop.type.replace(/ING/g, "") }}</td>
 
         <!-- Item name & key attributes -->
-        <td class="table-cell wrap-anywhere">
+        <td class="table-item wrap-anywhere">
           <div class="text-white">
             {{ shop.item.name }}
           </div>
@@ -111,7 +111,7 @@ function applySort(items: ShopData[]) {
 
         <!-- Price columns -->
         <!-- Mobile -->
-        <td class="table-cell md:hidden">
+        <td class="table-item table-cell md:hidden">
           <div class="text-nowrap">{{ getNormalisedPrice(shop) }}</div>
           <div class="mt-2">Min buy:</div>
           <div>{{ shop.item.quantity }}</div>
@@ -120,12 +120,12 @@ function applySort(items: ShopData[]) {
         </td>
 
         <!-- Desktop -->
-        <td class="hidden md:table-cell">{{ getNormalisedPrice(shop) }}</td>
-        <td class="hidden md:table-cell">{{ shop.item.quantity }}</td>
-        <td class="hidden md:table-cell">x {{ shop.remaining }}</td>
+        <td class="table-item hidden md:table-cell">{{ getNormalisedPrice(shop) }}</td>
+        <td class="table-item hidden md:table-cell">{{ shop.item.quantity }}</td>
+        <td class="table-item hidden md:table-cell">x {{ shop.remaining }}</td>
 
         <!-- Location -->
-        <td class="table-cell">
+        <td class="table-item">
           <div class="block md:inline mr-1">{{ `${shop.location.x},` }}</div>
           <div class="block md:inline mr-1">{{ `${shop.location.y},` }}</div>
           <div class="block md:inline mr-1">{{ shop.location.z }}</div>
@@ -142,7 +142,7 @@ function applySort(items: ShopData[]) {
         </td>
 
         <!-- Owner -->
-        <td class="hidden md:table-cell">{{ shop.owner.name }}</td>
+        <td class="table-item hidden md:table-cell wrap-anywhere">{{ shop.owner.name }}</td>
       </tr>
     </tbody>
   </table>
