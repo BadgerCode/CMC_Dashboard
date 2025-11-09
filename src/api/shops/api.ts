@@ -7,7 +7,7 @@ import type { Waystone } from "../waystones/waystone";
 import { NearestNeighbour, type Point } from "@/utilities/closest-point";
 
 export async function updateShops(): Promise<ShopOverview> {
-  // TODO: If recent, don't reload
+  // Don't reload if data is recent
   if (Date.now() - shopsStore.lastUpdated.getTime() < Config.MAX_CACHE_AGE_MINS * 60 * 1000) return shopsStore;
 
   const nearestNeighbour = new NearestNeighbour<Waystone>();
