@@ -37,7 +37,7 @@
 
 /* Tables */
 .table-head {
-  @apply border-b border-gray-700;
+  @apply text-xs text-gray-400 uppercase bg-gray-700;
 }
 
 .table-cell {
@@ -45,7 +45,7 @@
 }
 
 .stripped-row {
-  @apply odd:bg-gray-900 even:bg-gray-800 border-b border-gray-700;
+  @apply odd:bg-gray-800 even:bg-gray-800 border-b border-gray-700;
 }
 
 

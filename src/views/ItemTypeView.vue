@@ -4,7 +4,6 @@ import { computed, onMounted, ref } from "vue";
 import * as SalesAPI from "@/api/sales/api";
 import type { SaleSummary } from "@/api/sales/saleSummary";
 import RecentSales from "@/components/RecentSales.vue";
-import { formatNumber } from "@/utilities/number-format";
 import { formatPrice, normalisePrice, type NormalisedPrice } from "@/utilities/normalise-price";
 import { useRoute, useRouter } from "vue-router";
 import { Config } from "@/config";
@@ -13,6 +12,7 @@ import type { SalesFilters } from "@/api/sales/api";
 import DropdownFilter, { type DropdownOption } from "@/components/DropdownFilter.vue";
 import { formatCustomDisc } from "@/utilities/custom-disc-format";
 import { formatPotionEffect } from "@/utilities/potion-format";
+import PlayerHeadOverview from "@/components/PlayerHeadOverview.vue";
 
 interface Props {
   itemType: string;
@@ -69,6 +69,7 @@ onMounted(async () => {
 
 let filtersText = computed(() => {
   let filters = [] as string[];
+
   if (attributeFilters.value.enchantment) filters.push(`Enchantment: '${formatEnchantment(attributeFilters.value.enchantment)}'`);
 
   if (attributeFilters.value.customDisc) filters.push(`Custom Disc: '${formatCustomDisc(attributeFilters.value.customDisc)}'`);
@@ -83,10 +84,10 @@ async function loadEnchantments(): Promise<DropdownOption[]> {
   let response = await loadItems(`${Config.APIURL}/api/itemtypes/${props.itemType}/enchantments`);
   return response.map(
     (i: string) =>
-      ({
-        text: formatEnchantment(i),
-        value: i,
-      } as DropdownOption)
+    ({
+      text: formatEnchantment(i),
+      value: i,
+    } as DropdownOption)
   );
 }
 
@@ -95,10 +96,10 @@ async function loadDiscs(): Promise<DropdownOption[]> {
   let response = await loadItems(`${Config.APIURL}/api/customDiscs`);
   return response.map(
     (i: string) =>
-      ({
-        text: formatCustomDisc(i),
-        value: i,
-      } as DropdownOption)
+    ({
+      text: formatCustomDisc(i),
+      value: i,
+    } as DropdownOption)
   );
 }
 
@@ -107,10 +108,10 @@ async function loadPotions(): Promise<DropdownOption[]> {
   let response = await loadItems(`${Config.APIURL}/api/itemtypes/${props.itemType}/potionTypes`);
   return response.map(
     (i: string) =>
-      ({
-        text: formatPotionEffect(i),
-        value: i,
-      } as DropdownOption)
+    ({
+      text: formatPotionEffect(i),
+      value: i,
+    } as DropdownOption)
   );
 }
 
@@ -134,7 +135,8 @@ function filterSales(property: string, value: string) {
 </script>
 
 <template>
-  <div class="relative overflow-x-auto text-white flex flex-col gap-2">
+  <PlayerHeadOverview v-if="itemType == 'PLAYER_HEAD'" :item-type="itemType" :sales="sales"></PlayerHeadOverview>
+  <div v-else class="relative overflow-x-auto text-white flex flex-col gap-2">
     <div>
       <h2 class="mb-2 text-2xl font-bold tracking-tight text-white">{{ formatItemType(itemType) }}</h2>
       <div class="text-gray-400 mb-4 capitalize" v-if="filtersText">With {{ filtersText }}</div>
@@ -166,33 +168,18 @@ function filterSales(property: string, value: string) {
 
       <div class="flex flex-column sm:flex-row flex-wrap space-y-4 sm:space-y-0 items-center justify-between">
         <div class="flex flex-row flex-wrap gap-1">
-          <DropdownFilter
-            v-if="enchantments.length > 0"
-            :placeholder="'Enchantment'"
-            :default-selection="[]"
-            :icon="'fa-solid fa-wand-sparkles'"
-            :single-selection="true"
-            :options="enchantments"
+          <DropdownFilter v-if="enchantments.length > 0" :placeholder="'Enchantment'" :default-selection="[]"
+            :icon="'fa-solid fa-wand-sparkles'" :single-selection="true" :options="enchantments"
             @update:model-value="value => filterSales('enchantment', value as string)">
           </DropdownFilter>
 
-          <DropdownFilter
-            v-if="customDiscs.length > 0"
-            :placeholder="'Custom Music Disc'"
-            :default-selection="[]"
-            :icon="'fa-solid fa-record-vinyl'"
-            :single-selection="true"
-            :options="customDiscs"
+          <DropdownFilter v-if="customDiscs.length > 0" :placeholder="'Custom Music Disc'" :default-selection="[]"
+            :icon="'fa-solid fa-record-vinyl'" :single-selection="true" :options="customDiscs"
             @update:model-value="value => filterSales('discName', value as string)">
           </DropdownFilter>
 
-          <DropdownFilter
-            v-if="potionEffects.length > 0"
-            :placeholder="'Potion Effect'"
-            :default-selection="[]"
-            :icon="'fa-solid fa-flask'"
-            :single-selection="true"
-            :options="potionEffects"
+          <DropdownFilter v-if="potionEffects.length > 0" :placeholder="'Potion Effect'" :default-selection="[]"
+            :icon="'fa-solid fa-flask'" :single-selection="true" :options="potionEffects"
             @update:model-value="value => filterSales('potionEffect', value as string)">
           </DropdownFilter>
         </div>
