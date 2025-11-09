@@ -5,10 +5,7 @@ import * as SalesAPI from "@/api/sales/api";
 import type { SaleSummary } from "@/api/sales/saleSummary";
 import RecentSales from "@/components/RecentSales.vue";
 import { formatNumber } from "@/utilities/number-format";
-import {
-  normalisePrice,
-  type NormalisedPrice,
-} from "@/utilities/normalise-price";
+import { formatPrice, normalisePrice, type NormalisedPrice } from "@/utilities/normalise-price";
 import { useRoute, useRouter } from "vue-router";
 import { Config } from "@/config";
 import { formatEnchantment } from "@/utilities/enchantment-format";
@@ -33,7 +30,7 @@ const potionEffects = ref([] as DropdownOption[]);
 const customDiscs = ref([] as DropdownOption[]);
 
 // Average prices
-const averagePrice = ref(null as NormalisedPrice | null);
+const averagePrice = ref({ quantity: 0, price: 0 } as NormalisedPrice);
 const averagePriceNoRenames = ref(null as NormalisedPrice | null);
 
 onMounted(async () => {
@@ -45,24 +42,16 @@ onMounted(async () => {
   attributeFilters.value.potionEffect = route.query["potionEffect"]?.toString();
 
   // Load sales data for the item type
-  sales.value.push(
-    ...(await SalesAPI.loadSalesForItemType(
-      props.itemType,
-      attributeFilters.value
-    ))
-  );
+  sales.value.push(...(await SalesAPI.loadSalesForItemType(props.itemType, attributeFilters.value)));
 
   // Enchantments
   enchantments.value.push(...(await loadEnchantments()));
 
   // Custom music discs
-  if (props.itemType == "CUSTOM_MUSIC_DISC")
-    customDiscs.value.push(...(await loadDiscs()));
+  if (props.itemType == "CUSTOM_MUSIC_DISC") customDiscs.value.push(...(await loadDiscs()));
 
   // Potion effects
-  let isPotion =
-    ["POTION", "SPLASH_POTION", "LINGERING_POTION"].indexOf(props.itemType) !=
-    -1;
+  let isPotion = ["POTION", "SPLASH_POTION", "LINGERING_POTION"].indexOf(props.itemType) != -1;
   if (isPotion) potionEffects.value.push(...(await loadPotions()));
 
   // Calculate average price
@@ -71,30 +60,20 @@ onMounted(async () => {
   averagePrice.value = normalisePrice(totalPrice, totalQuantity);
 
   // Calculate average price without renamed items
-  let totalPriceNoRenames = sales.value
-    .filter((s) => s.customName == null)
-    .reduce((total, s) => total + s.totalPrice, 0);
-  let totalQuantityNoRenames = sales.value
-    .filter((s) => s.customName == null)
-    .reduce((total, s) => total + s.quantity, 0);
-  averagePriceNoRenames.value = normalisePrice(
-    totalPriceNoRenames,
-    totalQuantityNoRenames
-  );
+  let totalPriceNoRenames = sales.value.filter((s) => s.customName == null).reduce((total, s) => total + s.totalPrice, 0);
+  let totalQuantityNoRenames = sales.value.filter((s) => s.customName == null).reduce((total, s) => total + s.quantity, 0);
+
+  if (totalPriceNoRenames != totalPrice || totalQuantityNoRenames != totalQuantity)
+    averagePriceNoRenames.value = normalisePrice(totalPriceNoRenames, totalQuantityNoRenames);
 });
 
 let filtersText = computed(() => {
   let filters = [] as string[];
-  if (attributeFilters.value.enchantment)
-    filters.push(
-      `Enchantment: '${formatEnchantment(attributeFilters.value.enchantment)}'`
-    );
+  if (attributeFilters.value.enchantment) filters.push(`Enchantment: '${formatEnchantment(attributeFilters.value.enchantment)}'`);
 
-  if (attributeFilters.value.customDisc)
-    filters.push(`Custom Disc: '${formatCustomDisc(attributeFilters.value.customDisc)}'`);
+  if (attributeFilters.value.customDisc) filters.push(`Custom Disc: '${formatCustomDisc(attributeFilters.value.customDisc)}'`);
 
-  if (attributeFilters.value.potionEffect)
-    filters.push(`Potion Effect: '${formatPotionEffect(attributeFilters.value.potionEffect)}'`);
+  if (attributeFilters.value.potionEffect) filters.push(`Potion Effect: '${formatPotionEffect(attributeFilters.value.potionEffect)}'`);
 
   return filters.join(",");
 });
@@ -102,28 +81,37 @@ let filtersText = computed(() => {
 async function loadEnchantments(): Promise<DropdownOption[]> {
   // TODO: Cache
   let response = await loadItems(`${Config.APIURL}/api/itemtypes/${props.itemType}/enchantments`);
-  return response.map((i: string) => ({
-    text: formatEnchantment(i),
-    value: i
-  } as DropdownOption));
+  return response.map(
+    (i: string) =>
+      ({
+        text: formatEnchantment(i),
+        value: i,
+      } as DropdownOption)
+  );
 }
 
 async function loadDiscs(): Promise<DropdownOption[]> {
   // TODO: Cache
   let response = await loadItems(`${Config.APIURL}/api/customDiscs`);
-  return response.map((i: string) => ({
-    text: formatCustomDisc(i),
-    value: i
-  } as DropdownOption));
+  return response.map(
+    (i: string) =>
+      ({
+        text: formatCustomDisc(i),
+        value: i,
+      } as DropdownOption)
+  );
 }
 
 async function loadPotions(): Promise<DropdownOption[]> {
   // TODO: Cache
   let response = await loadItems(`${Config.APIURL}/api/itemtypes/${props.itemType}/potionTypes`);
-  return response.map((i: string) => ({
-    text: formatPotionEffect(i),
-    value: i
-  } as DropdownOption));
+  return response.map(
+    (i: string) =>
+      ({
+        text: formatPotionEffect(i),
+        value: i,
+      } as DropdownOption)
+  );
 }
 
 async function loadItems(url: string): Promise<any[]> {
@@ -141,9 +129,8 @@ function filterSales(property: string, value: string) {
   let query = {} as any;
   query[property] = value;
 
-  router.push({ name: 'itemSales', params: { itemType: props.itemType }, query: query })
+  router.push({ name: "itemSales", params: { itemType: props.itemType }, query: query });
 }
-
 </script>
 
 <template>
@@ -154,59 +141,58 @@ function filterSales(property: string, value: string) {
     </div>
 
     <div class="p-6 bg-gray-800 border border-gray-700 rounded-lg shadow-sm">
-      <h3 class="mb-2 text-xl font-bold tracking-tight text-white">
-        Average Prices
-      </h3>
+      <h3 class="mb-2 text-xl font-bold tracking-tight text-white">Average Prices</h3>
 
       <div>
-        <div class="text-gray-400">
-          Based on {{ sales.length }} sales shown below.
-        </div>
-        <div>
-          <span>{{ formatNumber(averagePrice?.quantity, 2) }} '{{
-            formatItemType(itemType)
-          }}'
-          </span>
-          <span>is worth </span>
-          <span>{{ formatNumber(averagePrice?.price, 2) }} diamond(s)</span>
+        <div class="text-gray-400">Based on {{ sales.length }} sales shown below.</div>
+        <div v-if="averagePrice.quantity == 0">No data</div>
+        <div v-else>
+          <span>{{ formatPrice(averagePrice, itemType) }}</span>
         </div>
 
         <div class="text-gray-400 mt-4">Excluding renamed items</div>
-        <div>
-          <span>{{ formatNumber(averagePriceNoRenames?.quantity, 2) }} '{{
-            formatItemType(itemType)
-          }}'
-          </span>
-          <span>is worth </span>
-          <span>{{
-            formatNumber(averagePriceNoRenames?.price, 2)
-          }}
-            diamond(s)</span>
+        <div v-if="averagePriceNoRenames == null">No difference</div>
+        <div v-else-if="averagePriceNoRenames.quantity == 0">No data</div>
+        <div v-else>
+          <span>{{ formatPrice(averagePriceNoRenames, itemType) }}</span>
         </div>
       </div>
     </div>
 
     <div class="mt-6">
-      <h3 class="mb-2 text-xl font-bold tracking-tight text-white">
-        Sales of {{ formatItemType(itemType) }}
-      </h3>
+      <h3 class="mb-2 text-xl font-bold tracking-tight text-white">Sales of {{ formatItemType(itemType) }}</h3>
 
       <div class="text-gray-400 mb-4 capitalize" v-if="filtersText">With {{ filtersText }}</div>
 
       <div class="flex flex-column sm:flex-row flex-wrap space-y-4 sm:space-y-0 items-center justify-between">
         <div class="flex flex-row flex-wrap gap-1">
-          <DropdownFilter v-if="enchantments.length > 0" :placeholder="'Enchantment'" :default-selection="[]"
-            :icon="'fa-solid fa-wand-sparkles'" :single-selection="true" :options="enchantments"
+          <DropdownFilter
+            v-if="enchantments.length > 0"
+            :placeholder="'Enchantment'"
+            :default-selection="[]"
+            :icon="'fa-solid fa-wand-sparkles'"
+            :single-selection="true"
+            :options="enchantments"
             @update:model-value="value => filterSales('enchantment', value as string)">
           </DropdownFilter>
 
-          <DropdownFilter v-if="customDiscs.length > 0" :placeholder="'Custom Music Disc'" :default-selection="[]"
-            :icon="'fa-solid fa-record-vinyl'" :single-selection="true" :options="customDiscs"
+          <DropdownFilter
+            v-if="customDiscs.length > 0"
+            :placeholder="'Custom Music Disc'"
+            :default-selection="[]"
+            :icon="'fa-solid fa-record-vinyl'"
+            :single-selection="true"
+            :options="customDiscs"
             @update:model-value="value => filterSales('discName', value as string)">
           </DropdownFilter>
 
-          <DropdownFilter v-if="potionEffects.length > 0" :placeholder="'Potion Effect'" :default-selection="[]"
-            :icon="'fa-solid fa-flask'" :single-selection="true" :options="potionEffects"
+          <DropdownFilter
+            v-if="potionEffects.length > 0"
+            :placeholder="'Potion Effect'"
+            :default-selection="[]"
+            :icon="'fa-solid fa-flask'"
+            :single-selection="true"
+            :options="potionEffects"
             @update:model-value="value => filterSales('potionEffect', value as string)">
           </DropdownFilter>
         </div>

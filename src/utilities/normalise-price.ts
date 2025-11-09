@@ -1,12 +1,12 @@
+import { formatItemType } from "./item-type-format";
+import { formatNumber } from "./number-format";
+
 export interface NormalisedPrice {
   price: number;
   quantity: number;
 }
 
-export function normalisePrice(
-  totalPrice: number,
-  quantity: number
-): NormalisedPrice {
+export function normalisePrice(totalPrice: number, quantity: number): NormalisedPrice {
   if (quantity < 1) return { price: 0, quantity: 0 };
 
   // E.g. 5 for 1 item
@@ -23,4 +23,8 @@ export function normalisePrice(
   }
 
   return normalPrice;
+}
+
+export function formatPrice(price: NormalisedPrice, itemType: string): string {
+  return `${formatNumber(price.quantity, 2)} '${formatItemType(itemType)}' is worth ${formatNumber(price.price, 2)} diamonds(s)`;
 }
