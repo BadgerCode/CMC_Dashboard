@@ -1,4 +1,4 @@
-export function formatDate(dateTime: string | null | undefined, defaultValue?: string | null | undefined): string {
+export function formatDate(dateTime: string | null | undefined | Date, defaultValue?: string | null | undefined): string {
   if (!dateTime) return defaultValue ?? "";
 
   let date = new Date(dateTime);
