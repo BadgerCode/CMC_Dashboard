@@ -13,11 +13,6 @@ interface SpecialItem {
 
 const specialItems = [
   {
-    itemType: "CUSTOM_MUSIC_DISC",
-    displayName: "Custom Music Discs",
-    icon: "fa-solid fa-record-vinyl",
-  },
-  {
     itemType: "ENCHANTED_BOOK",
     displayName: "Enchanted Books",
     icon: "fa-solid fa-book-bookmark",
@@ -36,6 +31,16 @@ const specialItems = [
     itemType: "LINGERING_POTION",
     displayName: "Lingering Potions",
     icon: "fa-solid fa-flask",
+  },
+  {
+    itemType: "CUSTOM_MUSIC_DISC",
+    displayName: "Custom Music Discs",
+    icon: "fa-solid fa-record-vinyl",
+  },
+  {
+    itemType: "LUA_FISH_MUSIC_BOOK",
+    displayName: "Custom Music Books",
+    icon: "fa-solid fa-file-audio",
   },
   {
     itemType: "WAYSTONE",
@@ -80,7 +85,7 @@ async function loadSales() {
     <div class="flex flex-row flex-wrap gap-2 md:gap-5">
       <RouterLink v-for="item in specialItems" :to="{ name: 'itemSales', params: { itemType: item.itemType }, }">
         <div
-          class="p-1 w-20 h-20 gap-1 md:p-3 md:w-25 md:h-25 md:gap-2 bg-gray-800 flex flex-col items-center text-center justify-center text-gray-300 border-1 border-gray-700 rounded-lg">
+          class="p-1 w-20 h-20 gap-1 md:p-3 md:w-27 md:h-27 md:gap-2 bg-gray-800 flex flex-col items-center text-center justify-center text-gray-300 border-1 border-gray-700 rounded-lg">
           <div class="text-xl md:text-3xl"><font-awesome-icon :icon="item.icon" /></div>
           <div class="text-xs md:text-sm">{{ item.displayName }}</div>
         </div>
