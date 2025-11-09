@@ -7,11 +7,12 @@ import * as WaystoneAPI from "@/api/waystones/api";
 import type { Waystone } from "@/api/waystones/waystone";
 import DropdownFilter, { type DropdownOption } from "@/components/DropdownFilter.vue";
 import SearchBox from "@/components/SearchBox.vue";
+import type { ServerWaystones } from "@/store/waystones-state";
 
 const loading = ref(true);
-const waystones = ref([] as Waystone[]);
+
+const waystoneData = ref(null as ServerWaystones | null);
 const filteredWaystones = ref([] as Waystone[]);
-const lastUpdated = ref("");
 
 // Name filter
 const nameFilter = ref("");
@@ -35,14 +36,12 @@ watch(worldFilter, async (_, __) => {
 onMounted(async () => {
   initFlowbite(); // Include on any component where you need flowbite JS functionality
 
-  let response = await WaystoneAPI.loadWaystones();
-  waystones.value = response.waystones;
-  lastUpdated.value = response.lastUpdated;
+  waystoneData.value = await WaystoneAPI.loadWaystones();
 
   // Initialise filters
-  worldFilterOptions.value = response.worlds.map(w => ({ text: w, value: w } as DropdownOption));
-  worldFilter.value = response.worlds;
-  worldFilterDefaultSelection.value = response.worlds;
+  worldFilterOptions.value = waystoneData.value.worlds.map(w => ({ text: w, value: w } as DropdownOption));
+  worldFilter.value = waystoneData.value.worlds;
+  worldFilterDefaultSelection.value = waystoneData.value.worlds;
 
   // Render
   applyFilters();
@@ -57,10 +56,11 @@ onUpdated(() => {
 
 // Filtering
 function applyFilters() {
-  filteredWaystones.value.splice(0);
+  if (waystoneData.value == null) return;
 
+  filteredWaystones.value.splice(0);
   filteredWaystones.value.push(
-    ...waystones.value.filter((w) => {
+    ...waystoneData.value.waystones.filter((w) => {
       // Apply world filter
       if (!worldFilter.value.includes(w.world)) return false;
 
@@ -135,7 +135,7 @@ function applySort() {
   <div v-else class="relative overflow-x-auto">
     <div class="text-gray-400">
       <div class="text-gray-500 text-xs">
-        Last updated {{ formatDate(lastUpdated, "") }}
+        Last updated {{ formatDate(waystoneData?.lastUpdated, "") }}
       </div>
     </div>
 
