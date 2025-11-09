@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, onUpdated, ref, watch, withScopeId } from "vue";
+import { onMounted, onUpdated, ref, watch } from "vue";
 import { initFlowbite } from "flowbite";
 import Loading from "@/components/Loading.vue";
 import { formatDate } from "@/utilities/date-format";
