@@ -16,6 +16,7 @@ import { Config } from "@/config";
 import { formatCustomDisc } from "@/utilities/custom-disc-format";
 import { formatPotionEffect } from "@/utilities/potion-format";
 import { useRoute } from "vue-router";
+import { convertToShopItemType } from "@/utilities/shop-item-type-converter";
 
 interface Props {
   itemType: string;
@@ -92,7 +93,8 @@ onMounted(async () => {
 
   // Load shop data
   let shopData = await updateShops();
-  shops.value = shopData.shops.filter((s) => s.item.type == props.itemType && s.type == "SELLING");
+  let shopItemType = convertToShopItemType(props.itemType);
+  shops.value = shopData.shops.filter((s) => s.item.type == shopItemType && s.type == "SELLING");
   filteredShops.value = shops.value;
 
   loading.value = false;
