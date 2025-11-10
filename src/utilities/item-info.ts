@@ -1,8 +1,8 @@
 export interface ItemInfo {
   itemType: string;
+  displayName: string;
   description?: string;
   isSpecialItem?: boolean;
-  displayName?: string; // Could default to formatted item type
   icon?: string;
   shopCaveats?: string;
 }
