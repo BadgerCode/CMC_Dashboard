@@ -12,6 +12,7 @@ import { formatPrice, normalisePrice, type NormalisedPrice } from "@/utilities/n
 import Loading from "@/components/Loading.vue";
 import { formatEnchantment } from "@/utilities/enchantment-format";
 import { formatPotionEffect } from "@/utilities/potion-format";
+import { formatCustomDisc } from "@/utilities/custom-disc-format";
 
 const props = defineProps({
   id: String,
@@ -215,6 +216,19 @@ let paintingOriginality = computed(() => {
                     }"
                     class="hyperlink">
                     {{ formatPotionEffect(attribute.value) }}
+                  </RouterLink>
+                </span>
+                <span v-else-if="attribute.key == 'CUSTOM_DISC_SONG'" class="capitalize">
+                  <RouterLink
+                    :to="{
+                      name: 'itemSales',
+                      params: { itemType: saleData.itemType },
+                      query: {
+                        discName: attribute.value,
+                      },
+                    }"
+                    class="hyperlink">
+                    {{ formatCustomDisc(attribute.value) }}
                   </RouterLink>
                 </span>
                 <span v-else>{{ attribute.value }}</span>

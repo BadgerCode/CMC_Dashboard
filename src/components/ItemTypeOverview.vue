@@ -49,7 +49,7 @@ const itemShopCaveats = {
   PLAYER_HEAD: "Shop listings will not include the name of the player that the head belongs to.",
   ENCHANTED_BOOK: "Book enchantments are missing from shop listings and filtering will not work.",
   LUA_FISH_MUSIC_BOOK: "Shop listings will include regular written books too.",
-  CUSTOM_MUSIC_DISC: "Custom music disc titles are missing from shop listings.",
+  CUSTOM_MUSIC_DISC: "Custom music disc titles are missing from shop listings and filtering will not work.",
   WAYSTONE: "Shop listings may include regular cobblestone walls."
 } as { [itemType: string]: string };
 
@@ -246,6 +246,15 @@ let filtersText = computed(() => {
             :single-selection="true"
             v-model="potionEffectFilter">
           </DropdownFilter>
+
+          <DropdownFilter
+            v-if="customDiscs.length > 0"
+            :placeholder="'Custom Discs'"
+            :icon="'fa-solid fa-record-vinyl'"
+            :options="customDiscs"
+            :single-selection="true"
+            v-model="customDiscFilter">
+          </DropdownFilter>
         </div>
       </div>
 
@@ -291,6 +300,15 @@ let filtersText = computed(() => {
             :options="potionEffects"
             :single-selection="true"
             v-model="potionEffectFilter">
+          </DropdownFilter>
+
+          <DropdownFilter
+            v-if="customDiscs.length > 0"
+            :placeholder="'Custom Discs'"
+            :icon="'fa-solid fa-record-vinyl'"
+            :options="customDiscs"
+            :single-selection="true"
+            v-model="customDiscFilter">
           </DropdownFilter>
 
           <SearchBox :placeholder="'Item Name'" v-model="nameFilter"></SearchBox>
