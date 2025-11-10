@@ -102,7 +102,7 @@ onUpdated(() => {
 
 async function loadSales() {
   let salesFilters = {
-    enchantment: enchantmentFilter.value,
+    enchantment: enchantmentFilter.value ? `ENCHANTMENT_${enchantmentFilter.value}` : "", // TODO: Remove once the backend is updated
     potionEffect: potionEffectFilter.value,
     customDisc: customDiscFilter.value,
   };
@@ -116,8 +116,8 @@ async function loadEnchantments(): Promise<DropdownOption[]> {
   return response.map(
     (i: string) =>
     ({
-      text: formatEnchantment(i),
-      value: i,
+      text: formatEnchantment(i.replace(/ENCHANTMENT_/, "")).toLocaleLowerCase(), // TODO: Remove replace once backend stops joining key to value
+      value: i.replace(/ENCHANTMENT_/, ""),
     } as DropdownOption)
   );
 }
@@ -164,7 +164,7 @@ function applyFilters() {
     // Apply enchantments filter
     // TODO: Support enchanted books
     // TODO: Consolidate sale vs shop enchantments, so they are consistent with format
-    let enchantment = enchantmentFilter.value.replace(/ENCHANTMENT_MINECRAFT:/i, "").replace(/_/g, " ").toLocaleLowerCase();
+    let enchantment = enchantmentFilter.value.replace(/MINECRAFT:/i, "").replace(/_/g, " ").toLocaleLowerCase();
     if (enchantment != "" && !s.item.parsedSNBT.enchantments.includes(enchantment)) return false;
 
     // Apply potion filter

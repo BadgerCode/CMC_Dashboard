@@ -140,15 +140,8 @@ let filteredAttributes = computed(() => {
         <table class="w-full text-left rtl:text-right text-gray-400 text-xs md:text-base mt-2">
           <tbody>
             <tr v-for="attribute in filteredAttributes" class="border-t border-gray-700">
-              <td class="table-item wrap-anywhere">
-                <span v-if="attribute.key.startsWith('ENCHANTMENT_')">
-                  <RouterLink
-                    :to="{ name: 'itemSales', params: { itemType: saleData.itemType }, query: { enchantment: `${attribute.key}_${attribute.value}`, }, }"
-                    class="hyperlink">
-                    {{ formatEnchantment(attribute.key) }}
-                  </RouterLink>
-                </span>
-                <span v-else>{{ formatItemType(attribute.key) }}</span>
+              <td class="table-item wrap-anywhere capitalize">
+                {{ formatItemType(attribute.key)?.toLocaleLowerCase() }}
               </td>
               <td class="table-item wrap-anywhere">
                 <span v-if="attribute.key == 'POTION_EFFECT'" class="capitalize">
@@ -163,6 +156,13 @@ let filteredAttributes = computed(() => {
                     :to="{ name: 'itemSales', params: { itemType: saleData.itemType }, query: { discName: attribute.value, }, }"
                     class="hyperlink">
                     {{ formatCustomDisc(attribute.value) }}
+                  </RouterLink>
+                </span>
+                <span v-else-if="attribute.key == 'ENCHANTMENT'">
+                  <RouterLink
+                    :to="{ name: 'itemSales', params: { itemType: saleData.itemType }, query: { enchantment: attribute.value, }, }"
+                    class="hyperlink">
+                    {{ formatEnchantment(attribute.value) }}
                   </RouterLink>
                 </span>
                 <span v-else>{{ attribute.value }}</span>
