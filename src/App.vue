@@ -1,7 +1,14 @@
 <script setup lang="ts">
 import { initFlowbite } from "flowbite";
-import { computed, onMounted, onUpdated } from "vue";
+import { computed, onMounted, onUpdated, ref } from "vue";
 import { useRoute } from "vue-router";
+import { Config } from "./config";
+
+interface ServerStats {
+  numPlayers: number;
+  lastResponse: Date;
+  status: string;
+}
 
 const route = useRoute();
 
@@ -9,13 +16,31 @@ const path = computed(() => {
   return route.fullPath.replace(route.hash, "");
 });
 
-onMounted(() => {
+const stats = ref(null as ServerStats | null);
+
+onMounted(async () => {
   initFlowbite(); // Include on any component where you need flowbite JS functionality
+  stats.value = await loadServerStats();
 });
 
 onUpdated(() => {
   initFlowbite(); // Include on any component where you need flowbite JS functionality
 });
+
+async function loadServerStats(): Promise<ServerStats | null> {
+  let httpResponse = await fetch(`${Config.APIURL}/api/serverstats`, { method: "get" });
+
+  if (httpResponse.status !== 200) return null;
+
+  let response = await httpResponse.json();
+  let lastResponse = new Date(response.lastResponse);
+
+  return {
+    numPlayers: response.numPlayers,
+    lastResponse: lastResponse,
+    status: Date.now() - lastResponse.getTime() < 130000 ? "Online" : "Offline",
+  } as ServerStats;
+}
 </script>
 
 <template>
@@ -77,10 +102,15 @@ onUpdated(() => {
       <!-- Page header -->
       <header
         class="relative bg-gray-800 after:pointer-events-none after:absolute after:inset-x-0 after:inset-y-0 after:border-y after:border-white/10">
-        <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+        <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 flex flex-row justify-between items-end">
           <h1 class="text-3xl font-bold tracking-tight text-white">
             {{ $route.meta.title }}
           </h1>
+
+          <div v-if="stats != null" class="text-gray-200 flex flex-col text-right">
+            <div>Server {{ stats.status }}</div>
+            <div>{{ stats.numPlayers }} players</div>
+          </div>
         </div>
       </header>
 
