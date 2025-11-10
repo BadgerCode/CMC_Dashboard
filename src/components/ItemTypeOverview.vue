@@ -31,7 +31,7 @@ const filteredShops = ref([] as ShopData[]);
 
 // Item descriptions
 const itemDescriptions = {
-  PLAYER_HEAD: "Heads of various players. Some have additional functionality through Figura.",
+  PLAYER_HEAD: "Can be used as decoration. Some have additional functionality through Figura.",
   ENCHANTED_BOOK: "A book with one or more enchantments, used to enchant other items.",
   POTION: "A regular potion with a status effect that you have to drink.",
   SPLASH_POTION: "A throwable potion with a status effect.",
@@ -40,6 +40,17 @@ const itemDescriptions = {
 
 const description = computed(() => {
   return itemDescriptions[props.itemType];
+});
+
+const itemShopCaveats = {
+  PLAYER_HEAD: "Shop listings will not include the name of the player that the head belongs to.",
+  ENCHANTED_BOOK: "Book enchantments are missing from shop listings and filtering will not work.",
+  LUA_FISH_MUSIC_BOOK: "Shop listings will include regular written books too.",
+  CUSTOM_MUSIC_DISC: "Custom music disc titles are missing from shop listings.",
+} as { [itemType: string]: string };
+
+const shopDescription = computed(() => {
+  return itemShopCaveats[props.itemType];
 });
 
 // Name filter
@@ -278,6 +289,13 @@ let filtersText = computed(() => {
 
           <SearchBox :placeholder="'Item Name'" v-model="nameFilter"></SearchBox>
         </div>
+      </div>
+
+      <div
+        v-if="shopDescription"
+        class="p-4 mb-4 text-sm text-yellow-800 rounded-lg bg-yellow-50 dark:bg-gray-800 dark:text-yellow-300"
+        role="alert">
+        {{ shopDescription }}
       </div>
 
       <div class="max-h-[400px] overflow-y-auto">

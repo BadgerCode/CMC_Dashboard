@@ -25,8 +25,7 @@ const buySellOptions = [
   { text: "I want to buy", value: "SELLING" },
   { text: "I want to sell", value: "BUYING" },
 ] as DropdownOption[];
-const buySellFilter = ref(["BUYING", "SELLING"]);
-const buySellDefaultSelection = ["SELLING"];
+const buySellFilter = ref(["SELLING"]);
 
 watch(buySellFilter, async (_, __) => {
   applyFilters();
@@ -124,7 +123,6 @@ function applyFilters() {
       <DropdownFilter
         :placeholder="'Buy/Sell'"
         :icon="'fa-solid fa-arrows-left-right'"
-        :default-selection="buySellDefaultSelection"
         :options="buySellOptions"
         v-model="buySellFilter"></DropdownFilter>
 

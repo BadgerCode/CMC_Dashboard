@@ -92,7 +92,14 @@ function applySort(items: ShopData[]) {
           </div>
 
           <div class="text-xs md:text-sm">
-            {{ formatItemType(shop.item.type) }}
+            <RouterLink
+              :to="{
+                name: 'itemSales',
+                params: { itemType: shop.item.type },
+              }"
+              class="hyperlink">
+              {{ formatItemType(shop.item.type) }}
+            </RouterLink>
           </div>
 
           <div class="text-xs md:text-sm capitalize" v-if="shop.item.parsedSNBT.potionEffect">
@@ -144,4 +151,6 @@ function applySort(items: ShopData[]) {
       </tr>
     </tbody>
   </table>
+
+  <div v-if="paginatedShops.length == 0" class="text-center p-2">No shops found</div>
 </template>

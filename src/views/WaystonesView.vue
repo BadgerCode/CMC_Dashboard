@@ -21,16 +21,13 @@ watch(nameFilter, async (_, __) => {
   applyFilters();
 });
 
-
 // World filter
 const worldFilterOptions = ref([] as DropdownOption[]);
 const worldFilter = ref([] as string[]);
-const worldFilterDefaultSelection = ref([] as string[]);
 
 watch(worldFilter, async (_, __) => {
   applyFilters();
 });
-
 
 // Setup
 onMounted(async () => {
@@ -39,9 +36,8 @@ onMounted(async () => {
   waystoneData.value = await WaystoneAPI.loadWaystones();
 
   // Initialise filters
-  worldFilterOptions.value = waystoneData.value.worlds.map(w => ({ text: w, value: w } as DropdownOption));
+  worldFilterOptions.value = waystoneData.value.worlds.map((w) => ({ text: w, value: w } as DropdownOption));
   worldFilter.value = waystoneData.value.worlds;
-  worldFilterDefaultSelection.value = waystoneData.value.worlds;
 
   // Render
   applyFilters();
@@ -52,7 +48,6 @@ onMounted(async () => {
 onUpdated(() => {
   initFlowbite(); // Include on any component where you need flowbite JS functionality
 });
-
 
 // Filtering
 function applyFilters() {
@@ -75,7 +70,6 @@ function applyFilters() {
   applySort();
 }
 
-
 // Sorting
 let sortProperty = "visitsThisWeek";
 let sortAscending = false;
@@ -95,10 +89,8 @@ function applySort() {
     let second = sortAscending ? b : a;
 
     let sortResult = 0;
-    if (sortProperty == "visitsThisWeek")
-      sortResult = first.visitsThisWeek - second.visitsThisWeek;
-    else if (sortProperty == "visitsTotal")
-      sortResult = first.visitsTotal - second.visitsTotal;
+    if (sortProperty == "visitsThisWeek") sortResult = first.visitsThisWeek - second.visitsThisWeek;
+    else if (sortProperty == "visitsTotal") sortResult = first.visitsTotal - second.visitsTotal;
 
     return sortResult || first.name.localeCompare(second.name);
   });
@@ -113,16 +105,13 @@ function applySort() {
     </div>
 
     <div class="pb-4">
-      <a href="https://callmecarson.live/subserver/map/" target="_blank" class="hyperlink">
-        World map
-      </a>
+      <a href="https://callmecarson.live/subserver/map/" target="_blank" class="hyperlink"> World map </a>
     </div>
   </div>
 
   <div class="flex flex-column sm:flex-row flex-wrap space-y-4 sm:space-y-0 items-center justify-between pb-4">
     <div class="flex flex-row flex-wrap gap-1">
-      <DropdownFilter :placeholder="'World'" :icon="'fa-solid fa-globe'"
-        :default-selection="worldFilterDefaultSelection" :options="worldFilterOptions" v-model="worldFilter">
+      <DropdownFilter :placeholder="'World'" :icon="'fa-solid fa-globe'" :options="worldFilterOptions" v-model="worldFilter">
       </DropdownFilter>
     </div>
 
@@ -134,9 +123,7 @@ function applySort() {
   <Loading v-if="loading" :fill-space="true"></Loading>
   <div v-else class="relative overflow-x-auto">
     <div class="text-gray-400">
-      <div class="text-gray-500 text-xs">
-        Last updated {{ formatDate(waystoneData?.lastUpdated, "") }}
-      </div>
+      <div class="text-gray-500 text-xs">Last updated {{ formatDate(waystoneData?.lastUpdated, "") }}</div>
     </div>
 
     <table class="w-full text-left rtl:text-right text-gray-400 text-xs md:text-base">
@@ -146,19 +133,16 @@ function applySort() {
           <th class="table-item">World</th>
           <th class="table-item">
             <span>Name</span>
-            <font-awesome-icon icon="fa-solid fa-sort" class="text-xs ml-1 cursor-pointer"
-              @click="sort('name', true)" />
+            <font-awesome-icon icon="fa-solid fa-sort" class="text-xs ml-1 cursor-pointer" @click="sort('name', true)" />
           </th>
           <th class="table-item">Location</th>
           <th class="table-item">
             <span>Visits This Week</span>
-            <font-awesome-icon icon="fa-solid fa-sort" class="text-xs ml-1 cursor-pointer"
-              @click="sort('visitsThisWeek', false)" />
+            <font-awesome-icon icon="fa-solid fa-sort" class="text-xs ml-1 cursor-pointer" @click="sort('visitsThisWeek', false)" />
           </th>
           <th class="table-item">
             <span>Visits</span>
-            <font-awesome-icon icon="fa-solid fa-sort" class="text-xs ml-1 cursor-pointer"
-              @click="sort('visitsTotal', false)" />
+            <font-awesome-icon icon="fa-solid fa-sort" class="text-xs ml-1 cursor-pointer" @click="sort('visitsTotal', false)" />
           </th>
         </tr>
       </thead>

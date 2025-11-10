@@ -43,6 +43,11 @@ const specialItems = [
     icon: "fa-solid fa-file-audio",
   },
   {
+    itemType: "PLAYER_HEAD",
+    displayName: "Player Heads",
+    icon: "fa-solid fa-cube",
+  },
+  {
     itemType: "WAYSTONE",
     displayName: "Waystones",
     icon: "fa-solid fa-chess-rook",
