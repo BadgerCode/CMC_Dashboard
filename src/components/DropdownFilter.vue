@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { initFlowbite } from 'flowbite';
-import { onMounted, useId } from 'vue';
+import { initFlowbite } from "flowbite";
+import { computed, onMounted, useId } from "vue";
 
 export interface DropdownOption {
   text: string;
@@ -16,51 +16,66 @@ interface Props {
 }
 const props = defineProps<Props>();
 
-const model = defineModel({ default: [] as string[] | string })
+const model = defineModel({ default: [] as string[] | string });
 
-const id = useId()
+const id = useId();
 
 onMounted(() => {
   initFlowbite(); // Include on any component where you need flowbite JS functionality
   clear();
 });
 
-function clear() {
-  model.value = props.defaultSelection ?? [];
-}
+const selectionCount = computed(() => {
+  if (props.singleSelection) return model.value.length > 0 ? 1 : 0;
+  return model.value.length;
+});
 
+function clear() {
+  model.value = props.singleSelection ? "" : props.defaultSelection ?? [];
+}
 </script>
 
 <template>
   <div>
-    <button :id="`${id}Button`" :data-dropdown-toggle="id"
+    <button
+      :id="`${id}Button`"
+      :data-dropdown-toggle="id"
       class="inline-flex items-center text-gray-500 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-3 py-1.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
       type="button">
       <font-awesome-icon :icon="icon" class="w-3 h-3 text-gray-400 me-3" />
       <span>{{ placeholder }}</span>
-      <span v-if="model.length > 0 && !singleSelection" class="ml-1">({{ model.length }})</span>
+      <span v-if="selectionCount > 0" class="ml-1">({{ selectionCount }})</span>
       <font-awesome-icon icon="fa-solid fa-chevron-down" class="w-2.5 h-2.5 ms-2.5" />
     </button>
 
     <!-- Dropdown menu -->
-    <div :id="id"
+    <div
+      :id="id"
       class="z-10 hidden w-60 bg-white divide-y divide-gray-100 rounded-lg shadow-sm dark:bg-gray-700 dark:divide-gray-600"
-      data-popper-reference-hidden="" data-popper-escaped="" data-popper-placement="top"
-      style="position: absolute; inset: auto auto 0px 0px; margin: 0px; transform: translate3d(522.5px, 3847.5px, 0px);">
-      <ul class="max-h-48 overflow-y-auto space-y-1 text-sm text-gray-700 dark:text-gray-200"
-        :aria-labelledby="`${id}Button`">
+      data-popper-reference-hidden=""
+      data-popper-escaped=""
+      data-popper-placement="top"
+      style="position: absolute; inset: auto auto 0px 0px; margin: 0px; transform: translate3d(522.5px, 3847.5px, 0px)">
+      <ul class="max-h-48 overflow-y-auto space-y-1 text-sm text-gray-700 dark:text-gray-200" :aria-labelledby="`${id}Button`">
         <li v-for="option in options">
           <div class="flex items-center rounded-sm hover:bg-gray-600">
-            <input :id="`${id}-${option.value}`" :type="singleSelection ? 'radio' : 'checkbox'" :value="option.value" v-model="model"
-              class="checkbox cursor-pointer ml-2" :class="{ 'hidden': singleSelection }">
-            <label :for="`${id}-${option.value}`"
-              class="w-full ms-2 text-sm font-medium text-gray-300 rounded-sm p-3 wrap-anywhere cursor-pointer capitalize">{{
-                option.text }}</label>
+            <input
+              :id="`${id}-${option.value}`"
+              :type="singleSelection ? 'radio' : 'checkbox'"
+              :value="option.value"
+              v-model="model"
+              class="checkbox cursor-pointer ml-2"
+              :class="{ hidden: singleSelection }" />
+            <label
+              :for="`${id}-${option.value}`"
+              class="w-full ms-2 text-sm font-medium text-gray-300 rounded-sm p-3 wrap-anywhere cursor-pointer capitalize"
+              >{{ option.text }}</label
+            >
           </div>
         </li>
       </ul>
 
-      <div class="p-3" v-if="!singleSelection">
+      <div class="p-3">
         <a class="hyperlink" @click="clear()">Clear</a>
       </div>
     </div>

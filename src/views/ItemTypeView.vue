@@ -14,6 +14,8 @@ import { formatCustomDisc } from "@/utilities/custom-disc-format";
 import { formatPotionEffect } from "@/utilities/potion-format";
 import PlayerHeadOverview from "@/components/PlayerHeadOverview.vue";
 
+const newItemViewWhitelist = ["PLAYER_HEAD", "ENCHANTED_BOOK", "POTION", "SPLASH_POTION", "LINGERING_POTION"];
+
 interface Props {
   itemType: string;
 }
@@ -135,7 +137,7 @@ function filterSales(property: string, value: string) {
 </script>
 
 <template>
-  <PlayerHeadOverview v-if="itemType == 'PLAYER_HEAD'" :item-type="itemType" :sales="sales"></PlayerHeadOverview>
+  <PlayerHeadOverview v-if="newItemViewWhitelist.includes(itemType)" :item-type="itemType"></PlayerHeadOverview>
   <div v-else class="relative overflow-x-auto text-white flex flex-col gap-2">
     <div>
       <h2 class="mb-2 text-2xl font-bold tracking-tight text-white">{{ formatItemType(itemType) }}</h2>
