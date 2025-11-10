@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @import "flowbite/src/themes/default";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* Links */
 .hyperlink {
   @apply text-blue-500 hover:underline cursor-pointer;
