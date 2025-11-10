@@ -48,6 +48,11 @@ const specialItems = [
     icon: "fa-solid fa-cube",
   },
   {
+    itemType: "PAINTING",
+    displayName: "Player Paintings",
+    icon: "fa-solid fa-image",
+  },
+  {
     itemType: "WAYSTONE",
     displayName: "Waystones",
     icon: "fa-solid fa-chess-rook",

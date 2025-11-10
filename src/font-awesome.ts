@@ -24,6 +24,7 @@ import {
   faArrowUp,
   faFileAudio,
   faCube,
+  faImage,
   // Don't forget to add it below too!
 } from "@fortawesome/free-solid-svg-icons";
 
@@ -47,6 +48,7 @@ library.add(
   faArrowUp,
   faFileAudio,
   faCube,
+  faImage,
 );
 
 // Regular icons
