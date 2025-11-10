@@ -135,7 +135,7 @@ const sales = computed(() => {
       </tbody>
     </table>
 
-    <div v-if="recentSales.length == 0" class="text-center p-2">No sales found</div>
+    <div v-if="!loading && recentSales.length == 0" class="text-center p-2">No sales found</div>
 
     <Loading v-if="loading" :fill-space="true"></Loading>
   </div>
