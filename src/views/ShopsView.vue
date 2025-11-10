@@ -1,25 +1,21 @@
 <script setup lang="ts">
-import { computed, onMounted, onUpdated, ref, watch } from "vue";
-import { normalisePrice } from "@/utilities/normalise-price";
-import { formatNumber } from "@/utilities/number-format";
+import { onMounted, onUpdated, ref, watch } from "vue";
 import ItemTypeSearch from "@/components/ItemTypeSearch.vue";
 import { initFlowbite } from "flowbite";
-import { formatItemType } from "@/utilities/item-type-format";
 import DropdownFilter, { type DropdownOption } from "@/components/DropdownFilter.vue";
 import { formatPotionEffect } from "@/utilities/potion-format";
 import Loading from "@/components/Loading.vue";
 import { formatDate } from "@/utilities/date-format";
-import { formatEnchantment } from "@/utilities/enchantment-format";
 import type { ShopData } from "@/api/shops/shopdata";
 import { updateShops } from "@/api/shops/api";
 import type { ShopOverview } from "@/store/shops-state";
+import ShopsList from "@/components/ShopsList.vue";
 
 const loading = ref(true);
 const shopData = ref(null as ShopOverview | null);
 
 const maxShops = 100;
 const filteredShops = ref([] as ShopData[]);
-const paginatedShops = computed(() => filteredShops.value.slice(0, Math.min(maxShops, filteredShops.value.length)));
 
 // Filtering: Item types
 const itemTypeFilter = ref("");
@@ -29,8 +25,7 @@ const buySellOptions = [
   { text: "I want to buy", value: "SELLING" },
   { text: "I want to sell", value: "BUYING" },
 ] as DropdownOption[];
-const buySellFilter = ref(["BUYING", "SELLING"]);
-const buySellDefaultSelection = ["SELLING"];
+const buySellFilter = ref(["SELLING"]);
 
 watch(buySellFilter, async (_, __) => {
   applyFilters();
@@ -83,11 +78,6 @@ onUpdated(() => {
   initFlowbite(); // Include on any component where you need flowbite JS functionality
 });
 
-function getNormalisedPrice(shop: ShopData) {
-  let price = normalisePrice(shop.price, shop.item.quantity);
-  return `${formatNumber(price.quantity, 2)} for ${formatNumber(price.price, 2)} 💎`;
-}
-
 function applyFilters() {
   if (shopData.value == null) return;
 
@@ -117,33 +107,6 @@ function applyFilters() {
       return true;
     })
   );
-
-  applySort();
-}
-
-// Sorting
-let sortProperty = "";
-let sortAscending = false;
-function sort(property: string, ascendingByDefault: boolean) {
-  if (sortProperty == property) sortAscending = !sortAscending;
-  else {
-    sortProperty = property;
-    sortAscending = ascendingByDefault;
-  }
-
-  applySort();
-}
-
-function applySort() {
-  filteredShops.value.sort((a, b) => {
-    let first = sortAscending ? a : b;
-    let second = sortAscending ? b : a;
-
-    let sortResult = 0;
-    if (sortProperty == "price") sortResult = first.item.quantity / first.price - second.item.quantity / second.price;
-
-    return sortResult || first.id - second.id;
-  });
 }
 </script>
 
@@ -160,7 +123,6 @@ function applySort() {
       <DropdownFilter
         :placeholder="'Buy/Sell'"
         :icon="'fa-solid fa-arrows-left-right'"
-        :default-selection="buySellDefaultSelection"
         :options="buySellOptions"
         v-model="buySellFilter"></DropdownFilter>
 
@@ -189,102 +151,8 @@ function applySort() {
       <div>{{ filteredShops.length }} shops</div>
       <div class="text-gray-500 text-xs" v-if="!loading">Last updated {{ formatDate(shopData?.lastUpdated, "") }}</div>
     </div>
-    <table class="w-full text-left rtl:text-right text-gray-400 text-xs md:text-base">
-      <thead class="table-head">
-        <tr>
-          <!-- Basic details -->
-          <th class="table-cell text-center">
-            <font-awesome-icon icon="fa-solid fa-arrows-left-right" />
-          </th>
-          <th class="table-cell text-center">Item</th>
 
-          <!-- Price columns -->
-          <!-- Mobile -->
-          <th class="table-cell md:hidden text-center">
-            <span>Price &amp; Stock</span>
-            <font-awesome-icon icon="fa-solid fa-sort" class="text-xs ml-1 cursor-pointer" @click="sort('price', false)" />
-          </th>
-
-          <!-- Desktop -->
-          <th class="hidden md:table-cell">
-            <span>Price</span>
-            <font-awesome-icon icon="fa-solid fa-sort" class="text-xs ml-1 cursor-pointer" @click="sort('price', false)" />
-          </th>
-          <th class="hidden md:table-cell pr-4">Min<br />Buy</th>
-          <th class="hidden md:table-cell">Stock</th>
-
-          <!-- Location -->
-          <th class="table-cell text-center">
-            <font-awesome-icon icon="fa-solid fa-globe" />
-          </th>
-
-          <!-- Owner -->
-          <th class="hidden md:table-cell">Owner</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="shop in paginatedShops" class="stripped-row">
-          <td class="table-cell">THEY {{ shop.type.replace(/ING/g, "") }}</td>
-
-          <!-- Item name & key attributes -->
-          <td class="table-cell wrap-anywhere">
-            <div class="text-white">
-              {{ shop.item.name }}
-            </div>
-
-            <div class="text-xs md:text-sm">
-              {{ formatItemType(shop.item.type) }}
-            </div>
-
-            <div class="text-xs md:text-sm capitalize" v-if="shop.item.parsedSNBT.potionEffect">
-              {{ formatPotionEffect(shop.item.parsedSNBT.potionEffect) }}
-            </div>
-
-            <div class="text-xs md:text-sm" v-if="shop.item.parsedSNBT.paintingName">
-              {{ shop.item.parsedSNBT.paintingName }}
-            </div>
-
-            <div class="text-xs md:text-sm capitalize" v-for="enchantment in shop.item.parsedSNBT.enchantments">
-              {{ formatEnchantment(enchantment) }}
-            </div>
-          </td>
-
-          <!-- Price columns -->
-          <!-- Mobile -->
-          <td class="table-cell md:hidden">
-            <div class="text-nowrap">{{ getNormalisedPrice(shop) }}</div>
-            <div class="mt-2">Min buy:</div>
-            <div>{{ shop.item.quantity }}</div>
-            <div class="mt-2">Stock:</div>
-            <div>x{{ shop.remaining }}</div>
-          </td>
-
-          <!-- Desktop -->
-          <td class="hidden md:table-cell">{{ getNormalisedPrice(shop) }}</td>
-          <td class="hidden md:table-cell">{{ shop.item.quantity }}</td>
-          <td class="hidden md:table-cell">x {{ shop.remaining }}</td>
-
-          <!-- Location -->
-          <td class="table-cell">
-            <div class="block md:inline mr-1">{{ `${shop.location.x},` }}</div>
-            <div class="block md:inline mr-1">{{ `${shop.location.y},` }}</div>
-            <div class="block md:inline mr-1">{{ shop.location.z }}</div>
-            <div>({{ shop.location.world }})</div>
-
-            <div v-for="waystone in shop.nearestWaystones" class="text-xs mt-2">
-              <div>
-                {{ waystone.distance }} blocks
-                <font-awesome-icon icon="fa-solid fa-arrow-up" :style="{ transform: 'rotate(' + waystone.directionRotation + 'deg)' }" /> of
-              </div>
-              <div>'{{ waystone.name }}'</div>
-            </div>
-          </td>
-
-          <!-- Owner -->
-          <td class="hidden md:table-cell">{{ shop.owner.name }}</td>
-        </tr>
-      </tbody>
-    </table>
+    <ShopsList :shops="filteredShops"></ShopsList>
   </div>
 
   <div v-if="filteredShops.length > maxShops" class="mt-8 text-center text-gray-400">Only showing up to {{ maxShops }} shops</div>

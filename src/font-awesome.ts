@@ -23,6 +23,7 @@ import {
   faBookBookmark,
   faArrowUp,
   faFileAudio,
+  faCube,
   // Don't forget to add it below too!
 } from "@fortawesome/free-solid-svg-icons";
 
@@ -44,7 +45,8 @@ library.add(
   faChessRook,
   faBookBookmark,
   faArrowUp,
-  faFileAudio
+  faFileAudio,
+  faCube,
 );
 
 // Regular icons
