@@ -86,7 +86,7 @@ async function fetchPaintingSales(paintingID: string): Promise<PaintingSaleSumma
     </div>
 
     <div v-if="paintingData != null">
-      <h4 class="mb-2 text-2xl font-bold tracking-tight text-white">Other sales of '{{ paintingData.title }}' painting
+      <h4 class="mb-2 text-2xl font-bold tracking-tight text-white">Sales of '{{ paintingData.title }}' painting
       </h4>
 
       <div class="mb-3 font-normal text-gray-400 flex flex-col gap-4">
