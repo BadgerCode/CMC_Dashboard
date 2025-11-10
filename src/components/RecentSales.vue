@@ -41,7 +41,12 @@ defineProps<Props>();
           </td>
           <td class="table-item wrap-anywhere">
             <div>
-              {{ formatItemType(sale.itemType) }}
+              <RouterLink :to="{
+                name: 'itemSales',
+                params: { itemType: sale.itemType },
+              }" class="hyperlink">
+                {{ formatItemType(sale.itemType) }}
+              </RouterLink>
             </div>
 
             <div v-if="sale.customName" class="text-xs md:text-sm">
