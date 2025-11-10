@@ -110,7 +110,7 @@ onMounted(async () => {
   let shopData = await updateShops();
   let shopItemType = convertToShopItemType(props.itemType);
   shops.value = shopData.shops.filter((s) => s.item.type == shopItemType && s.type == "SELLING");
-  filteredShops.value = shops.value;
+  applyFilters();
 
   loading.value = false;
 });
