@@ -1,6 +1,7 @@
 import GalleryView from "@/views/GalleryView.vue";
 import HomeView from "@/views/HomeView.vue";
 import ItemTypeView from "@/views/ItemTypeView.vue";
+import PaintingView from "@/views/PaintingView.vue";
 import SaleView from "@/views/SaleView.vue";
 import ShopsView from "@/views/ShopsView.vue";
 import WaystonesView from "@/views/WaystonesView.vue";
@@ -32,6 +33,15 @@ const router = createRouter({
       props: true,
       meta: {
         title: 'Gallery'
+      }
+    },
+    {
+      path: "/paintings/:id",
+      name: "painting",
+      component: PaintingView,
+      props: true,
+      meta: {
+        title: 'Painting'
       }
     },
     {

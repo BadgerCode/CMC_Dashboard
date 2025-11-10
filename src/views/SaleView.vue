@@ -1,18 +1,14 @@
 <script setup lang="ts">
-import type { Painting } from "@/api/paintings/painting";
-import RenderPainting from "@/components/RenderPainting.vue";
 import { Config } from "@/config";
 import { formatDate } from "@/utilities/date-format";
 import { formatItemType } from "@/utilities/item-type-format";
 import { computed, onMounted, ref } from "vue";
-import type { SaleSummary } from "@/api/sales/saleSummary";
-import RecentSales from "@/components/RecentSales.vue";
-import type { PaintingSaleSummary } from "@/api/paintings/paintingSaleSummary";
 import { formatPrice, normalisePrice, type NormalisedPrice } from "@/utilities/normalise-price";
 import Loading from "@/components/Loading.vue";
 import { formatEnchantment } from "@/utilities/enchantment-format";
 import { formatPotionEffect } from "@/utilities/potion-format";
 import { formatCustomDisc } from "@/utilities/custom-disc-format";
+import PaintingOverview from "@/components/PaintingOverview.vue";
 
 const props = defineProps({
   id: String,
@@ -46,8 +42,8 @@ interface ItemAttribute {
 const loading = ref(true);
 const saleData = ref(null as SaleData | null);
 const normalisedPrice = ref({ quantity: 0, price: 0 } as NormalisedPrice);
-const paintingData = ref(null as Painting | null);
-const paintingSales = ref([] as SaleSummary[]);
+const paintingID = ref(null as string | undefined | null);
+const paintingOriginality = ref(null as string | undefined | null);
 
 onMounted(async () => {
   let url = `${Config.APIURL}/api/sales/${props.id}`;
@@ -65,57 +61,15 @@ onMounted(async () => {
   normalisedPrice.value = normalisePrice(saleData.value.totalPrice, saleData.value.quantity);
 
   // Load painting data
-  let paintingID = saleData.value.itemAttributes.find((a) => a.key == "PAINTING_ID")?.value;
-  if (paintingID) {
-    paintingData.value = await fetchPainting(paintingID);
-
-    // Load other sales
-    paintingSales.value = (await fetchPaintingSales(paintingID)).map(
-      (s) =>
-      ({
-        id: s.id,
-        occurredAt: s.occurredAt,
-        type: s.type,
-        itemType: "PAINTING",
-        quantity: s.quantity,
-        totalPrice: s.totalPrice,
-        isEnchanted: false,
-        itemAttributes: [],
-        customName: null
-      } as SaleSummary)
-    );
-  }
+  paintingID.value = saleData.value.itemAttributes.find((a) => a.key == "PAINTING_ID")?.value;
+  paintingOriginality.value = saleData.value.itemAttributes.find((a) => a.key == "PAINTING_ORIGINALITY")?.value;
 });
-
-async function fetchPainting(paintingID: string): Promise<Painting | null> {
-  let url = `${Config.APIURL}/api/paintings/${paintingID}`;
-  let httpResponse = await fetch(url, { method: "get" });
-
-  if (httpResponse.status !== 200) return null;
-
-  let response = await httpResponse.json();
-  return response.result;
-}
-
-async function fetchPaintingSales(paintingID: string): Promise<PaintingSaleSummary[]> {
-  let url = `${Config.APIURL}/api/paintings/${paintingID}/sales`;
-  let httpResponse = await fetch(url, { method: "get" });
-
-  if (httpResponse.status !== 200) return [];
-
-  let response = await httpResponse.json();
-  return response.items;
-}
 
 let filteredAttributes = computed(() => {
   // Exclude painting attributes, as we'll render them separately
   return (saleData.value?.itemAttributes.filter((a) => !a.key.startsWith("PAINTING_")) ?? []).sort(
     (a, b) => a.key.localeCompare(b.key) || a.value.localeCompare(b.value)
   );
-});
-
-let paintingOriginality = computed(() => {
-  return saleData.value?.itemAttributes.find((a) => a.key == "PAINTING_ORIGINALITY")?.value;
 });
 </script>
 
@@ -148,12 +102,11 @@ let paintingOriginality = computed(() => {
         <!-- Item info -->
         <div>
           <div>
-            <RouterLink :to="{
-              name: 'itemSales',
-              params: { itemType: saleData.itemType },
-            }" class="hyperlink">
+            <RouterLink :to="{ name: 'itemSales', params: { itemType: saleData.itemType }, }" class="hyperlink">
               {{ formatItemType(saleData.itemType) }}
             </RouterLink>
+
+            <span v-if="paintingOriginality"> ({{ paintingOriginality }})</span>
           </div>
 
           <div v-if="saleData.customName" class="text-gray-400">
@@ -189,13 +142,9 @@ let paintingOriginality = computed(() => {
             <tr v-for="attribute in filteredAttributes" class="border-t border-gray-700">
               <td class="table-item wrap-anywhere">
                 <span v-if="attribute.key.startsWith('ENCHANTMENT_')">
-                  <RouterLink :to="{
-                    name: 'itemSales',
-                    params: { itemType: saleData.itemType },
-                    query: {
-                      enchantment: `${attribute.key}_${attribute.value}`,
-                    },
-                  }" class="hyperlink">
+                  <RouterLink
+                    :to="{ name: 'itemSales', params: { itemType: saleData.itemType }, query: { enchantment: `${attribute.key}_${attribute.value}`, }, }"
+                    class="hyperlink">
                     {{ formatEnchantment(attribute.key) }}
                   </RouterLink>
                 </span>
@@ -203,24 +152,16 @@ let paintingOriginality = computed(() => {
               </td>
               <td class="table-item wrap-anywhere">
                 <span v-if="attribute.key == 'POTION_EFFECT'" class="capitalize">
-                  <RouterLink :to="{
-                    name: 'itemSales',
-                    params: { itemType: saleData.itemType },
-                    query: {
-                      potionEffect: attribute.value,
-                    },
-                  }" class="hyperlink">
+                  <RouterLink
+                    :to="{ name: 'itemSales', params: { itemType: saleData.itemType }, query: { potionEffect: attribute.value, }, }"
+                    class="hyperlink">
                     {{ formatPotionEffect(attribute.value) }}
                   </RouterLink>
                 </span>
                 <span v-else-if="attribute.key == 'CUSTOM_DISC_SONG'" class="capitalize">
-                  <RouterLink :to="{
-                    name: 'itemSales',
-                    params: { itemType: saleData.itemType },
-                    query: {
-                      discName: attribute.value,
-                    },
-                  }" class="hyperlink">
+                  <RouterLink
+                    :to="{ name: 'itemSales', params: { itemType: saleData.itemType }, query: { discName: attribute.value, }, }"
+                    class="hyperlink">
                     {{ formatCustomDisc(attribute.value) }}
                   </RouterLink>
                 </span>
@@ -232,32 +173,7 @@ let paintingOriginality = computed(() => {
       </div>
     </div>
 
-    <div class="p-6 bg-gray-800 border border-gray-700 rounded-lg shadow-sm" v-if="paintingData != null">
-      <h4 class="mb-2 text-2xl font-bold tracking-tight text-white">Painting - {{ paintingData.title }}</h4>
-
-      <div class="mb-3 font-normal text-gray-400 flex flex-col gap-4">
-        <div>
-          <span>By </span>
-          <RouterLink :to="{
-            name: 'gallery',
-            params: { authorName: paintingData.authorName },
-          }" class="hyperlink">
-            {{ paintingData.authorName }}
-          </RouterLink>
-        </div>
-        <RenderPainting :painting="paintingData"></RenderPainting>
-        <div>Originality: {{ paintingOriginality }}</div>
-      </div>
-    </div>
-
-    <div v-if="paintingData != null">
-      <h4 class="mb-2 text-2xl font-bold tracking-tight text-white">Other sales of '{{ paintingData.title }}' painting
-      </h4>
-
-      <div class="mb-3 font-normal text-gray-400 flex flex-col gap-4">
-        <RecentSales :recent-sales="paintingSales"></RecentSales>
-      </div>
-    </div>
+    <PaintingOverview v-if="paintingID" :painting-id="paintingID"></PaintingOverview>
 
     <div class="p-6 bg-gray-800 border border-gray-700 rounded-lg shadow-sm" v-if="saleData?.containedItems.length">
       <h4 class="mb-2 text-2xl font-bold tracking-tight text-white">Contents</h4>

@@ -62,7 +62,7 @@ async function loadNextPage() {
 <template>
   <div class="mb-8">
     <RouterLink :to="{ name: 'gallery' }" class="hyperlink" v-if="showingArtistProfile">
-      Back to all paintings
+      Gallery
     </RouterLink>
     <h1 class="text-3xl font-bold" v-if="!showingArtistProfile">Recent</h1>
     <h1 class="text-3xl font-bold" v-else>Recent {{ authorName }} paintings</h1>
