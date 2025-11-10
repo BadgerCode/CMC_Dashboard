@@ -36,6 +36,9 @@ const itemDescriptions = {
   POTION: "A regular potion with a status effect that you have to drink.",
   SPLASH_POTION: "A throwable potion with a status effect.",
   LINGERING_POTION: "A throwable potion which creates a cloud with a status effect.",
+  LUA_FISH_MUSIC_BOOK: "Written books that can be used on the Lua_Fish record player to play music.",
+  CUSTOM_MUSIC_DISC: "Music discs with custom songs. They use music disc 11.",
+  WAYSTONE: "Makes it easier for players to teleport back to a location like a town.",
 } as { [itemType: string]: string };
 
 const description = computed(() => {
@@ -47,6 +50,7 @@ const itemShopCaveats = {
   ENCHANTED_BOOK: "Book enchantments are missing from shop listings and filtering will not work.",
   LUA_FISH_MUSIC_BOOK: "Shop listings will include regular written books too.",
   CUSTOM_MUSIC_DISC: "Custom music disc titles are missing from shop listings.",
+  WAYSTONE: "Shop listings may include regular cobblestone walls."
 } as { [itemType: string]: string };
 
 const shopDescription = computed(() => {
