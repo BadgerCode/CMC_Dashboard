@@ -4,60 +4,7 @@ import { onMounted, ref } from "vue";
 import * as SalesAPI from "@/api/sales/api";
 import RecentSales from "@/components/RecentSales.vue";
 import ItemTypeSearch from "@/components/ItemTypeSearch.vue";
-
-interface SpecialItem {
-  itemType: string;
-  displayName: string;
-  icon: string;
-}
-
-const specialItems = [
-  {
-    itemType: "ENCHANTED_BOOK",
-    displayName: "Enchanted Books",
-    icon: "fa-solid fa-book-bookmark",
-  },
-  {
-    itemType: "POTION",
-    displayName: "Potions",
-    icon: "fa-solid fa-flask",
-  },
-  {
-    itemType: "SPLASH_POTION",
-    displayName: "Splash Potions",
-    icon: "fa-solid fa-flask",
-  },
-  {
-    itemType: "LINGERING_POTION",
-    displayName: "Lingering Potions",
-    icon: "fa-solid fa-flask",
-  },
-  {
-    itemType: "CUSTOM_MUSIC_DISC",
-    displayName: "Custom Music Discs",
-    icon: "fa-solid fa-record-vinyl",
-  },
-  {
-    itemType: "LUA_FISH_MUSIC_BOOK",
-    displayName: "Custom Music Books",
-    icon: "fa-solid fa-file-audio",
-  },
-  {
-    itemType: "PLAYER_HEAD",
-    displayName: "Player Heads",
-    icon: "fa-solid fa-cube",
-  },
-  {
-    itemType: "PAINTING",
-    displayName: "Player Paintings",
-    icon: "fa-solid fa-image",
-  },
-  {
-    itemType: "WAYSTONE",
-    displayName: "Waystones",
-    icon: "fa-solid fa-chess-rook",
-  },
-] as SpecialItem[];
+import { getSpecialItems } from "@/utilities/item-info";
 
 const loading = ref(true);
 const recentSales = ref([] as SaleSummary[]);
@@ -105,7 +52,7 @@ async function loadSales() {
     </div>
 
     <div class="flex flex-row flex-wrap gap-2 md:gap-3">
-      <RouterLink v-for="item in specialItems" :to="{ name: 'itemSales', params: { itemType: item.itemType }, }">
+      <RouterLink v-for="item in getSpecialItems()" :to="{ name: 'itemSales', params: { itemType: item.itemType }, }">
         <div
           class="p-1 w-20 h-20 gap-1 md:p-3 md:w-27 md:h-27 md:gap-2 bg-gray-800 flex flex-col items-center text-center justify-center text-gray-300 border-1 border-gray-700 rounded-lg">
           <div class="text-xl md:text-3xl"><font-awesome-icon :icon="item.icon" /></div>

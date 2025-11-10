@@ -18,6 +18,7 @@ import { formatPotionEffect } from "@/utilities/potion-format";
 import { useRoute } from "vue-router";
 import { convertToShopItemType } from "@/utilities/shop-item-type-converter";
 import ItemTypeSearch from "./ItemTypeSearch.vue";
+import { getItemInfo } from "@/utilities/item-info";
 
 interface Props {
   itemType: string;
@@ -32,31 +33,8 @@ const shops = ref([] as ShopData[]);
 const filteredShops = ref([] as ShopData[]);
 
 // Item descriptions
-const itemDescriptions = {
-  PLAYER_HEAD: "Can be used as decoration. Some have additional functionality through Figura.",
-  ENCHANTED_BOOK: "A book with one or more enchantments, used to enchant other items.",
-  POTION: "A regular potion with a status effect that you have to drink.",
-  SPLASH_POTION: "A throwable potion with a status effect.",
-  LINGERING_POTION: "A throwable potion which creates a cloud with a status effect.",
-  LUA_FISH_MUSIC_BOOK: "Written books that can be used on the Lua_Fish record player to play music.",
-  CUSTOM_MUSIC_DISC: "Music discs with custom songs. They use music disc 11.",
-  WAYSTONE: "Makes it easier for players to teleport back to a location like a town.",
-} as { [itemType: string]: string };
-
-const description = computed(() => {
-  return itemDescriptions[props.itemType];
-});
-
-const itemShopCaveats = {
-  PLAYER_HEAD: "Shop listings will not include the name of the player that the head belongs to.",
-  ENCHANTED_BOOK: "Book enchantments are missing from shop listings and filtering will not work.",
-  LUA_FISH_MUSIC_BOOK: "Shop listings will include regular written books too.",
-  CUSTOM_MUSIC_DISC: "Custom music disc titles are missing from shop listings and filtering will not work.",
-  WAYSTONE: "Shop listings may include regular cobblestone walls."
-} as { [itemType: string]: string };
-
-const shopDescription = computed(() => {
-  return itemShopCaveats[props.itemType];
+const itemInfo = computed(() => {
+  return getItemInfo(props.itemType);
 });
 
 // Name filter
@@ -225,7 +203,7 @@ let filtersText = computed(() => {
     <div class="flex flex-row justify-between items-end">
       <div>
         <h1 class="text-3xl font-bold capitalize">{{ formatItemType(itemType)?.toLocaleLowerCase() }}</h1>
-        <p class="text-gray-300" v-if="description">{{ description }}</p>
+        <p class="text-gray-300" v-if="itemInfo?.description">{{ itemInfo.description }}</p>
       </div>
     </div>
 
@@ -288,10 +266,10 @@ let filtersText = computed(() => {
         </div>
       </div>
 
-      <div v-if="shopDescription"
+      <div v-if="itemInfo?.shopCaveats"
         class="p-4 mb-4 text-sm text-yellow-800 rounded-lg bg-yellow-50 dark:bg-gray-800 dark:text-yellow-300"
         role="alert">
-        {{ shopDescription }}
+        {{ itemInfo.shopCaveats }}
       </div>
 
       <div class="max-h-[400px] overflow-y-auto">
