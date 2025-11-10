@@ -219,8 +219,7 @@ let filtersText = computed(() => {
       </div>
     </div>
 
-    <!-- Recent sales (include player head player name & custom name) -->
-    <!-- Include enchantments -->
+    <!-- Recent sales -->
     <div>
       <div class="flex flex-column sm:flex-row flex-wrap space-y-1 items-end justify-between pb-2">
         <div>
@@ -259,20 +258,12 @@ let filtersText = computed(() => {
       </div>
 
       <div class="max-h-[400px] overflow-y-auto">
-        <!-- TODO: Show player head player name as an additional column -->
         <Loading v-if="loading" :loader-type="'text'"></Loading>
         <RecentSales v-else :recent-sales="filteredSales"></RecentSales>
       </div>
     </div>
 
-    <!-- Top selling player heads (include player head player name & custom name) -->
-    <!-- <div>
-      <div>
-        <h2 class="text-2xl font-bold">Top Selling</h2>
-      </div>
-    </div> -->
-
-    <!-- Player heads for sale (include custom name) -->
+    <!-- Items for sale -->
     <div>
       <div class="flex flex-column sm:flex-row flex-wrap space-y-1 items-end justify-between pb-2">
         <div class="flex flex-col gap-1">
