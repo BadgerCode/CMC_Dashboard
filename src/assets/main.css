@@ -33,7 +33,7 @@
 }
 
 .textbox {
-  @apply block p-2 ps-10 text-sm text-white border border-gray-600 rounded-lg w-80 bg-gray-700 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-400;
+  @apply block p-2 ps-10 text-sm text-white border border-gray-600 rounded-lg w-80 bg-gray-700 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-400 cursor-text;
 }
 
 

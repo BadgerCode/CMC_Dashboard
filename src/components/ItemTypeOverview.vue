@@ -17,6 +17,7 @@ import { formatCustomDisc } from "@/utilities/custom-disc-format";
 import { formatPotionEffect } from "@/utilities/potion-format";
 import { useRoute } from "vue-router";
 import { convertToShopItemType } from "@/utilities/shop-item-type-converter";
+import ItemTypeSearch from "./ItemTypeSearch.vue";
 
 interface Props {
   itemType: string;
@@ -24,8 +25,9 @@ interface Props {
 const props = defineProps<Props>();
 const route = useRoute();
 
-const loading = ref(true);
+const loadingSales = ref(true);
 const filteredSales = ref([] as SaleSummary[]);
+const loadingShops = ref(true);
 const shops = ref([] as ShopData[]);
 const filteredShops = ref([] as ShopData[]);
 
@@ -105,6 +107,7 @@ onMounted(async () => {
 
   // Load sales with any filters
   await loadSales();
+  loadingSales.value = false;
 
   // Load shop data
   let shopData = await updateShops();
@@ -112,7 +115,7 @@ onMounted(async () => {
   shops.value = shopData.shops.filter((s) => s.item.type == shopItemType && s.type == "SELLING");
   applyFilters();
 
-  loading.value = false;
+  loadingShops.value = false;
 });
 
 onUpdated(() => {
@@ -134,10 +137,10 @@ async function loadEnchantments(): Promise<DropdownOption[]> {
   let response = await loadItems(`${Config.APIURL}/api/itemtypes/${props.itemType}/enchantments`);
   return response.map(
     (i: string) =>
-      ({
-        text: formatEnchantment(i),
-        value: i,
-      } as DropdownOption)
+    ({
+      text: formatEnchantment(i),
+      value: i,
+    } as DropdownOption)
   );
 }
 
@@ -146,10 +149,10 @@ async function loadDiscs(): Promise<DropdownOption[]> {
   let response = await loadItems(`${Config.APIURL}/api/customDiscs`);
   return response.map(
     (i: string) =>
-      ({
-        text: formatCustomDisc(i),
-        value: i,
-      } as DropdownOption)
+    ({
+      text: formatCustomDisc(i),
+      value: i,
+    } as DropdownOption)
   );
 }
 
@@ -158,10 +161,10 @@ async function loadPotions(): Promise<DropdownOption[]> {
   let response = await loadItems(`${Config.APIURL}/api/itemtypes/${props.itemType}/potionTypes`);
   return response.map(
     (i: string) =>
-      ({
-        text: formatPotionEffect(i),
-        value: i,
-      } as DropdownOption)
+    ({
+      text: formatPotionEffect(i),
+      value: i,
+    } as DropdownOption)
   );
 }
 
@@ -217,48 +220,39 @@ let filtersText = computed(() => {
         <h1 class="text-3xl font-bold capitalize">{{ formatItemType(itemType)?.toLocaleLowerCase() }}</h1>
         <p class="text-gray-300" v-if="description">{{ description }}</p>
       </div>
+
+      <div>
+        <ItemTypeSearch @selection="itemType => $router.push({ name: 'itemSales', params: { itemType: itemType } })">
+        </ItemTypeSearch>
+      </div>
     </div>
 
-    <!-- Recent sales -->
+    <!-- Latest sales -->
     <div>
       <div class="flex flex-column sm:flex-row flex-wrap space-y-1 items-end justify-between pb-2">
         <div>
-          <h2 class="text-2xl font-bold">Recent Sales</h2>
+          <h2 class="text-2xl font-bold">Latest Sales</h2>
           <div class="text-gray-400 text-sm capitalize">{{ filtersText }}</div>
         </div>
 
         <div>
-          <DropdownFilter
-            v-if="enchantments.length > 0"
-            :placeholder="'Enchantments'"
-            :icon="'fa-solid fa-wand-sparkles'"
-            :options="enchantments"
-            :single-selection="true"
+          <DropdownFilter v-if="enchantments.length > 0" :placeholder="'Enchantments'"
+            :icon="'fa-solid fa-wand-sparkles'" :options="enchantments" :single-selection="true"
             v-model="enchantmentFilter">
           </DropdownFilter>
 
-          <DropdownFilter
-            v-if="potionEffects.length > 0"
-            :placeholder="'Potion Effect'"
-            :icon="'fa-solid fa-flask'"
-            :options="potionEffects"
-            :single-selection="true"
-            v-model="potionEffectFilter">
+          <DropdownFilter v-if="potionEffects.length > 0" :placeholder="'Potion Effect'" :icon="'fa-solid fa-flask'"
+            :options="potionEffects" :single-selection="true" v-model="potionEffectFilter">
           </DropdownFilter>
 
-          <DropdownFilter
-            v-if="customDiscs.length > 0"
-            :placeholder="'Custom Discs'"
-            :icon="'fa-solid fa-record-vinyl'"
-            :options="customDiscs"
-            :single-selection="true"
-            v-model="customDiscFilter">
+          <DropdownFilter v-if="customDiscs.length > 0" :placeholder="'Custom Discs'" :icon="'fa-solid fa-record-vinyl'"
+            :options="customDiscs" :single-selection="true" v-model="customDiscFilter">
           </DropdownFilter>
         </div>
       </div>
 
       <div class="max-h-[400px] overflow-y-auto">
-        <Loading v-if="loading" :loader-type="'text'"></Loading>
+        <Loading v-if="loadingSales" :loader-type="'text'"></Loading>
         <RecentSales v-else :recent-sales="filteredSales"></RecentSales>
       </div>
     </div>
@@ -275,46 +269,31 @@ let filtersText = computed(() => {
         </div>
 
         <div class="flex flex-row flex-wrap gap-1 items-end">
-          <DropdownFilter
-            v-if="enchantments.length > 0"
-            :placeholder="'Enchantments'"
-            :icon="'fa-solid fa-wand-sparkles'"
-            :options="enchantments"
-            :single-selection="true"
+          <DropdownFilter v-if="enchantments.length > 0" :placeholder="'Enchantments'"
+            :icon="'fa-solid fa-wand-sparkles'" :options="enchantments" :single-selection="true"
             v-model="enchantmentFilter">
           </DropdownFilter>
 
-          <DropdownFilter
-            v-if="potionEffects.length > 0"
-            :placeholder="'Potion Effect'"
-            :icon="'fa-solid fa-flask'"
-            :options="potionEffects"
-            :single-selection="true"
-            v-model="potionEffectFilter">
+          <DropdownFilter v-if="potionEffects.length > 0" :placeholder="'Potion Effect'" :icon="'fa-solid fa-flask'"
+            :options="potionEffects" :single-selection="true" v-model="potionEffectFilter">
           </DropdownFilter>
 
-          <DropdownFilter
-            v-if="customDiscs.length > 0"
-            :placeholder="'Custom Discs'"
-            :icon="'fa-solid fa-record-vinyl'"
-            :options="customDiscs"
-            :single-selection="true"
-            v-model="customDiscFilter">
+          <DropdownFilter v-if="customDiscs.length > 0" :placeholder="'Custom Discs'" :icon="'fa-solid fa-record-vinyl'"
+            :options="customDiscs" :single-selection="true" v-model="customDiscFilter">
           </DropdownFilter>
 
           <SearchBox :placeholder="'Item Name'" v-model="nameFilter"></SearchBox>
         </div>
       </div>
 
-      <div
-        v-if="shopDescription"
+      <div v-if="shopDescription"
         class="p-4 mb-4 text-sm text-yellow-800 rounded-lg bg-yellow-50 dark:bg-gray-800 dark:text-yellow-300"
         role="alert">
         {{ shopDescription }}
       </div>
 
       <div class="max-h-[400px] overflow-y-auto">
-        <Loading v-if="loading" :loader-type="'text'"></Loading>
+        <Loading v-if="loadingShops" :loader-type="'text'"></Loading>
         <ShopsList v-else :shops="filteredShops" :hide-buy-sell="true"></ShopsList>
       </div>
     </div>

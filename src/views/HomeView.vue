@@ -80,6 +80,18 @@ async function loadSales() {
 </script>
 
 <template>
+  <div class="mb-8 flex flex-col gap-4">
+    <div class="flex flex-col gap-1">
+      <h1 class="text-3xl font-bold">Item Lookup</h1>
+      <div class="text-gray-300">See sales and shops for an item</div>
+    </div>
+
+    <div class="flex flex-row items-center justify-center">
+      <ItemTypeSearch @selection="itemType => $router.push({ name: 'itemSales', params: { itemType: itemType } })">
+      </ItemTypeSearch>
+    </div>
+  </div>
+
   <div class="mb-8">
     <div class="mb-3 flex flex-row justify-between items-end">
       <div>
@@ -100,13 +112,8 @@ async function loadSales() {
 
   <div class="flex flex-row flex-wrap justify-between items-end">
     <div class="pb-4">
-      <h1 class="text-3xl font-bold">Recent Transactions</h1>
+      <h1 class="text-3xl font-bold">Latest Sales</h1>
       <p class="text-gray-300">Shops and auctions</p>
-    </div>
-
-    <div class="text-right pb-4">
-      <ItemTypeSearch @selection="itemType => $router.push({ name: 'itemSales', params: { itemType: itemType } })">
-      </ItemTypeSearch>
     </div>
   </div>
 

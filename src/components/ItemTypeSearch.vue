@@ -3,6 +3,7 @@ import { initFlowbite } from 'flowbite';
 import { onMounted, ref } from 'vue';
 import { debounce } from 'lodash'
 import { Config } from '@/config';
+import SearchBox from './SearchBox.vue';
 
 interface Props {
   itemTypes?: string[]
@@ -64,23 +65,17 @@ function clear() {
 
 <template>
   <div>
+
     <label for="table-search" class="sr-only">Search</label>
     <div class="relative group">
-      <div class="absolute inset-y-0 left-0 rtl:inset-r-0 rtl:right-0 flex items-center ps-3 pointer-events-none">
-        <font-awesome-icon icon="fa-solid fa-magnifying-glass" class="w-5 h-5 text-gray-400" />
-      </div>
-      <input type="text" id="table-search" class="textbox" placeholder="Search item types. E.g. Diamond"
-        :value="filterText" @input="event => { filterText = (event.target as HTMLInputElement).value; filter(); }">
-
-      <div class="absolute inset-y-0 right-0 rtl:inset-r-0 rtl:right-0 flex items-center pe-3 cursor-pointer"
-        tabindex="0" @click="clear">
-        <font-awesome-icon icon="fa-solid fa-xmark" class="w-5 h-5 text-gray-400" />
-      </div>
+      <SearchBox :placeholder="'Search item types. E.g. Emerald'" :model-value="filterText"
+        @update:model-value="text => { filterText = text; filter(); }"></SearchBox>
 
       <!-- Dropdown menu -->
-      <div id="itemTypeSearch" class="absolute inset-y-0 z-10 w-60 mt-[40px] hidden group-focus-within:block" v-if="filteredItemTypes.length > 0">
+      <div id="itemTypeSearch" class="absolute inset-y-0 z-10 w-60 mt-[40px] hidden group-focus-within:block"
+        v-if="filteredItemTypes.length > 0">
 
-        <ul class="max-h-48 p-3 overflow-y-auto text-sm text-gray-200 bg-gray-700 rounded-lg shadow-sm"
+        <ul class="max-h-48 p-3 overflow-y-auto text-sm text-gray-200 bg-gray-700 rounded-lg shadow-sm border border-gray-800"
           aria-labelledby="itemTypeSearchButton">
           <li v-for="itemType in filteredItemTypes" class="hyperlink" @click="emit('selection', itemType)">
             <div tabindex="0"

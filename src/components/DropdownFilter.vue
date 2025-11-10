@@ -50,7 +50,7 @@ function clear() {
     <!-- Dropdown menu -->
     <div
       :id="id"
-      class="z-10 hidden w-60 bg-white divide-y divide-gray-100 rounded-lg shadow-sm dark:bg-gray-700 dark:divide-gray-600"
+      class="z-10 hidden w-60 bg-white divide-y divide-gray-100 rounded-lg shadow-sm dark:bg-gray-700 dark:divide-gray-600 border border-gray-800"
       data-popper-reference-hidden=""
       data-popper-escaped=""
       data-popper-placement="top"
