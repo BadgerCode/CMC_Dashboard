@@ -6,6 +6,8 @@ import ShopsList from "./ShopsList.vue";
 import type { SaleSummary } from "@/api/sales/saleSummary";
 import RecentSales from "./RecentSales.vue";
 import SearchBox from "./SearchBox.vue";
+import { formatItemType } from "@/utilities/item-type-format";
+import Loading from "./Loading.vue";
 
 interface Props {
   itemType: string;
@@ -13,6 +15,7 @@ interface Props {
 }
 const props = defineProps<Props>();
 
+const loading = ref(true);
 const shops = ref([] as ShopData[]);
 const filteredShops = ref([] as ShopData[]);
 
@@ -25,8 +28,9 @@ watch(nameFilter, async (_, __) => {
 onMounted(async () => {
   // Load shop data
   let shopData = await updateShops();
-  shops.value = shopData.shops.filter((s) => s.item.type == props.itemType);
+  shops.value = shopData.shops.filter((s) => s.item.type == props.itemType && s.type == "SELLING");
   filteredShops.value = shops.value;
+  loading.value = false;
 });
 
 function applyFilters() {
@@ -51,13 +55,14 @@ function applyFilters() {
 
     <!-- Recent sales (include player head player name & custom name) -->
     <div>
-      <div>
+      <div class="flex flex-column sm:flex-row flex-wrap space-y-1 items-end justify-between pb-2">
         <h2 class="text-2xl font-bold">Recent Sales</h2>
       </div>
 
       <div class="max-h-[400px] overflow-y-auto">
         <!-- TODO: Show player head player name as an additional column -->
-        <RecentSales :recent-sales="sales"></RecentSales>
+        <Loading v-if="loading" :loader-type="'text'"></Loading>
+        <RecentSales v-else :recent-sales="sales"></RecentSales>
       </div>
     </div>
 
@@ -70,12 +75,11 @@ function applyFilters() {
 
     <!-- Player heads for sale (include custom name) -->
     <div>
-      <div>
-        <h2 class="text-2xl font-bold">Shops</h2>
-      </div>
-
-      <div class="flex flex-column sm:flex-row flex-wrap space-y-4 sm:space-y-0 items-center justify-between pb-4">
-        <div class="flex flex-row flex-wrap gap-1"></div>
+      <div class="flex flex-column sm:flex-row flex-wrap space-y-1 items-end justify-between pb-2">
+        <div class="flex flex-col gap-1">
+          <h2 class="text-2xl font-bold">Shops</h2>
+          <p class="text-gray-300">Selling {{ formatItemType(itemType) }}</p>
+        </div>
 
         <div>
           <SearchBox :placeholder="'Item Name'" v-model="nameFilter"></SearchBox>
@@ -83,7 +87,8 @@ function applyFilters() {
       </div>
 
       <div class="max-h-[400px] overflow-y-auto">
-        <ShopsList :shops="filteredShops"></ShopsList>
+        <Loading v-if="loading" :loader-type="'text'"></Loading>
+        <ShopsList v-else :shops="filteredShops" :hide-buy-sell="true"></ShopsList>
       </div>
     </div>
   </div>

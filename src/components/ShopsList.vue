@@ -8,7 +8,8 @@ import { formatEnchantment } from "@/utilities/enchantment-format";
 import { formatPotionEffect } from "@/utilities/potion-format";
 
 interface Props {
-  shops: ShopData[],
+  shops: ShopData[];
+  hideBuySell?: boolean;
 }
 const props = defineProps<Props>();
 const maxShops = 100;
@@ -51,7 +52,7 @@ function applySort(items: ShopData[]) {
     <thead class="table-head">
       <tr>
         <!-- Basic details -->
-        <th class="table-item text-center">
+        <th class="table-item text-center" v-if="!hideBuySell">
           <font-awesome-icon icon="fa-solid fa-arrows-left-right" />
         </th>
         <th class="table-item text-center">Item</th>
@@ -60,15 +61,13 @@ function applySort(items: ShopData[]) {
         <!-- Mobile -->
         <th class="table-item md:hidden text-center">
           <span>Price &amp; Stock</span>
-          <font-awesome-icon icon="fa-solid fa-sort" class="text-xs ml-1 cursor-pointer"
-            @click="sort('price', false)" />
+          <font-awesome-icon icon="fa-solid fa-sort" class="text-xs ml-1 cursor-pointer" @click="sort('price', false)" />
         </th>
 
         <!-- Desktop -->
         <th class="table-item hidden md:table-cell">
           <span>Price</span>
-          <font-awesome-icon icon="fa-solid fa-sort" class="text-xs ml-1 cursor-pointer"
-            @click="sort('price', false)" />
+          <font-awesome-icon icon="fa-solid fa-sort" class="text-xs ml-1 cursor-pointer" @click="sort('price', false)" />
         </th>
         <th class="table-item hidden md:table-cell pr-4">Min<br />Buy</th>
         <th class="table-item hidden md:table-cell">Stock</th>
@@ -84,7 +83,7 @@ function applySort(items: ShopData[]) {
     </thead>
     <tbody>
       <tr v-for="shop in paginatedShops" class="stripped-row">
-        <td class="table-item">THEY {{ shop.type.replace(/ING/g, "") }}</td>
+        <td class="table-item" v-if="!hideBuySell">THEY {{ shop.type.replace(/ING/g, "") }}</td>
 
         <!-- Item name & key attributes -->
         <td class="table-item wrap-anywhere">
@@ -134,8 +133,7 @@ function applySort(items: ShopData[]) {
           <div v-for="waystone in shop.nearestWaystones" class="text-xs mt-2">
             <div>
               {{ waystone.distance }} blocks
-              <font-awesome-icon icon="fa-solid fa-arrow-up"
-                :style="{ transform: 'rotate(' + waystone.directionRotation + 'deg)' }" /> of
+              <font-awesome-icon icon="fa-solid fa-arrow-up" :style="{ transform: 'rotate(' + waystone.directionRotation + 'deg)' }" /> of
             </div>
             <div>'{{ waystone.name }}'</div>
           </div>
