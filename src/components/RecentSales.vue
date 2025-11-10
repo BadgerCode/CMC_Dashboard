@@ -119,7 +119,12 @@ const sales = computed(() => {
                 </RouterLink>
                 <span v-if="row.paintingOriginality"> ({{ row.paintingOriginality }})</span>
               </div>
-              <div v-if="row.paintingAuthor">Author: {{ row.paintingAuthor }}</div>
+              <div v-if="row.paintingAuthor">
+                Author: <RouterLink :to="{ name: 'gallery', params: { authorName: row.paintingAuthor }, }"
+                  class="hyperlink">
+                  {{ row.paintingAuthor }}
+                </RouterLink>
+              </div>
 
               <div v-for="enchantment in row.enchantments">{{ enchantment }}</div>
             </div>

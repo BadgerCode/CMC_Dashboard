@@ -77,6 +77,7 @@ itemInfo["PAINTING"] = {
   displayName: "Player Paintings",
   icon: "fa-solid fa-image",
   isSpecialItem: true,
+  description: "Paintings created by the players of the server"
 }
 itemInfo["WAYSTONE"] = {
   itemType: "WAYSTONE",
