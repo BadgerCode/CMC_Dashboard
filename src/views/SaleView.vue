@@ -72,15 +72,17 @@ onMounted(async () => {
     // Load other sales
     paintingSales.value = (await fetchPaintingSales(paintingID)).map(
       (s) =>
-        ({
-          id: s.id,
-          occurredAt: s.occurredAt,
-          type: s.type,
-          itemType: "PAINTING",
-          quantity: s.quantity,
-          totalPrice: s.totalPrice,
-          isEnchanted: false,
-        } as SaleSummary)
+      ({
+        id: s.id,
+        occurredAt: s.occurredAt,
+        type: s.type,
+        itemType: "PAINTING",
+        quantity: s.quantity,
+        totalPrice: s.totalPrice,
+        isEnchanted: false,
+        itemAttributes: [],
+        customName: null
+      } as SaleSummary)
     );
   }
 });
@@ -146,12 +148,10 @@ let paintingOriginality = computed(() => {
         <!-- Item info -->
         <div>
           <div>
-            <RouterLink
-              :to="{
-                name: 'itemSales',
-                params: { itemType: saleData.itemType },
-              }"
-              class="hyperlink">
+            <RouterLink :to="{
+              name: 'itemSales',
+              params: { itemType: saleData.itemType },
+            }" class="hyperlink">
               {{ formatItemType(saleData.itemType) }}
             </RouterLink>
           </div>
@@ -179,8 +179,7 @@ let paintingOriginality = computed(() => {
       </div>
     </div>
 
-    <div
-      class="p-6 bg-gray-800 border border-gray-700 rounded-lg shadow-sm"
+    <div class="p-6 bg-gray-800 border border-gray-700 rounded-lg shadow-sm"
       v-if="!loading && filteredAttributes.length > 0 && saleData != null">
       <h4 class="mb-2 text-2xl font-bold tracking-tight text-white">Item Attributes</h4>
 
@@ -190,15 +189,13 @@ let paintingOriginality = computed(() => {
             <tr v-for="attribute in filteredAttributes" class="border-t border-gray-700">
               <td class="table-item wrap-anywhere">
                 <span v-if="attribute.key.startsWith('ENCHANTMENT_')">
-                  <RouterLink
-                    :to="{
-                      name: 'itemSales',
-                      params: { itemType: saleData.itemType },
-                      query: {
-                        enchantment: `${attribute.key}_${attribute.value}`,
-                      },
-                    }"
-                    class="hyperlink">
+                  <RouterLink :to="{
+                    name: 'itemSales',
+                    params: { itemType: saleData.itemType },
+                    query: {
+                      enchantment: `${attribute.key}_${attribute.value}`,
+                    },
+                  }" class="hyperlink">
                     {{ formatEnchantment(attribute.key) }}
                   </RouterLink>
                 </span>
@@ -206,28 +203,24 @@ let paintingOriginality = computed(() => {
               </td>
               <td class="table-item wrap-anywhere">
                 <span v-if="attribute.key == 'POTION_EFFECT'" class="capitalize">
-                  <RouterLink
-                    :to="{
-                      name: 'itemSales',
-                      params: { itemType: saleData.itemType },
-                      query: {
-                        potionEffect: attribute.value,
-                      },
-                    }"
-                    class="hyperlink">
+                  <RouterLink :to="{
+                    name: 'itemSales',
+                    params: { itemType: saleData.itemType },
+                    query: {
+                      potionEffect: attribute.value,
+                    },
+                  }" class="hyperlink">
                     {{ formatPotionEffect(attribute.value) }}
                   </RouterLink>
                 </span>
                 <span v-else-if="attribute.key == 'CUSTOM_DISC_SONG'" class="capitalize">
-                  <RouterLink
-                    :to="{
-                      name: 'itemSales',
-                      params: { itemType: saleData.itemType },
-                      query: {
-                        discName: attribute.value,
-                      },
-                    }"
-                    class="hyperlink">
+                  <RouterLink :to="{
+                    name: 'itemSales',
+                    params: { itemType: saleData.itemType },
+                    query: {
+                      discName: attribute.value,
+                    },
+                  }" class="hyperlink">
                     {{ formatCustomDisc(attribute.value) }}
                   </RouterLink>
                 </span>
@@ -245,12 +238,10 @@ let paintingOriginality = computed(() => {
       <div class="mb-3 font-normal text-gray-400 flex flex-col gap-4">
         <div>
           <span>By </span>
-          <RouterLink
-            :to="{
-              name: 'gallery',
-              params: { authorName: paintingData.authorName },
-            }"
-            class="hyperlink">
+          <RouterLink :to="{
+            name: 'gallery',
+            params: { authorName: paintingData.authorName },
+          }" class="hyperlink">
             {{ paintingData.authorName }}
           </RouterLink>
         </div>
@@ -260,7 +251,8 @@ let paintingOriginality = computed(() => {
     </div>
 
     <div v-if="paintingData != null">
-      <h4 class="mb-2 text-2xl font-bold tracking-tight text-white">Other sales of '{{ paintingData.title }}' painting</h4>
+      <h4 class="mb-2 text-2xl font-bold tracking-tight text-white">Other sales of '{{ paintingData.title }}' painting
+      </h4>
 
       <div class="mb-3 font-normal text-gray-400 flex flex-col gap-4">
         <RecentSales :recent-sales="paintingSales"></RecentSales>
