@@ -1,13 +1,17 @@
 <script setup lang="ts">
 import { updateShops } from "@/api/shops/api";
 import type { ShopData } from "@/api/shops/shopdata";
-import { onMounted, ref, watch } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import ShopsList from "./ShopsList.vue";
 import type { SaleSummary } from "@/api/sales/saleSummary";
 import RecentSales from "./RecentSales.vue";
 import SearchBox from "./SearchBox.vue";
 import { formatItemType } from "@/utilities/item-type-format";
 import Loading from "./Loading.vue";
+
+const itemDescriptions = {
+  PLAYER_HEAD: "Heads of various players. Some have additional functionality through Figura.",
+} as { [itemType: string]: string };
 
 interface Props {
   itemType: string;
@@ -33,6 +37,10 @@ onMounted(async () => {
   loading.value = false;
 });
 
+const description = computed(() => {
+  return itemDescriptions[props.itemType];
+});
+
 function applyFilters() {
   filteredShops.value = shops.value.filter((s) => {
     // Apply name filter
@@ -48,8 +56,8 @@ function applyFilters() {
   <div class="flex flex-col gap-8">
     <div class="flex flex-row justify-between items-end">
       <div>
-        <h1 class="text-3xl font-bold">Player Heads</h1>
-        <p class="text-gray-300">Heads of various players. Some have additional functionality through Figura.</p>
+        <h1 class="text-3xl font-bold capitalize">{{ formatItemType(itemType)?.toLocaleLowerCase() }}</h1>
+        <p class="text-gray-300" v-if="description">{{ description }}</p>
       </div>
     </div>
 
@@ -78,7 +86,7 @@ function applyFilters() {
       <div class="flex flex-column sm:flex-row flex-wrap space-y-1 items-end justify-between pb-2">
         <div class="flex flex-col gap-1">
           <h2 class="text-2xl font-bold">Shops</h2>
-          <p class="text-gray-300">Selling {{ formatItemType(itemType) }}</p>
+          <p class="text-gray-300 capitalize">Selling {{ formatItemType(itemType)?.toLocaleLowerCase() }}</p>
         </div>
 
         <div>

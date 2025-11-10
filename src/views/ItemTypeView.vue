@@ -84,10 +84,10 @@ async function loadEnchantments(): Promise<DropdownOption[]> {
   let response = await loadItems(`${Config.APIURL}/api/itemtypes/${props.itemType}/enchantments`);
   return response.map(
     (i: string) =>
-    ({
-      text: formatEnchantment(i),
-      value: i,
-    } as DropdownOption)
+      ({
+        text: formatEnchantment(i),
+        value: i,
+      } as DropdownOption)
   );
 }
 
@@ -96,10 +96,10 @@ async function loadDiscs(): Promise<DropdownOption[]> {
   let response = await loadItems(`${Config.APIURL}/api/customDiscs`);
   return response.map(
     (i: string) =>
-    ({
-      text: formatCustomDisc(i),
-      value: i,
-    } as DropdownOption)
+      ({
+        text: formatCustomDisc(i),
+        value: i,
+      } as DropdownOption)
   );
 }
 
@@ -108,10 +108,10 @@ async function loadPotions(): Promise<DropdownOption[]> {
   let response = await loadItems(`${Config.APIURL}/api/itemtypes/${props.itemType}/potionTypes`);
   return response.map(
     (i: string) =>
-    ({
-      text: formatPotionEffect(i),
-      value: i,
-    } as DropdownOption)
+      ({
+        text: formatPotionEffect(i),
+        value: i,
+      } as DropdownOption)
   );
 }
 
@@ -166,23 +166,40 @@ function filterSales(property: string, value: string) {
 
       <div class="text-gray-400 mb-4 capitalize" v-if="filtersText">With {{ filtersText }}</div>
 
-      <div class="flex flex-column sm:flex-row flex-wrap space-y-4 sm:space-y-0 items-center justify-between">
-        <div class="flex flex-row flex-wrap gap-1">
-          <DropdownFilter v-if="enchantments.length > 0" :placeholder="'Enchantment'" :default-selection="[]"
-            :icon="'fa-solid fa-wand-sparkles'" :single-selection="true" :options="enchantments"
+      <div class="flex flex-column sm:flex-row flex-wrap space-y-1 items-end justify-between pb-2">
+        <div class="flex flex-col gap-1">
+          <DropdownFilter
+            v-if="enchantments.length > 0"
+            :placeholder="'Enchantment'"
+            :default-selection="[]"
+            :icon="'fa-solid fa-wand-sparkles'"
+            :single-selection="true"
+            :options="enchantments"
             @update:model-value="value => filterSales('enchantment', value as string)">
           </DropdownFilter>
 
-          <DropdownFilter v-if="customDiscs.length > 0" :placeholder="'Custom Music Disc'" :default-selection="[]"
-            :icon="'fa-solid fa-record-vinyl'" :single-selection="true" :options="customDiscs"
+          <DropdownFilter
+            v-if="customDiscs.length > 0"
+            :placeholder="'Custom Music Disc'"
+            :default-selection="[]"
+            :icon="'fa-solid fa-record-vinyl'"
+            :single-selection="true"
+            :options="customDiscs"
             @update:model-value="value => filterSales('discName', value as string)">
           </DropdownFilter>
 
-          <DropdownFilter v-if="potionEffects.length > 0" :placeholder="'Potion Effect'" :default-selection="[]"
-            :icon="'fa-solid fa-flask'" :single-selection="true" :options="potionEffects"
+          <DropdownFilter
+            v-if="potionEffects.length > 0"
+            :placeholder="'Potion Effect'"
+            :default-selection="[]"
+            :icon="'fa-solid fa-flask'"
+            :single-selection="true"
+            :options="potionEffects"
             @update:model-value="value => filterSales('potionEffect', value as string)">
           </DropdownFilter>
         </div>
+
+        <div></div>
       </div>
 
       <div class="mb-3 font-normal text-gray-400">
