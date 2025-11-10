@@ -22,7 +22,6 @@ const id = useId();
 
 onMounted(() => {
   initFlowbite(); // Include on any component where you need flowbite JS functionality
-  clear();
 });
 
 const selectionCount = computed(() => {

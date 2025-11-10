@@ -15,11 +15,13 @@ import { formatEnchantment } from "@/utilities/enchantment-format";
 import { Config } from "@/config";
 import { formatCustomDisc } from "@/utilities/custom-disc-format";
 import { formatPotionEffect } from "@/utilities/potion-format";
+import { useRoute } from "vue-router";
 
 interface Props {
   itemType: string;
 }
 const props = defineProps<Props>();
+const route = useRoute();
 
 const loading = ref(true);
 const filteredSales = ref([] as SaleSummary[]);
@@ -47,7 +49,7 @@ watch(nameFilter, async (_, __) => {
 
 // Enchantment filter
 const enchantments = ref([] as DropdownOption[]);
-const enchantmentFilter = ref("");
+const enchantmentFilter = ref(route.query["enchantment"]?.toString() ?? "");
 watch(enchantmentFilter, async (_, __) => {
   await loadSales();
   applyFilters();
@@ -55,7 +57,7 @@ watch(enchantmentFilter, async (_, __) => {
 
 // Potion effect filter
 const potionEffects = ref([] as DropdownOption[]);
-const potionEffectFilter = ref("");
+const potionEffectFilter = ref(route.query["potionEffect"]?.toString() ?? "");
 watch(potionEffectFilter, async (_, __) => {
   await loadSales();
   applyFilters();
@@ -63,7 +65,7 @@ watch(potionEffectFilter, async (_, __) => {
 
 // Custom disc filter
 const customDiscs = ref([] as DropdownOption[]);
-const customDiscFilter = ref("");
+const customDiscFilter = ref(route.query["discName"]?.toString() ?? "");
 watch(customDiscFilter, async (_, __) => {
   await loadSales();
   applyFilters();
@@ -101,11 +103,13 @@ onUpdated(() => {
 });
 
 async function loadSales() {
-  filteredSales.value = await SalesAPI.loadSalesForItemType(props.itemType, {
+  let salesFilters = {
     enchantment: enchantmentFilter.value,
     potionEffect: potionEffectFilter.value,
     customDisc: customDiscFilter.value,
-  });
+  };
+
+  filteredSales.value = await SalesAPI.loadSalesForItemType(props.itemType, salesFilters);
 }
 
 async function loadEnchantments(): Promise<DropdownOption[]> {
@@ -202,7 +206,7 @@ let filtersText = computed(() => {
       <div class="flex flex-column sm:flex-row flex-wrap space-y-1 items-end justify-between pb-2">
         <div>
           <h2 class="text-2xl font-bold">Recent Sales</h2>
-          <div class="text-gray-400 text-sm">{{ filtersText }}</div>
+          <div class="text-gray-400 text-sm capitalize">{{ filtersText }}</div>
         </div>
 
         <div>
@@ -247,7 +251,7 @@ let filtersText = computed(() => {
           <h2 class="text-2xl font-bold">Shops</h2>
           <div class="text-gray-300 capitalize">
             <div>Selling {{ formatItemType(itemType)?.toLocaleLowerCase() }}</div>
-            <div class="text-gray-400 text-sm">{{ filtersText }}</div>
+            <div class="text-gray-400 text-sm capitalize">{{ filtersText }}</div>
           </div>
         </div>
 

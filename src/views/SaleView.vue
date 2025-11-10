@@ -4,15 +4,14 @@ import RenderPainting from "@/components/RenderPainting.vue";
 import { Config } from "@/config";
 import { formatDate } from "@/utilities/date-format";
 import { formatItemType } from "@/utilities/item-type-format";
-import { formatNumber } from "@/utilities/number-format";
 import { computed, onMounted, ref } from "vue";
-import * as SalesAPI from "@/api/sales/api";
 import type { SaleSummary } from "@/api/sales/saleSummary";
 import RecentSales from "@/components/RecentSales.vue";
 import type { PaintingSaleSummary } from "@/api/paintings/paintingSaleSummary";
 import { formatPrice, normalisePrice, type NormalisedPrice } from "@/utilities/normalise-price";
 import Loading from "@/components/Loading.vue";
 import { formatEnchantment } from "@/utilities/enchantment-format";
+import { formatPotionEffect } from "@/utilities/potion-format";
 
 const props = defineProps({
   id: String,
@@ -44,14 +43,10 @@ interface ItemAttribute {
 }
 
 const loading = ref(true);
-const loadingSales = ref(true);
 const saleData = ref(null as SaleData | null);
 const normalisedPrice = ref({ quantity: 0, price: 0 } as NormalisedPrice);
 const paintingData = ref(null as Painting | null);
 const paintingSales = ref([] as SaleSummary[]);
-const otherSales = ref([] as SaleSummary[]);
-const averagePrice = ref({ quantity: 0, price: 0 } as NormalisedPrice);
-const averagePriceNoRenames = ref(null as NormalisedPrice | null);
 
 onMounted(async () => {
   let url = `${Config.APIURL}/api/sales/${props.id}`;
@@ -63,47 +58,29 @@ onMounted(async () => {
   saleData.value = response.result;
   loading.value = false;
 
-  if (saleData.value) {
-    // Calculate normalised prices
-    normalisedPrice.value = normalisePrice(saleData.value.totalPrice, saleData.value.quantity);
+  if (saleData.value == null) return;
 
-    // Load painting data
-    let paintingID = saleData.value.itemAttributes.find((a) => a.key == "PAINTING_ID")?.value;
-    if (paintingID) {
-      paintingData.value = await fetchPainting(paintingID);
+  // Calculate normalised prices
+  normalisedPrice.value = normalisePrice(saleData.value.totalPrice, saleData.value.quantity);
 
-      // Load other sales
-      paintingSales.value = (await fetchPaintingSales(paintingID)).map(
-        (s) =>
-          ({
-            id: s.id,
-            occurredAt: s.occurredAt,
-            type: s.type,
-            itemType: "PAINTING",
-            quantity: s.quantity,
-            totalPrice: s.totalPrice,
-            isEnchanted: false,
-          } as SaleSummary)
-      );
-    }
+  // Load painting data
+  let paintingID = saleData.value.itemAttributes.find((a) => a.key == "PAINTING_ID")?.value;
+  if (paintingID) {
+    paintingData.value = await fetchPainting(paintingID);
 
-    // Load sales data for the item type
-    otherSales.value.push(...(await SalesAPI.loadSalesForItemType(saleData.value.itemType)));
-
-    // Calculate average price
-    let totalPrice = otherSales.value.reduce((total, s) => total + s.totalPrice, 0);
-    let totalQuantity = otherSales.value.reduce((total, s) => total + s.quantity, 0);
-    averagePrice.value = normalisePrice(totalPrice, totalQuantity);
-
-    // Calculate average price without renamed items
-    let totalPriceNoRenames = otherSales.value.filter((s) => s.customName == null).reduce((total, s) => total + s.totalPrice, 0);
-    let totalQuantityNoRenames = otherSales.value.filter((s) => s.customName == null).reduce((total, s) => total + s.quantity, 0);
-
-    // Only show average price without renames if it's different
-    if (totalPriceNoRenames != totalPrice || totalQuantityNoRenames != totalQuantity)
-      averagePriceNoRenames.value = normalisePrice(totalPriceNoRenames, totalQuantityNoRenames);
-
-    loadingSales.value = false;
+    // Load other sales
+    paintingSales.value = (await fetchPaintingSales(paintingID)).map(
+      (s) =>
+        ({
+          id: s.id,
+          occurredAt: s.occurredAt,
+          type: s.type,
+          itemType: "PAINTING",
+          quantity: s.quantity,
+          totalPrice: s.totalPrice,
+          isEnchanted: false,
+        } as SaleSummary)
+    );
   }
 });
 
@@ -201,27 +178,6 @@ let paintingOriginality = computed(() => {
       </div>
     </div>
 
-    <div class="p-6 bg-gray-800 border border-gray-700 rounded-lg shadow-sm">
-      <h4 class="mb-2 text-2xl font-bold tracking-tight text-white">Average '{{ saleData?.itemType }}' Prices</h4>
-
-      <Loading v-if="loadingSales || saleData == null" :loader-type="'text'"></Loading>
-
-      <div v-else>
-        <div class="text-gray-400">Based on {{ otherSales.length }} sales shown below.</div>
-        <div v-if="averagePrice.quantity == 0">No data</div>
-        <div v-else>
-          <span>{{ formatPrice(averagePrice, saleData.itemType) }}</span>
-        </div>
-
-        <div class="text-gray-400 mt-4">Excluding renamed items</div>
-        <div v-if="averagePriceNoRenames == null">No difference</div>
-        <div v-else-if="averagePriceNoRenames.quantity == 0">No data</div>
-        <div v-else class="flex flex-row gap-1">
-          <span>{{ formatPrice(averagePriceNoRenames, saleData.itemType) }}</span>
-        </div>
-      </div>
-    </div>
-
     <div
       class="p-6 bg-gray-800 border border-gray-700 rounded-lg shadow-sm"
       v-if="!loading && filteredAttributes.length > 0 && saleData != null">
@@ -247,7 +203,22 @@ let paintingOriginality = computed(() => {
                 </span>
                 <span v-else>{{ formatItemType(attribute.key) }}</span>
               </td>
-              <td class="table-item wrap-anywhere">{{ attribute.value }}</td>
+              <td class="table-item wrap-anywhere">
+                <span v-if="attribute.key == 'POTION_EFFECT'" class="capitalize">
+                  <RouterLink
+                    :to="{
+                      name: 'itemSales',
+                      params: { itemType: saleData.itemType },
+                      query: {
+                        potionEffect: attribute.value,
+                      },
+                    }"
+                    class="hyperlink">
+                    {{ formatPotionEffect(attribute.value) }}
+                  </RouterLink>
+                </span>
+                <span v-else>{{ attribute.value }}</span>
+              </td>
             </tr>
           </tbody>
         </table>
@@ -315,20 +286,6 @@ let paintingOriginality = computed(() => {
             </tr>
           </tbody>
         </table>
-      </div>
-    </div>
-
-    <div class="mt-6">
-      <h4 class="mb-2 text-2xl font-bold tracking-tight text-white" v-if="saleData != null">
-        Other sales of {{ formatItemType(saleData.itemType) }}
-      </h4>
-
-      <RouterLink v-if="saleData != null" :to="{ name: 'itemSales', params: { itemType: saleData.itemType } }" class="hyperlink">
-        View '{{ formatItemType(saleData.itemType) }}' statistics
-      </RouterLink>
-
-      <div class="mb-3 font-normal text-gray-400">
-        <RecentSales :loading="loadingSales" :recent-sales="otherSales"></RecentSales>
       </div>
     </div>
   </div>
