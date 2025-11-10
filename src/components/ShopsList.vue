@@ -61,13 +61,15 @@ function applySort(items: ShopData[]) {
         <!-- Mobile -->
         <th class="table-item md:hidden text-center">
           <span>Price &amp; Stock</span>
-          <font-awesome-icon icon="fa-solid fa-sort" class="text-xs ml-1 cursor-pointer" @click="sort('price', false)" />
+          <font-awesome-icon icon="fa-solid fa-sort" class="text-xs ml-1 cursor-pointer"
+            @click="sort('price', false)" />
         </th>
 
         <!-- Desktop -->
         <th class="table-item hidden md:table-cell">
           <span>Price</span>
-          <font-awesome-icon icon="fa-solid fa-sort" class="text-xs ml-1 cursor-pointer" @click="sort('price', false)" />
+          <font-awesome-icon icon="fa-solid fa-sort" class="text-xs ml-1 cursor-pointer"
+            @click="sort('price', false)" />
         </th>
         <th class="table-item hidden md:table-cell pr-4">Min<br />Buy</th>
         <th class="table-item hidden md:table-cell">Stock</th>
@@ -92,12 +94,7 @@ function applySort(items: ShopData[]) {
           </div>
 
           <div class="text-xs md:text-sm">
-            <RouterLink
-              :to="{
-                name: 'itemSales',
-                params: { itemType: shop.item.type },
-              }"
-              class="hyperlink">
+            <RouterLink :to="{ name: 'itemSales', params: { itemType: shop.item.type }, }" class="hyperlink">
               {{ formatItemType(shop.item.type) }}
             </RouterLink>
           </div>
@@ -107,7 +104,9 @@ function applySort(items: ShopData[]) {
           </div>
 
           <div class="text-xs md:text-sm" v-if="shop.item.parsedSNBT.paintingName">
-            {{ shop.item.parsedSNBT.paintingName }}
+            Title: <RouterLink :to="{ name: 'painting', params: { id: shop.item.parsedSNBT.paintingID }, }" class="hyperlink">
+              {{ shop.item.parsedSNBT.paintingName }}
+            </RouterLink>
           </div>
 
           <div class="text-xs md:text-sm capitalize" v-for="enchantment in shop.item.parsedSNBT.enchantments">
@@ -140,7 +139,8 @@ function applySort(items: ShopData[]) {
           <div v-for="waystone in shop.nearestWaystones" class="text-xs mt-2">
             <div>
               {{ waystone.distance }} blocks
-              <font-awesome-icon icon="fa-solid fa-arrow-up" :style="{ transform: 'rotate(' + waystone.directionRotation + 'deg)' }" /> of
+              <font-awesome-icon icon="fa-solid fa-arrow-up"
+                :style="{ transform: 'rotate(' + waystone.directionRotation + 'deg)' }" /> of
             </div>
             <div>'{{ waystone.name }}'</div>
           </div>

@@ -65,7 +65,10 @@ async function fetchPaintingSales(paintingID: string): Promise<PaintingSaleSumma
 <template>
   <div class="relative overflow-x-auto text-white flex flex-col gap-2">
     <Loading v-if="loading" :loader-type="'text'"></Loading>
-    <div v-else-if="paintingData == null">Painting not found</div>
+    <div v-else-if="paintingData == null" class="text-center">
+      <p>Painting not found.</p>
+      <p>Maybe it hasn't been sold yet?</p>
+    </div>
     <div v-else class="p-6 bg-gray-800 border border-gray-700 rounded-lg shadow-sm">
       <div class="flex flex-col gap-1">
         <h2 class="text-2xl font-bold">Painting - {{ paintingData.title }}</h2>

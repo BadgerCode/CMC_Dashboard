@@ -76,8 +76,13 @@ async function loadNextPage() {
   <div class="flex flex-row flex-wrap w-full gap-4 justify-center">
     <div v-for="painting in paintings" class="painting flex justify-center items-center flex-col gap-2 mb-4">
       <div class="w-full text-center pl-1">
-        <div>{{ painting.title }}</div>
+        <div>
+          <RouterLink :to="{ name: 'painting', params: { id: painting.id }, }" class="hyperlink">
+            {{ painting.title }}
+          </RouterLink>
+        </div>
       </div>
+
       <RenderPainting :painting="painting"></RenderPainting>
 
       <div class="w-full text-center pl-1">

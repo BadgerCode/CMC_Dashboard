@@ -21,6 +21,7 @@ interface SaleRow {
   customDiscSong?: string;
   writtenBookAuthor?: string;
   writtenBookPageCount?: string;
+  paintingID?: string;
   paintingTitle?: string;
   paintingAuthor?: string;
   paintingOriginality?: string;
@@ -47,6 +48,9 @@ const sales = computed(() => {
       }
       else if (attribute.key == "WRITTEN_BOOK_PAGE_COUNT") {
         row.writtenBookPageCount = attribute.value;
+      }
+      else if (attribute.key == "PAINTING_ID") {
+        row.paintingID = attribute.value;
       }
       else if (attribute.key == "PAINTING_TITLE") {
         row.paintingTitle = attribute.value;
@@ -98,10 +102,7 @@ const sales = computed(() => {
             </div>
 
             <div>
-              <RouterLink :to="{
-                name: 'itemSales',
-                params: { itemType: row.sale.itemType },
-              }" class="hyperlink">
+              <RouterLink :to="{ name: 'itemSales', params: { itemType: row.sale.itemType }, }" class="hyperlink">
                 {{ formatItemType(row.sale.itemType) }}
               </RouterLink>
             </div>
@@ -113,7 +114,9 @@ const sales = computed(() => {
               <div v-if="row.writtenBookAuthor">Author: {{ row.writtenBookAuthor }}</div>
               <div v-if="row.writtenBookPageCount">Pages: {{ row.writtenBookPageCount }}</div>
               <div v-if="row.paintingTitle">
-                Title: {{ row.paintingTitle }}
+                Title: <RouterLink :to="{ name: 'painting', params: { id: row.paintingID }, }" class="hyperlink">
+                  {{ row.paintingTitle }}
+                </RouterLink>
                 <span v-if="row.paintingOriginality"> ({{ row.paintingOriginality }})</span>
               </div>
               <div v-if="row.paintingAuthor">Author: {{ row.paintingAuthor }}</div>
