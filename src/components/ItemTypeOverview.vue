@@ -178,7 +178,9 @@ function applyFilters() {
 
     // Apply enchantments filter
     // TODO: Support enchanted books
-    if (enchantmentFilter.value != "" && !s.item.parsedSNBT.enchantments.includes(enchantmentFilter.value)) return false;
+    // TODO: Consolidate sale vs shop enchantments, so they are consistent with format
+    let enchantment = enchantmentFilter.value.replace(/ENCHANTMENT_MINECRAFT:/i, "").replace(/_/g, " ").toLocaleLowerCase();
+    if (enchantment != "" && !s.item.parsedSNBT.enchantments.includes(enchantment)) return false;
 
     // Apply potion filter
     if (
