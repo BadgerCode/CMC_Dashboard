@@ -102,7 +102,7 @@ onUpdated(() => {
 
 async function loadSales() {
   let salesFilters = {
-    enchantment: enchantmentFilter.value ? `ENCHANTMENT_${enchantmentFilter.value}` : "", // TODO: Remove once the backend is updated
+    enchantment: enchantmentFilter.value,
     potionEffect: potionEffectFilter.value,
     customDisc: customDiscFilter.value,
   };
@@ -116,8 +116,8 @@ async function loadEnchantments(): Promise<DropdownOption[]> {
   return response.map(
     (i: string) =>
     ({
-      text: formatEnchantment(i.replace(/ENCHANTMENT_/, "")).toLocaleLowerCase(), // TODO: Remove replace once backend stops joining key to value
-      value: i.replace(/ENCHANTMENT_/, ""),
+      text: formatEnchantment(i).toLocaleLowerCase(),
+      value: i,
     } as DropdownOption)
   );
 }
