@@ -102,9 +102,7 @@ const sales = computed(() => {
             </div>
 
             <div>
-              <RouterLink :to="{ name: 'itemSales', params: { itemType: row.sale.itemType }, }" class="hyperlink">
-                {{ formatItemType(row.sale.itemType) }}
-              </RouterLink>
+              {{ formatItemType(row.sale.itemType) }}
             </div>
 
             <div class="text-xs md:text-sm capitalize">
