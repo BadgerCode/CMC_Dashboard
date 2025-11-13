@@ -7,6 +7,7 @@ import { formatEnchantment } from "@/utilities/enchantment-format";
 import { formatCustomDisc } from "@/utilities/custom-disc-format";
 import { formatPotionEffect } from "@/utilities/potion-format";
 import { computed } from "vue";
+import { normalisePrice, simpleNormalisedPrice, type NormalisedPrice } from "@/utilities/normalise-price";
 
 interface Props {
   recentSales: SaleSummary[];
@@ -16,6 +17,7 @@ const props = defineProps<Props>();
 
 interface SaleRow {
   sale: SaleSummary;
+  price: NormalisedPrice;
   playerHeadPlayerName?: string;
   potionEffect?: string;
   customDiscSong?: string;
@@ -30,8 +32,13 @@ interface SaleRow {
 
 const sales = computed(() => {
   return props.recentSales.map(s => {
-    let row = { sale: s, enchantments: [] } as SaleRow
+    let row = {
+      sale: s,
+      enchantments: [],
+      price: normalisePrice(s.totalPrice, s.quantity)
+    } as SaleRow
 
+    // Extract attributes
     for (const attribute of s.itemAttributes) {
       if (attribute.key == "PLAYERHEAD_PLAYER_NAME") row.playerHeadPlayerName = attribute.value;
       else if (attribute.key == "ENCHANTMENT") {
@@ -77,8 +84,15 @@ const sales = computed(() => {
           <th></th>
           <th></th>
           <th class="table-item">Item</th>
-          <th class="table-item"><span class="hidden md:inline">Quantity</span><span class="md:hidden">#</span></th>
-          <th class="table-item"><span class="hidden md:inline">Price</span><span class="md:hidden">$</span></th>
+
+          <!-- Price columns -->
+          <!-- Mobile -->
+          <th class="table-item md:hidden text-center">Details</th>
+
+          <!-- Desktop -->
+          <th class="table-item hidden md:table-cell">Quantity</th>
+          <th class="table-item hidden md:table-cell">Price</th>
+          <th class="table-item hidden md:table-cell">Paid</th>
         </tr>
       </thead>
       <tbody>
@@ -127,8 +141,27 @@ const sales = computed(() => {
               <div v-for="enchantment in row.enchantments">{{ enchantment }}</div>
             </div>
           </td>
-          <td class="table-item">{{ row.sale.quantity }}</td>
-          <td class="table-item">{{ row.sale.totalPrice }}</td>
+
+          <!-- Price columns -->
+          <!-- Mobile -->
+          <td class="table-item table-cell md:hidden">
+            <div>Quantity:</div>
+            <div class="mb-2">{{ row.sale.quantity }}</div>
+
+            <div>Paid:</div>
+            <div class="mb-2">{{ row.sale.totalPrice }}</div>
+
+            <div class="text-nowrap">{{ simpleNormalisedPrice(row.price) }}</div>
+          </td>
+
+          <!-- Desktop -->
+          <td class="table-item hidden md:table-cell">{{ row.sale.quantity }}</td>
+          <td class="table-item hidden md:table-cell text-nowrap">
+            <span class="hidden md:inline">
+              {{ simpleNormalisedPrice(row.price) }}
+            </span>
+          </td>
+          <td class="table-item hidden md:table-cell">{{ row.sale.totalPrice }}</td>
         </tr>
       </tbody>
     </table>

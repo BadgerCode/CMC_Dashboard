@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { formatItemType } from "@/utilities/item-type-format";
-import { formatNumber } from "@/utilities/number-format";
-import { normalisePrice } from "@/utilities/normalise-price";
 import type { ShopData } from "@/api/shops/shopdata";
 import { computed, ref } from "vue";
 import { formatEnchantment } from "@/utilities/enchantment-format";
 import { formatPotionEffect } from "@/utilities/potion-format";
+import { normalisePrice, simpleNormalisedPrice } from "@/utilities/normalise-price";
 
 interface Props {
   shops: ShopData[];
@@ -15,11 +14,6 @@ const props = defineProps<Props>();
 const maxShops = 100;
 
 const paginatedShops = computed(() => applySort(props.shops).slice(0, Math.min(maxShops, props.shops.length)));
-
-function getNormalisedPrice(shop: ShopData) {
-  let price = normalisePrice(shop.price, shop.item.quantity);
-  return `${formatNumber(price.quantity, 2)} for ${formatNumber(price.price, 2)} 💎`;
-}
 
 // Sorting
 let sortProperty = ref("");
@@ -52,15 +46,15 @@ function applySort(items: ShopData[]) {
     <thead class="table-head">
       <tr>
         <!-- Basic details -->
-        <th class="table-item text-center" v-if="!hideBuySell">
+        <th class="table-item" v-if="!hideBuySell">
           <font-awesome-icon icon="fa-solid fa-arrows-left-right" />
         </th>
-        <th class="table-item text-center">Item</th>
+        <th class="table-item">Item</th>
 
         <!-- Price columns -->
         <!-- Mobile -->
-        <th class="table-item md:hidden text-center">
-          <span>Price &amp; Stock</span>
+        <th class="table-item md:hidden">
+          <span>Details</span>
           <font-awesome-icon icon="fa-solid fa-sort" class="text-xs ml-1 cursor-pointer"
             @click="sort('price', false)" />
         </th>
@@ -71,16 +65,14 @@ function applySort(items: ShopData[]) {
           <font-awesome-icon icon="fa-solid fa-sort" class="text-xs ml-1 cursor-pointer"
             @click="sort('price', false)" />
         </th>
-        <th class="table-item hidden md:table-cell pr-4">Min<br />Buy</th>
+        <th class="table-item hidden md:table-cell pr-4">Batch<br />Size</th>
         <th class="table-item hidden md:table-cell">Stock</th>
 
         <!-- Location -->
-        <th class="table-item text-center">
-          <font-awesome-icon icon="fa-solid fa-globe" />
-        </th>
+        <th class="table-item">Location</th>
 
         <!-- Owner -->
-        <th class="table-item hidden md:table-cell">Owner</th>
+        <th class="table-item table-cell">Owner</th>
       </tr>
     </thead>
     <tbody>
@@ -104,7 +96,8 @@ function applySort(items: ShopData[]) {
           </div>
 
           <div class="text-xs md:text-sm" v-if="shop.item.parsedSNBT.paintingName">
-            Title: <RouterLink :to="{ name: 'painting', params: { id: shop.item.parsedSNBT.paintingID }, }" class="hyperlink">
+            Title: <RouterLink :to="{ name: 'painting', params: { id: shop.item.parsedSNBT.paintingID }, }"
+              class="hyperlink">
               {{ shop.item.parsedSNBT.paintingName }}
             </RouterLink>
           </div>
@@ -117,23 +110,25 @@ function applySort(items: ShopData[]) {
         <!-- Price columns -->
         <!-- Mobile -->
         <td class="table-item table-cell md:hidden">
-          <div class="text-nowrap">{{ getNormalisedPrice(shop) }}</div>
-          <div class="mt-2">Min buy:</div>
+          <div class="text-nowrap">{{ simpleNormalisedPrice(normalisePrice(shop.price, shop.item.quantity)) }}</div>
+          <div class="mt-2">Batch size:</div>
           <div>{{ shop.item.quantity }}</div>
           <div class="mt-2">Stock:</div>
           <div>x{{ shop.remaining }}</div>
         </td>
 
         <!-- Desktop -->
-        <td class="table-item hidden md:table-cell">{{ getNormalisedPrice(shop) }}</td>
+        <td class="table-item hidden md:table-cell text-nowrap">
+          {{ simpleNormalisedPrice(normalisePrice(shop.price, shop.item.quantity)) }}
+        </td>
         <td class="table-item hidden md:table-cell">{{ shop.item.quantity }}</td>
         <td class="table-item hidden md:table-cell">x {{ shop.remaining }}</td>
 
         <!-- Location -->
         <td class="table-item">
-          <div class="block md:inline mr-1">{{ `${shop.location.x},` }}</div>
-          <div class="block md:inline mr-1">{{ `${shop.location.y},` }}</div>
-          <div class="block md:inline mr-1">{{ shop.location.z }}</div>
+          <div class="mr-1">
+            {{ shop.location.x }}, {{ shop.location.y }}, {{ shop.location.z }}
+          </div>
           <div>({{ shop.location.world }})</div>
 
           <div v-for="waystone in shop.nearestWaystones" class="text-xs mt-2">
@@ -147,7 +142,7 @@ function applySort(items: ShopData[]) {
         </td>
 
         <!-- Owner -->
-        <td class="table-item hidden md:table-cell wrap-anywhere">{{ shop.owner.name }}</td>
+        <td class="table-item table-cell wrap-anywhere">{{ shop.owner.name }}</td>
       </tr>
     </tbody>
   </table>

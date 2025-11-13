@@ -28,3 +28,8 @@ export function normalisePrice(totalPrice: number, quantity: number): Normalised
 export function formatPrice(price: NormalisedPrice, itemType: string): string {
   return `${formatNumber(price.quantity, 2)} '${formatItemType(itemType)}' is worth ${formatNumber(price.price, 2)} diamonds(s)`;
 }
+
+export function simpleNormalisedPrice(price: NormalisedPrice) {
+  return `${formatNumber(price.quantity, 2)} for ${formatNumber(price.price, 2)} 💎`;
+}
+
