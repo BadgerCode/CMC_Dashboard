@@ -103,7 +103,7 @@ let filteredAttributes = computed(() => {
         <div>
           <!-- Custom name -->
           <div v-if="saleData.customName" class="text-gray-400 italic">
-            <span>&quot;{{ saleData.customName }}&quot;</span>
+            <span>{{ saleData.customName }}</span>
           </div>
 
           <!-- Quantity, item type, price -->

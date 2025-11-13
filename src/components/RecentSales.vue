@@ -21,6 +21,7 @@ interface SaleRow {
   playerHeadPlayerName?: string;
   potionEffect?: string;
   customDiscSong?: string;
+  writtenBookTitle?: string;
   writtenBookAuthor?: string;
   writtenBookPageCount?: string;
   paintingID?: string;
@@ -49,6 +50,9 @@ const sales = computed(() => {
       }
       else if (attribute.key == "CUSTOM_DISC_SONG") {
         row.customDiscSong = formatCustomDisc(attribute.value).toLocaleLowerCase();
+      }
+      else if (attribute.key == "WRITTEN_BOOK_TITLE") {
+        row.writtenBookTitle = attribute.value;
       }
       else if (attribute.key == "WRITTEN_BOOK_AUTHOR") {
         row.writtenBookAuthor = attribute.value;
@@ -120,7 +124,7 @@ const sales = computed(() => {
           <td class="table-item wrap-anywhere">
             <!-- Custom name -->
             <div v-if="row.sale.customName" class="text-xs md:text-sm italic">
-              &quot;{{ row.sale.customName }}&quot;
+              {{ row.sale.customName }}
             </div>
 
             <!-- Item type -->
@@ -133,6 +137,7 @@ const sales = computed(() => {
               <div v-if="row.playerHeadPlayerName">Player: {{ row.playerHeadPlayerName }}</div>
               <div v-if="row.potionEffect">{{ row.potionEffect }}</div>
               <div v-if="row.customDiscSong">{{ row.customDiscSong }}</div>
+              <div v-if="row.writtenBookAuthor">Title: {{ row.writtenBookTitle }}</div>
               <div v-if="row.writtenBookAuthor">Author: {{ row.writtenBookAuthor }}</div>
               <div v-if="row.writtenBookPageCount">Pages: {{ row.writtenBookPageCount }}</div>
               <div v-if="row.paintingTitle">

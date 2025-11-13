@@ -81,29 +81,35 @@ function applySort(items: ShopData[]) {
 
         <!-- Item name & key attributes -->
         <td class="table-item wrap-anywhere">
+
+          <!-- Item name -->
           <div class="text-white">
             {{ shop.item.name }}
           </div>
 
+          <!-- Item type -->
           <div class="text-xs md:text-sm">
             <RouterLink :to="{ name: 'itemSales', params: { itemType: shop.item.type }, }" class="hyperlink">
               {{ formatItemType(shop.item.type) }}
             </RouterLink>
           </div>
 
+          <!-- Enchantments -->
+          <div class="text-xs md:text-sm capitalize" v-for="enchantment in shop.item.parsedSNBT.enchantments">
+            {{ formatEnchantment(enchantment) }}
+          </div>
+
+          <!-- Potion effect -->
           <div class="text-xs md:text-sm capitalize" v-if="shop.item.parsedSNBT.potionEffect">
             {{ formatPotionEffect(shop.item.parsedSNBT.potionEffect) }}
           </div>
 
+          <!-- Painting info -->
           <div class="text-xs md:text-sm" v-if="shop.item.parsedSNBT.paintingName">
             Title: <RouterLink :to="{ name: 'painting', params: { id: shop.item.parsedSNBT.paintingID }, }"
               class="hyperlink">
               {{ shop.item.parsedSNBT.paintingName }}
             </RouterLink>
-          </div>
-
-          <div class="text-xs md:text-sm capitalize" v-for="enchantment in shop.item.parsedSNBT.enchantments">
-            {{ formatEnchantment(enchantment) }}
           </div>
         </td>
 
