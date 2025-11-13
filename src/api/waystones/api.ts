@@ -20,7 +20,7 @@ export async function loadWaystones(): Promise<ServerWaystones> {
 
     waystones.push(
       ...response.worlds[world].flatMap((w: any) => {
-        let worldInfo = [...w.options.popup.content.matchAll(/.*<br\/><br\/>(\d+) visits this week<br\/>(\d+) total visits.*/gi)][0] ?? [];
+        let worldInfo = [...w.options.popup.content.matchAll(/.*<br\/>(\d+) visits this week<br\/>(\d+) total visits.*/gi)][0] ?? [];
 
         return {
           id: w.data.key,
