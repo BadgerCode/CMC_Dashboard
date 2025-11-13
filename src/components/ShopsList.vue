@@ -71,8 +71,8 @@ function applySort(items: ShopData[]) {
         <!-- Location -->
         <th class="table-item">Location</th>
 
-        <!-- Owner -->
-        <th class="table-item table-cell">Owner</th>
+        <!-- Owner (desktop) -->
+        <th class="table-item hidden md:table-cell">Owner</th>
       </tr>
     </thead>
     <tbody>
@@ -117,10 +117,15 @@ function applySort(items: ShopData[]) {
         <!-- Mobile -->
         <td class="table-item table-cell md:hidden">
           <div class="text-nowrap">{{ simpleNormalisedPrice(normalisePrice(shop.price, shop.item.quantity)) }}</div>
+
           <div class="mt-2">Batch size:</div>
           <div>{{ shop.item.quantity }}</div>
+
           <div class="mt-2">Stock:</div>
           <div>x{{ shop.remaining }}</div>
+
+          <div class="mt-2">Sold by:</div>
+          <div>{{ shop.owner.name }}</div>
         </td>
 
         <!-- Desktop -->
@@ -143,12 +148,12 @@ function applySort(items: ShopData[]) {
               <font-awesome-icon icon="fa-solid fa-arrow-up"
                 :style="{ transform: 'rotate(' + waystone.directionRotation + 'deg)' }" /> of
             </div>
-            <div>'{{ waystone.name }}'</div>
+            <div class="wrap-anywhere">'{{ waystone.name }}'</div>
           </div>
         </td>
 
-        <!-- Owner -->
-        <td class="table-item table-cell wrap-anywhere">{{ shop.owner.name }}</td>
+        <!-- Owner (desktop) -->
+        <td class="table-item hidden md:table-cell wrap-anywhere">{{ shop.owner.name }}</td>
       </tr>
     </tbody>
   </table>

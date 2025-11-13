@@ -133,7 +133,7 @@ const sales = computed(() => {
             </div>
 
             <!-- Key attributes- enchantments, effects, etc. -->
-            <div class="text-xs md:text-sm capitalize">
+            <div class="text-xs md:text-sm capitalize mt-2">
               <div v-if="row.playerHeadPlayerName">Player: {{ row.playerHeadPlayerName }}</div>
               <div v-if="row.potionEffect">{{ row.potionEffect }}</div>
               <div v-if="row.customDiscSong">{{ row.customDiscSong }}</div>
