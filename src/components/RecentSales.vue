@@ -97,28 +97,38 @@ const sales = computed(() => {
       </thead>
       <tbody>
         <tr v-for="row in sales" class="stripped-row">
+          <!-- Sale date -->
           <td class="table-item wrap-anywhere">
             <RouterLink :to="{ name: 'sale', params: { id: row.sale.id } }" class="hyperlink">
               {{ formatDate(row.sale.occurredAt) }}
             </RouterLink>
           </td>
+
+          <!-- Sale type icon -->
           <td class="table-item" :title="row.sale.type">
             <font-awesome-icon icon="fa-solid fa-shop" v-if="row.sale.type == 'Shop'" />
             <font-awesome-icon icon="fa-solid fa-gavel" v-else-if="row.sale.type == 'Auction'" />
             <font-awesome-icon icon="fa-solid fa-question" v-else title="Unknown" />
           </td>
+
+          <!-- Is enchanted icon -->
           <td class="table-item" title="Enchanted">
             <font-awesome-icon icon="fa-solid fa-wand-sparkles" v-if="row.sale.isEnchanted" />
           </td>
+
+          <!-- Item details -->
           <td class="table-item wrap-anywhere">
+            <!-- Custom name -->
             <div v-if="row.sale.customName" class="text-xs md:text-sm italic">
-              {{ row.sale.customName }}
+              &quot;{{ row.sale.customName }}&quot;
             </div>
 
+            <!-- Item type -->
             <div>
               {{ formatItemType(row.sale.itemType) }}
             </div>
 
+            <!-- Key attributes- enchantments, effects, etc. -->
             <div class="text-xs md:text-sm capitalize">
               <div v-if="row.playerHeadPlayerName">Player: {{ row.playerHeadPlayerName }}</div>
               <div v-if="row.potionEffect">{{ row.potionEffect }}</div>

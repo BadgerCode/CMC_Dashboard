@@ -3,7 +3,7 @@ import { Config } from "@/config";
 import { formatDate } from "@/utilities/date-format";
 import { formatItemType } from "@/utilities/item-type-format";
 import { computed, onMounted, ref } from "vue";
-import { formatPrice, normalisePrice, type NormalisedPrice } from "@/utilities/normalise-price";
+import { formatPrice, normalisePrice, simpleNormalisedPrice, type NormalisedPrice } from "@/utilities/normalise-price";
 import Loading from "@/components/Loading.vue";
 import { formatEnchantment } from "@/utilities/enchantment-format";
 import { formatPotionEffect } from "@/utilities/potion-format";
@@ -81,7 +81,7 @@ let filteredAttributes = computed(() => {
       <Loading v-if="loading" :loader-type="'text'"></Loading>
 
       <div class="mb-3 font-normal text-gray-400 flex flex-col gap-4" v-if="saleData != null">
-        <!-- Basic info -->
+        <!-- Basic info- date & sale type -->
         <div class="text-gray-300">
           <div class="flex flex-row gap-6">
             <div>
@@ -99,78 +99,74 @@ let filteredAttributes = computed(() => {
           </div>
         </div>
 
-        <!-- Item info -->
+        <!-- Item info- quantity, item, price, name -->
         <div>
-          <div>
+          <!-- Custom name -->
+          <div v-if="saleData.customName" class="text-gray-400 italic">
+            <span>&quot;{{ saleData.customName }}&quot;</span>
+          </div>
+
+          <!-- Quantity, item type, price -->
+          <div class="text-white">
+            <span>{{ saleData.quantity }}&nbsp;</span>
+
             <RouterLink :to="{ name: 'itemSales', params: { itemType: saleData.itemType } }" class="hyperlink">
               {{ formatItemType(saleData.itemType) }}
             </RouterLink>
 
-            <span v-if="paintingOriginality"> ({{ paintingOriginality }})</span>
-          </div>
+            <span v-if="paintingOriginality">&nbsp;({{ paintingOriginality }})</span>
 
-          <div v-if="saleData.customName" class="text-gray-400">
-            <span>{{ saleData.customName }}</span>
+            <span>&nbsp;bought for {{ saleData.totalPrice }} 💎</span>
           </div>
         </div>
 
-        <!-- Price -->
-        <div class="text-white">
-          <div>Price</div>
-          <div>
-            {{ saleData.quantity }} x {{ formatItemType(saleData.itemType) }} sold for
-            {{ saleData.totalPrice }}
-            diamond(s).
-          </div>
-        </div>
+        <!-- Comparison price -->
         <div>
-          <div class="text-gray-400">Normalised price</div>
-          <div>
-            <span>{{ formatPrice(normalisedPrice, saleData.itemType) }}</span>
+          <div>Comparison Price</div>
+          <div>{{ simpleNormalisedPrice(normalisePrice(saleData.totalPrice, saleData.quantity)) }}</div>
+        </div>
+
+        <!-- Item attributes -->
+        <div class="mt-4">
+          <h4 class="mb-2 text-2xl font-bold tracking-tight text-white">Item Attributes</h4>
+
+          <div v-if="filteredAttributes.length == 0">No additional information (enchantments, effects, etc.)</div>
+          <div v-else class="mb-3 font-normal text-gray-400 flex flex-col gap-4">
+            <table class="w-full text-left rtl:text-right text-gray-400 text-xs md:text-base mt-2">
+              <tbody>
+                <tr v-for="attribute in filteredAttributes" class="border-t border-gray-700">
+                  <td class="table-item wrap-anywhere capitalize">
+                    {{ formatItemType(attribute.key)?.toLocaleLowerCase() }}
+                  </td>
+                  <td class="table-item wrap-anywhere">
+                    <span v-if="attribute.key == 'POTION_EFFECT'" class="capitalize">
+                      <RouterLink
+                        :to="{ name: 'itemSales', params: { itemType: saleData.itemType }, query: { potionEffect: attribute.value } }"
+                        class="hyperlink">
+                        {{ formatPotionEffect(attribute.value) }}
+                      </RouterLink>
+                    </span>
+                    <span v-else-if="attribute.key == 'CUSTOM_DISC_SONG'" class="capitalize">
+                      <RouterLink
+                        :to="{ name: 'itemSales', params: { itemType: saleData.itemType }, query: { discName: attribute.value } }"
+                        class="hyperlink">
+                        {{ formatCustomDisc(attribute.value) }}
+                      </RouterLink>
+                    </span>
+                    <span v-else-if="attribute.key == 'ENCHANTMENT'">
+                      <RouterLink
+                        :to="{ name: 'itemSales', params: { itemType: saleData.itemType }, query: { enchantment: attribute.value } }"
+                        class="hyperlink">
+                        {{ formatEnchantment(attribute.value) }}
+                      </RouterLink>
+                    </span>
+                    <span v-else>{{ attribute.value }}</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
-      </div>
-    </div>
-
-    <div
-      class="p-6 bg-gray-800 border border-gray-700 rounded-lg shadow-sm"
-      v-if="!loading && filteredAttributes.length > 0 && saleData != null">
-      <h4 class="mb-2 text-2xl font-bold tracking-tight text-white">Item Attributes</h4>
-
-      <div class="mb-3 font-normal text-gray-400 flex flex-col gap-4">
-        <table class="w-full text-left rtl:text-right text-gray-400 text-xs md:text-base mt-2">
-          <tbody>
-            <tr v-for="attribute in filteredAttributes" class="border-t border-gray-700">
-              <td class="table-item wrap-anywhere capitalize">
-                {{ formatItemType(attribute.key)?.toLocaleLowerCase() }}
-              </td>
-              <td class="table-item wrap-anywhere">
-                <span v-if="attribute.key == 'POTION_EFFECT'" class="capitalize">
-                  <RouterLink
-                    :to="{ name: 'itemSales', params: { itemType: saleData.itemType }, query: { potionEffect: attribute.value } }"
-                    class="hyperlink">
-                    {{ formatPotionEffect(attribute.value) }}
-                  </RouterLink>
-                </span>
-                <span v-else-if="attribute.key == 'CUSTOM_DISC_SONG'" class="capitalize">
-                  <RouterLink
-                    :to="{ name: 'itemSales', params: { itemType: saleData.itemType }, query: { discName: attribute.value } }"
-                    class="hyperlink">
-                    {{ formatCustomDisc(attribute.value) }}
-                  </RouterLink>
-                </span>
-                <span v-else-if="attribute.key == 'ENCHANTMENT'">
-                  <RouterLink
-                    :to="{ name: 'itemSales', params: { itemType: saleData.itemType }, query: { enchantment: attribute.value } }"
-                    class="hyperlink">
-                    {{ formatEnchantment(attribute.value) }}
-                  </RouterLink>
-                </span>
-                <span v-else>{{ attribute.value }}</span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
       </div>
     </div>
 
