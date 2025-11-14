@@ -9,6 +9,7 @@ import { formatEnchantment } from "@/utilities/enchantment-format";
 import { formatPotionEffect } from "@/utilities/potion-format";
 import { formatCustomDisc } from "@/utilities/custom-disc-format";
 import PaintingOverview from "@/components/PaintingOverview.vue";
+import RenderPainting from "@/components/RenderPainting.vue";
 
 const props = defineProps({
   id: String,
@@ -170,8 +171,10 @@ let filteredAttributes = computed(() => {
       </div>
     </div>
 
+    <!-- Painting -->
     <PaintingOverview v-if="paintingID" :painting-id="paintingID"></PaintingOverview>
 
+    <!-- Container items -->
     <div class="p-6 bg-gray-800 border border-gray-700 rounded-lg shadow-sm" v-if="saleData?.containedItems.length">
       <h4 class="mb-2 text-2xl font-bold tracking-tight text-white">Contents</h4>
 
@@ -199,7 +202,8 @@ let filteredAttributes = computed(() => {
               <td class="table-item wrap-anywhere">
                 <div
                   v-for="attribute in subItem.itemAttributes.sort((a, b) => a.key.localeCompare(b.key) || a.value.localeCompare(b.value))">
-                  <span class="capitalize">{{ formatItemType(attribute.key)?.toLocaleLowerCase() }}: </span>
+                  <span class="capitalize" v-if="attribute.key != 'PAINTING_ID'">{{
+                    formatItemType(attribute.key)?.toLocaleLowerCase() }}: </span>
 
                   <span v-if="attribute.key == 'POTION_EFFECT'" class="capitalize">
                     <RouterLink
@@ -229,7 +233,7 @@ let filteredAttributes = computed(() => {
                   </span>
                   <span v-else-if="attribute.key == 'PAINTING_ID'">
                     <RouterLink :to="{ name: 'painting', params: { id: attribute.value } }" class="hyperlink">
-                      {{ attribute.value }}
+                      <RenderPainting :painting-id="attribute.value" :size="'large'"></RenderPainting>
                     </RouterLink>
                   </span>
                   <span v-else>{{ attribute.value }}</span>
