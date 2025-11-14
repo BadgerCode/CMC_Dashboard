@@ -79,6 +79,14 @@ itemInfo["PAINTING"] = {
   isSpecialItem: true,
   description: "Paintings created by the players of the server"
 }
+itemInfo["FILLED_MAP"] = {
+  itemType: "FILLED_MAP",
+  displayName: "Map Artwork",
+  icon: "fa-solid fa-map",
+  isSpecialItem: true,
+  description: "Maps used to display artwork. Includes regular maps too",
+  shopCaveats: "Shop listings will include regular maps as well as map artwork."
+}
 itemInfo["WAYSTONE"] = {
   itemType: "WAYSTONE",
   displayName: "Waystones",
