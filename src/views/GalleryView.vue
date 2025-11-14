@@ -83,7 +83,7 @@ async function loadNextPage() {
         </div>
       </div>
 
-      <RenderPainting :painting="painting"></RenderPainting>
+      <RenderPainting :painting-id="painting.id" :size="painting.size"></RenderPainting>
 
       <div class="w-full text-center pl-1">
         <div class="text-sm text-gray-300">

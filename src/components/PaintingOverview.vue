@@ -81,7 +81,7 @@ async function fetchPaintingSales(paintingID: string): Promise<PaintingSaleSumma
             {{ paintingData.authorName }}
           </RouterLink>
         </div>
-        <RenderPainting :painting="paintingData"></RenderPainting>
+        <RenderPainting :painting-id="paintingData.id" :size="paintingData.size"></RenderPainting>
       </div>
     </div>
 
