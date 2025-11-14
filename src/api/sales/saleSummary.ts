@@ -8,6 +8,7 @@ export interface SaleSummary {
   isEnchanted: boolean;
   customName: string | null;
   itemAttributes: SoldItemAttribute[];
+  insideContainer: boolean;
 }
 
 export interface SoldItemAttribute {

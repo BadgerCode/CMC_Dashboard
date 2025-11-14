@@ -87,6 +87,7 @@ const sales = computed(() => {
           <th class="table-item">Time</th>
           <th></th>
           <th></th>
+          <th></th>
           <th class="table-item">Item</th>
 
           <!-- Price columns -->
@@ -120,6 +121,11 @@ const sales = computed(() => {
             <font-awesome-icon icon="fa-solid fa-wand-sparkles" v-if="row.sale.isEnchanted" />
           </td>
 
+          <!-- Is inside a shulker icon -->
+          <td class="table-item" title="Inside Container">
+            <font-awesome-icon icon="fa-solid fa-box-open" v-if="row.sale.insideContainer" />
+          </td>
+
           <!-- Item details -->
           <td class="table-item wrap-anywhere">
             <!-- Custom name -->
@@ -128,9 +134,7 @@ const sales = computed(() => {
             </div>
 
             <!-- Item type -->
-            <div>
-              {{ formatItemType(row.sale.itemType) }}
-            </div>
+            <div>{{ formatItemType(row.sale.itemType) }}</div>
 
             <!-- Key attributes- enchantments, effects, etc. -->
             <div class="text-xs md:text-sm capitalize mt-2">
@@ -140,10 +144,12 @@ const sales = computed(() => {
               <div v-if="row.writtenBookAuthor">Title: {{ row.writtenBookTitle }}</div>
               <div v-if="row.writtenBookAuthor">Author: {{ row.writtenBookAuthor }}</div>
               <div v-if="row.writtenBookPageCount">Pages: {{ row.writtenBookPageCount }}</div>
-              <div v-if="row.paintingTitle">
-                Title: <RouterLink :to="{ name: 'painting', params: { id: row.paintingID }, }" class="hyperlink">
-                  {{ row.paintingTitle }}
-                </RouterLink>
+              <div v-if="row.paintingTitle || row.paintingOriginality">
+                <span v-if="row.paintingTitle">Title: <RouterLink
+                    :to="{ name: 'painting', params: { id: row.paintingID }, }" class="hyperlink">
+                    {{ row.paintingTitle }}
+                  </RouterLink>
+                </span>
                 <span v-if="row.paintingOriginality"> ({{ row.paintingOriginality }})</span>
               </div>
               <div v-if="row.paintingAuthor">

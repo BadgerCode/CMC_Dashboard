@@ -33,8 +33,9 @@ onMounted(async () => {
       quantity: s.quantity,
       totalPrice: s.totalPrice,
       isEnchanted: false,
-      itemAttributes: [],
-      customName: null
+      itemAttributes: s.additionalAttributes,
+      customName: s.customName,
+      insideContainer: s.insideContainer
     } as SaleSummary)
   );
 
