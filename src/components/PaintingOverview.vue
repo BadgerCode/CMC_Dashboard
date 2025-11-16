@@ -1,18 +1,17 @@
 <script setup lang="ts">
-import type { Painting } from '@/api/paintings/painting';
-import type { PaintingSaleSummary } from '@/api/paintings/paintingSaleSummary';
-import type { SaleSummary } from '@/api/sales/saleSummary';
-import { Config } from '@/config';
-import { onMounted, ref } from 'vue';
-import RenderPainting from './RenderPainting.vue';
-import RecentSales from './RecentSales.vue';
-import Loading from './Loading.vue';
-
+import type { Painting } from "@/api/paintings/painting";
+import type { PaintingSaleSummary } from "@/api/paintings/paintingSaleSummary";
+import type { SaleSummary } from "@/api/sales/saleSummary";
+import { Config } from "@/config";
+import { onMounted, ref } from "vue";
+import RenderPainting from "./RenderPainting.vue";
+import RecentSales from "./RecentSales.vue";
+import Loading from "./Loading.vue";
 
 interface Props {
   paintingId: string;
 }
-const props = defineProps<Props>()
+const props = defineProps<Props>();
 
 const loading = ref(true);
 const paintingData = ref(null as Painting | null);
@@ -25,18 +24,18 @@ onMounted(async () => {
   // Load other sales
   paintingSales.value = (await fetchPaintingSales(props.paintingId)).map(
     (s) =>
-    ({
-      id: s.id,
-      occurredAt: s.occurredAt,
-      type: s.type,
-      itemType: "PAINTING",
-      quantity: s.quantity,
-      totalPrice: s.totalPrice,
-      isEnchanted: false,
-      itemAttributes: s.additionalAttributes,
-      customName: s.customName,
-      insideContainer: s.insideContainer
-    } as SaleSummary)
+      ({
+        id: s.id,
+        occurredAt: s.occurredAt,
+        type: s.type,
+        itemType: "PAINTING",
+        quantity: s.quantity,
+        totalPrice: s.totalPrice,
+        isEnchanted: false,
+        itemAttributes: s.additionalAttributes,
+        customName: s.customName,
+        insideContainer: s.insideContainer,
+      } as SaleSummary)
   );
 
   loading.value = false;
@@ -78,7 +77,7 @@ async function fetchPaintingSales(paintingID: string): Promise<PaintingSaleSumma
       <div class="mb-3 font-normal text-gray-400 flex flex-col gap-4">
         <div>
           <span>By </span>
-          <RouterLink :to="{ name: 'gallery', params: { authorName: paintingData.authorName }, }" class="hyperlink">
+          <RouterLink :to="{ name: 'gallery', params: { authorName: paintingData.authorName } }" class="hyperlink">
             {{ paintingData.authorName }}
           </RouterLink>
         </div>
@@ -87,10 +86,10 @@ async function fetchPaintingSales(paintingID: string): Promise<PaintingSaleSumma
     </div>
 
     <div v-if="paintingData != null">
-      <h4 class="mb-2 text-2xl font-bold tracking-tight text-white">Sales of '{{ paintingData.title }}' painting
-      </h4>
+      <h4 class="mb-2 text-2xl font-bold tracking-tight text-white">Sales of '{{ paintingData.title }}' painting</h4>
 
-      <div class="mb-3 font-normal text-gray-400 flex flex-col gap-4">
+      <Loading v-if="loading" :loader-type="'text'"></Loading>
+      <div v-else class="mb-3 font-normal text-gray-400 flex flex-col gap-4">
         <RecentSales :recent-sales="paintingSales"></RecentSales>
       </div>
     </div>
