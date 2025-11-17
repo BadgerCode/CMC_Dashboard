@@ -75,6 +75,7 @@ onMounted(async () => {
       ],
     },
     options: {
+      maintainAspectRatio: false,
       plugins: {
         tooltip: {
           callbacks: {
@@ -129,7 +130,7 @@ async function getPlayerCounts(startDate: Date): Promise<PlayerCount[]> {
 </script>
 
 <template>
-  <div>
+  <div class="min-h-[400px]">
     <canvas id="chartOutput"></canvas>
   </div>
 </template>
