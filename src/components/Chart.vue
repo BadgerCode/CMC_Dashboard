@@ -8,6 +8,7 @@ interface ChartEntry {
   dateTime: Date;
   playerCounts: number[];
   index: number;
+  currentTime: boolean;
 }
 
 onMounted(async () => {
@@ -26,6 +27,7 @@ onMounted(async () => {
       dateTime: new Date(startDate.getTime() + i * intervalMs),
       index: i,
       playerCounts: [],
+      currentTime: false,
     });
   }
 
@@ -34,6 +36,7 @@ onMounted(async () => {
     dateTime: currentDate,
     index: data.length,
     playerCounts: [],
+    currentTime: true,
   });
 
   for (const playerCount of playerCounts) {
@@ -57,11 +60,16 @@ onMounted(async () => {
           label: "Players",
           spanGaps: true,
           borderWidth: 1,
-          data: data.map((row) =>
-            row.playerCounts.length == 0
-              ? NaN
-              : Math.round(row.playerCounts.reduce((partial, x) => partial + x, 0)) / row.playerCounts.length
-          ),
+          data: data.map((row) => {
+            // Empty results for times without player counts
+            if (row.playerCounts.length == 0) return NaN;
+
+            // For the current time, show the latest value
+            if (row.currentTime) return row.playerCounts[row.playerCounts.length - 1];
+
+            // Average of values for time period
+            return Math.round(row.playerCounts.reduce((partial, x) => partial + x, 0) / row.playerCounts.length);
+          }),
         },
       ],
     },
