@@ -43,10 +43,10 @@ const sales = computed(() => {
     for (const attribute of s.itemAttributes) {
       if (attribute.key == "PLAYERHEAD_PLAYER_NAME") row.playerHeadPlayerName = attribute.value;
       else if (attribute.key == "ENCHANTMENT") {
-        row.enchantments.push(formatEnchantment(attribute.value).toLocaleLowerCase());
+        row.enchantments.push(formatEnchantment(attribute.value));
       }
       else if (attribute.key == "POTION_EFFECT") {
-        row.potionEffect = formatPotionEffect(attribute.value).toLocaleLowerCase();
+        row.potionEffect = formatPotionEffect(attribute.value);
       }
       else if (attribute.key == "CUSTOM_DISC_SONG") {
         row.customDiscSong = formatCustomDisc(attribute.value).toLocaleLowerCase();

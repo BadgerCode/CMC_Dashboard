@@ -3,7 +3,7 @@ import { Config } from "@/config";
 import { formatDate } from "@/utilities/date-format";
 import { formatItemType } from "@/utilities/item-type-format";
 import { computed, onMounted, ref } from "vue";
-import { formatPrice, normalisePrice, simpleNormalisedPrice, type NormalisedPrice } from "@/utilities/normalise-price";
+import { normalisePrice, simpleNormalisedPrice, type NormalisedPrice } from "@/utilities/normalise-price";
 import Loading from "@/components/Loading.vue";
 import { formatEnchantment } from "@/utilities/enchantment-format";
 import { formatPotionEffect } from "@/utilities/potion-format";
@@ -223,7 +223,7 @@ let filteredAttributes = computed(() => {
                     <RouterLink
                       :to="{ name: 'itemSales', params: { itemType: subItem.itemType }, query: { enchantment: attribute.value } }"
                       class="hyperlink">
-                      {{ formatEnchantment(attribute.value)?.toLocaleLowerCase() }}
+                      {{ formatEnchantment(attribute.value) }}
                     </RouterLink>
                   </span>
                   <span v-else-if="attribute.key == 'PAINTING_AUTHOR_NAME'">

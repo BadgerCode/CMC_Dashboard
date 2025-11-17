@@ -116,7 +116,7 @@ async function loadEnchantments(): Promise<DropdownOption[]> {
   return response.map(
     (i: string) =>
     ({
-      text: formatEnchantment(i).toLocaleLowerCase(),
+      text: formatEnchantment(i),
       value: i,
     } as DropdownOption)
   );

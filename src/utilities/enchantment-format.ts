@@ -1,3 +1,3 @@
 export function formatEnchantment(enchantment: string): string {
-    return enchantment.replace("MINECRAFT:", "").replace(/_/g, " ");
+    return enchantment.toLocaleLowerCase().replace("minecraft:", "").replace(/_/g, " ");
 }
