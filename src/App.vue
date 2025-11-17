@@ -124,7 +124,13 @@ async function loadServerStats(): Promise<ServerStats | null> {
       <!-- Footer -->
       <footer
         class="relative bg-gray-800 after:pointer-events-none after:absolute after:inset-x-0 after:inset-y-0 after:border-y after:border-white/10">
-        <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 text-gray-300 text-center">Created by BadgerCode 🦡</div>
+        <div class="text-center mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 text-gray-300">
+          <div class="">Created by BadgerCode 🦡</div>
+          <div class="text-gray-400 text-xs mt-2">
+            <span>Server Info: </span>
+            <a href="https://callmecarson.live" class="hyperlink" target="_blank">https://callmecarson.live</a>
+          </div>
+        </div>
       </footer>
     </div>
   </div>
