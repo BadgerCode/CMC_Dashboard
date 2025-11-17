@@ -53,13 +53,14 @@ onMounted(async () => {
   new Chart(document.getElementById("chartOutput") as HTMLCanvasElement, {
     type: "line",
     data: {
-      // labels: data.map((row) => row.index),
-      labels: data.map((row) => formatDate(row.dateTime)),
+      labels: data.map((row) => row.dateTime.getTime()),
       datasets: [
         {
           label: "Players",
           spanGaps: true,
           borderWidth: 1,
+          pointRadius: 2,
+          pointStyle: "circle",
           data: data.map((row) => {
             // Empty results for times without player counts
             if (row.playerCounts.length == 0) return NaN;
@@ -74,16 +75,29 @@ onMounted(async () => {
       ],
     },
     options: {
+      plugins: {
+        tooltip: {
+          callbacks: {
+            title: function (context) {
+              let value = context[0]?.parsed.x;
+              if (!value) return "";
+              return formatDate(new Date(value));
+            },
+          },
+        },
+      },
       scales: {
         x: {
           grid: {
-            display: true,
             color: (context) => "rgba(255, 255, 255, 0.2)",
           },
+          type: "linear",
+          // min: startDate.getTime(),
+          max: currentDate.getTime(),
           ticks: {
-            callback: function (val, index) {
-              // Hide every 2nd tick label
-              return index % 2 === 0 ? this.getLabelForValue(val as number) : "";
+            stepSize: 6 * 60 * 60 * 1000,
+            callback: function (value, index, ticks) {
+              return formatDate(new Date(value));
             },
           },
         },
