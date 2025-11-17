@@ -109,7 +109,9 @@ async function loadServerStats(): Promise<ServerStats | null> {
 
           <div v-if="stats != null" class="text-gray-200 flex flex-col text-right">
             <div>Server {{ stats.status }}</div>
-            <div>{{ stats.numPlayers }} players</div>
+            <div>
+              <RouterLink :to="{ name: 'playercounts' }" class="hyperlink">{{ stats.numPlayers }} players</RouterLink>
+            </div>
           </div>
         </div>
       </header>

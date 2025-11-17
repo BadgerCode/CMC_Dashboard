@@ -39,8 +39,7 @@ async function loadSales() {
     </div>
 
     <div class="flex flex-row items-center justify-center">
-      <ItemTypeSearch @selection="itemType => $router.push({ name: 'itemSales', params: { itemType: itemType } })">
-      </ItemTypeSearch>
+      <ItemTypeSearch @selection="(itemType) => $router.push({ name: 'itemSales', params: { itemType: itemType } })"> </ItemTypeSearch>
     </div>
   </div>
 
@@ -52,7 +51,7 @@ async function loadSales() {
     </div>
 
     <div class="flex flex-row flex-wrap gap-2 md:gap-3">
-      <RouterLink v-for="item in getSpecialItems()" :to="{ name: 'itemSales', params: { itemType: item.itemType }, }">
+      <RouterLink v-for="item in getSpecialItems()" :to="{ name: 'itemSales', params: { itemType: item.itemType } }">
         <div
           class="p-1 w-20 h-20 gap-1 md:p-3 md:w-27 md:h-27 md:gap-2 bg-gray-800 flex flex-col items-center text-center justify-center text-gray-300 border-1 border-gray-700 rounded-lg">
           <div class="text-xl md:text-3xl"><font-awesome-icon :icon="item.icon" /></div>
@@ -74,9 +73,7 @@ async function loadSales() {
   </div>
 
   <div class="mt-8 text-center" v-if="!loading">
-    <button type="button" class="button" v-on:click="loadNextPage" v-if="!noMoreResults">
-      More
-    </button>
+    <button type="button" class="button" v-on:click="loadNextPage" v-if="!noMoreResults">More</button>
     <div v-else>No more results</div>
   </div>
 </template>

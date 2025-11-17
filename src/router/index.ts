@@ -2,6 +2,7 @@ import GalleryView from "@/views/GalleryView.vue";
 import HomeView from "@/views/HomeView.vue";
 import ItemTypeView from "@/views/ItemTypeView.vue";
 import PaintingView from "@/views/PaintingView.vue";
+import PlayerCountView from "@/views/PlayerCountView.vue";
 import SaleView from "@/views/SaleView.vue";
 import ShopsView from "@/views/ShopsView.vue";
 import WaystonesView from "@/views/WaystonesView.vue";
@@ -15,16 +16,16 @@ const router = createRouter({
       name: "home",
       component: HomeView,
       meta: {
-        title: 'Home'
-      }
+        title: "Home",
+      },
     },
     {
       path: "/shops",
       name: "shops",
       component: ShopsView,
       meta: {
-        title: 'Shops'
-      }
+        title: "Shops",
+      },
     },
     {
       path: "/gallery/:authorName?",
@@ -32,8 +33,8 @@ const router = createRouter({
       component: GalleryView,
       props: true,
       meta: {
-        title: 'Gallery'
-      }
+        title: "Gallery",
+      },
     },
     {
       path: "/paintings/:id",
@@ -41,8 +42,8 @@ const router = createRouter({
       component: PaintingView,
       props: true,
       meta: {
-        title: 'Painting'
-      }
+        title: "Painting",
+      },
     },
     {
       path: "/sale/:id",
@@ -50,8 +51,8 @@ const router = createRouter({
       component: SaleView,
       props: true,
       meta: {
-        title: 'Sale'
-      }
+        title: "Sale",
+      },
     },
     {
       path: "/items/:itemType",
@@ -59,15 +60,23 @@ const router = createRouter({
       component: ItemTypeView,
       props: true,
       meta: {
-        title: 'Item Information'
-      }
+        title: "Item Information",
+      },
     },
     {
       path: "/waystones",
       name: "waystones",
       component: WaystonesView,
       meta: {
-        title: 'Waystones'
+        title: "Waystones",
+      },
+    },
+    {
+      path: "/playercounts",
+      name: "playercounts",
+      component: PlayerCountView,
+      meta: {
+        title: "Player Numbers"
       }
     },
   ],
