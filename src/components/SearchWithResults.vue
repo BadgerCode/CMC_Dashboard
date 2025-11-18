@@ -12,7 +12,7 @@ interface Props {
 const props = defineProps<Props>();
 
 const emit = defineEmits<{
-  (e: "selection", item: DropdownOption): void;
+  (e: "selection", item: DropdownOption | null): void;
 }>();
 
 const filterText = ref("");
@@ -50,7 +50,8 @@ const filter = debounce(async () => {
             filterText = text;
             filter();
           }
-        ">
+        "
+        @clear="$emit('selection', null)">
       </SearchBox>
 
       <!-- Dropdown menu -->

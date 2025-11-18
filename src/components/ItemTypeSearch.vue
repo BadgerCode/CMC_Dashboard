@@ -1,17 +1,17 @@
 <script setup lang="ts">
-import { initFlowbite } from 'flowbite';
-import { onMounted, ref } from 'vue';
-import { debounce } from 'lodash'
-import { Config } from '@/config';
-import SearchBox from './SearchBox.vue';
+import { initFlowbite } from "flowbite";
+import { onMounted, ref } from "vue";
+import { debounce } from "lodash";
+import { Config } from "@/config";
+import SearchBox from "./SearchBox.vue";
 
 interface Props {
-  itemTypes?: string[]
+  itemTypes?: string[];
 }
-const props = defineProps<Props>()
+const props = defineProps<Props>();
 
 const emit = defineEmits<{
-  (e: 'selection', itemType: string): void
+  (e: "selection", itemType: string): void;
 }>();
 
 const filterText = ref("");
@@ -34,10 +34,9 @@ const filter = debounce(async () => {
   if (props.itemTypes != null) {
     let lowerCaseInput = input.toLowerCase();
     filteredItemTypes.value.splice(0);
-    filteredItemTypes.value.push(...props.itemTypes.filter(itemType => itemType.toLocaleLowerCase().includes(lowerCaseInput)));
+    filteredItemTypes.value.push(...props.itemTypes.filter((itemType) => itemType.toLocaleLowerCase().includes(lowerCaseInput)));
     return;
   }
-
 
   // If item types haven't been passed in, get them via the API
   const params = new URLSearchParams();
@@ -47,8 +46,7 @@ const filter = debounce(async () => {
   let url = `${Config.APIURL}/api/itemTypes?${params.toString()}`;
   let httpResponse = await fetch(url, { method: "get" });
 
-  if (httpResponse.status !== 200)
-    return null;
+  if (httpResponse.status !== 200) return null;
 
   let response = await httpResponse.json();
   filteredItemTypes.value.splice(0);
@@ -56,30 +54,37 @@ const filter = debounce(async () => {
 }, 350);
 
 function clear() {
-  emit('selection', '');
-  filterText.value = '';
+  emit("selection", "");
+  filterText.value = "";
   filteredItemTypes.value.splice(0);
 }
-
 </script>
 
 <template>
   <div>
-
     <label for="table-search" class="sr-only">Search</label>
     <div class="relative group">
-      <SearchBox :placeholder="'Item types. E.g. Emerald'" :model-value="filterText"
-        @update:model-value="text => { filterText = text; filter(); }"></SearchBox>
+      <SearchBox
+        :placeholder="'Item types. E.g. Emerald'"
+        :model-value="filterText"
+        @update:model-value="
+          (text) => {
+            filterText = text;
+            filter();
+          }
+        "
+        @clear="$emit('selection', '')"></SearchBox>
 
       <!-- Dropdown menu -->
-      <div id="itemTypeSearch" class="absolute inset-y-0 z-10 w-60 mt-[40px] hidden group-focus-within:block"
+      <div
+        id="itemTypeSearch"
+        class="absolute inset-y-0 z-10 w-60 mt-[40px] hidden group-focus-within:block"
         v-if="filteredItemTypes.length > 0">
-
-        <ul class="max-h-48 p-3 overflow-y-auto text-sm text-gray-200 bg-gray-700 rounded-lg shadow-sm border border-gray-800"
+        <ul
+          class="max-h-48 p-3 overflow-y-auto text-sm text-gray-200 bg-gray-700 rounded-lg shadow-sm border border-gray-800"
           aria-labelledby="itemTypeSearchButton">
           <li v-for="itemType in filteredItemTypes" class="hyperlink" @click="emit('selection', itemType)">
-            <div tabindex="0"
-              class="flex items-center px-4 py-2 ps-2 rounded-sm hover:bg-gray-600 text-gray-300 text-sm font-medium">
+            <div tabindex="0" class="flex items-center px-4 py-2 ps-2 rounded-sm hover:bg-gray-600 text-gray-300 text-sm font-medium">
               {{ itemType }}
             </div>
           </li>

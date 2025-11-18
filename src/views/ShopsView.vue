@@ -154,7 +154,11 @@ function applyFilters() {
       <DropdownFilter :placeholder="'Enchantments'" :icon="'fa-solid fa-wand-sparkles'" :options="enchantments" v-model="enchantmentFilter">
       </DropdownFilter>
 
-      <SearchWithResults :placeholder="'Shop owners'" :items="shopOwners" @selection="(item) => (shopOwnerFilter = item.value)">
+      <SearchWithResults
+        :placeholder="'Shop owners'"
+        :items="shopOwners"
+        @selection="(item) => (shopOwnerFilter = item?.value ?? '')"
+        @clear="() => (shopOwnerFilter = '')">
       </SearchWithResults>
     </div>
 
