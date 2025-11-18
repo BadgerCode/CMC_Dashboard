@@ -29,6 +29,7 @@ import {
   faMap,
   faBoxOpen,
   faUser,
+  faCircleQuestion,
   // Don't forget to add it below too!
 } from "@fortawesome/free-solid-svg-icons";
 
@@ -57,6 +58,7 @@ library.add(
   faMap,
   faBoxOpen,
   faUser,
+  faCircleQuestion,
 );
 
 // Regular icons

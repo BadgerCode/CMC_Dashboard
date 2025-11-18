@@ -41,3 +41,20 @@ export async function loadWaystones(): Promise<ServerWaystones> {
 
   return waystonesStore;
 }
+
+export interface WaystoneStats {
+  id: string;
+  name: string;
+  world: string;
+  visitsThisWeek: number;
+}
+
+export async function loadWaystoneStats(date: Date): Promise<WaystoneStats[]> {
+  let url = `${Config.APIURL}/api/waystones/stats?date=${date.toISOString()}`;
+  let httpResponse = await fetch(url, { method: "get" });
+
+  if (httpResponse.status !== 200) throw new Error("Failed to retrieve waystones");
+
+  let response = await httpResponse.json();
+  return response.items;
+}
