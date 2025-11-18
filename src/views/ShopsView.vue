@@ -10,6 +10,7 @@ import type { ShopData } from "@/api/shops/shopdata";
 import { updateShops } from "@/api/shops/api";
 import type { ShopOverview } from "@/store/shops-state";
 import ShopsList from "@/components/ShopsList.vue";
+import SearchWithResults from "@/components/SearchWithResults.vue";
 
 const loading = ref(true);
 const shopData = ref(null as ShopOverview | null);
@@ -47,6 +48,13 @@ watch(enchantmentFilter, async (_, __) => {
   applyFilters();
 });
 
+// Filtering: shop owner
+const shopOwners = ref([] as DropdownOption[]);
+const shopOwnerFilter = ref("");
+watch(shopOwnerFilter, async (_, __) => {
+  applyFilters();
+});
+
 // Setup
 onMounted(async () => {
   initFlowbite(); // Include on any component where you need flowbite JS functionality
@@ -70,6 +78,16 @@ onMounted(async () => {
     }))
     .sort((a, b) => a.text.localeCompare(b.text));
 
+  // Populate shop owner filter
+  let allOwners = shopData.value.shops
+    .map((s) => ({
+      text: s.owner.name,
+      value: s.owner.uuid,
+    }))
+    .sort((a, b) => a.text.localeCompare(b.text));
+
+  shopOwners.value = [...new Map(allOwners.map((item) => [item.text, item])).values()];
+
   applyFilters();
   loading.value = false;
 });
@@ -84,6 +102,7 @@ function applyFilters() {
   filteredShops.value.splice(0);
 
   let itemType = itemTypeFilter.value.trim();
+  let shopOwner = shopOwnerFilter.value.trim();
 
   filteredShops.value.push(
     ...shopData.value.shops.filter((s) => {
@@ -103,6 +122,9 @@ function applyFilters() {
       // Apply enchantments filter
       if (enchantmentFilter.value.length > 0 && !enchantmentFilter.value.some((e) => s.item.parsedSNBT.enchantments.includes(e)))
         return false;
+
+      // Apply owner filter
+      if (shopOwner.length > 0 && s.owner.uuid != shopOwner) return false;
 
       return true;
     })
@@ -131,6 +153,9 @@ function applyFilters() {
 
       <DropdownFilter :placeholder="'Enchantments'" :icon="'fa-solid fa-wand-sparkles'" :options="enchantments" v-model="enchantmentFilter">
       </DropdownFilter>
+
+      <SearchWithResults :placeholder="'Shop owners'" :items="shopOwners" @selection="(item) => (shopOwnerFilter = item.value)">
+      </SearchWithResults>
     </div>
 
     <div>

@@ -28,6 +28,7 @@ import {
   faCircle,
   faMap,
   faBoxOpen,
+  faUser,
   // Don't forget to add it below too!
 } from "@fortawesome/free-solid-svg-icons";
 
@@ -55,6 +56,7 @@ library.add(
   faCircle,
   faMap,
   faBoxOpen,
+  faUser,
 );
 
 // Regular icons

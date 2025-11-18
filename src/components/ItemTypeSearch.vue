@@ -68,7 +68,7 @@ function clear() {
 
     <label for="table-search" class="sr-only">Search</label>
     <div class="relative group">
-      <SearchBox :placeholder="'Search item types. E.g. Emerald'" :model-value="filterText"
+      <SearchBox :placeholder="'Item types. E.g. Emerald'" :model-value="filterText"
         @update:model-value="text => { filterText = text; filter(); }"></SearchBox>
 
       <!-- Dropdown menu -->
