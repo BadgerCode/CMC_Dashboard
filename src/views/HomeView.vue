@@ -39,7 +39,9 @@ async function loadSales() {
     </div>
 
     <div class="flex flex-row items-center justify-center">
-      <ItemTypeSearch @selection="(itemType) => $router.push({ name: 'itemSales', params: { itemType: itemType } })"> </ItemTypeSearch>
+      <ItemTypeSearch
+        @selection="(itemType) => { if (itemType) $router.push({ name: 'itemSales', params: { itemType: itemType } }) }">
+      </ItemTypeSearch>
     </div>
   </div>
 

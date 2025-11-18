@@ -142,35 +142,25 @@ function applyFilters() {
 
   <div class="flex flex-column flex-wrap space-y-2 items-start justify-between">
     <div class="flex flex-row flex-wrap gap-1">
-      <DropdownFilter
-        :placeholder="'Buy/Sell'"
-        :icon="'fa-solid fa-arrows-left-right'"
-        :options="buySellOptions"
+      <DropdownFilter :placeholder="'Buy/Sell'" :icon="'fa-solid fa-arrows-left-right'" :options="buySellOptions"
         v-model="buySellFilter"></DropdownFilter>
 
-      <DropdownFilter :placeholder="'Potion Effect'" :icon="'fa-solid fa-flask'" :options="potionEffects" v-model="potionEffectFilter">
+      <DropdownFilter :placeholder="'Potion Effect'" :icon="'fa-solid fa-flask'" :options="potionEffects"
+        v-model="potionEffectFilter">
       </DropdownFilter>
 
-      <DropdownFilter :placeholder="'Enchantments'" :icon="'fa-solid fa-wand-sparkles'" :options="enchantments" v-model="enchantmentFilter">
+      <DropdownFilter :placeholder="'Enchantments'" :icon="'fa-solid fa-wand-sparkles'" :options="enchantments"
+        v-model="enchantmentFilter">
       </DropdownFilter>
 
-      <SearchWithResults
-        :placeholder="'Shop owners'"
-        :items="shopOwners"
-        @selection="(item) => (shopOwnerFilter = item?.value ?? '')"
-        @clear="() => (shopOwnerFilter = '')">
+      <SearchWithResults :placeholder="'Shop owners'" :items="shopOwners"
+        @selection="(item) => (shopOwnerFilter = item?.value ?? '')" @clear="() => (shopOwnerFilter = '')">
       </SearchWithResults>
     </div>
 
     <div>
-      <ItemTypeSearch
-        :item-types="shopData?.itemTypes ?? []"
-        @selection="
-          (itemType) => {
-            itemTypeFilter = itemType;
-            applyFilters();
-          }
-        ">
+      <ItemTypeSearch :item-types="shopData?.itemTypes ?? []"
+        @selection="(itemType) => { itemTypeFilter = itemType ?? ''; applyFilters(); }">
       </ItemTypeSearch>
     </div>
   </div>
@@ -184,7 +174,8 @@ function applyFilters() {
     <ShopsList :shops="filteredShops"></ShopsList>
   </div>
 
-  <div v-if="filteredShops.length > maxShops" class="mt-8 text-center text-gray-400">Only showing up to {{ maxShops }} shops</div>
+  <div v-if="filteredShops.length > maxShops" class="mt-8 text-center text-gray-400">Only showing up to {{ maxShops }}
+    shops</div>
 
   <Loading v-if="loading" :fill-space="true"></Loading>
 </template>

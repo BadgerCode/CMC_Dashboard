@@ -195,7 +195,8 @@ let filtersText = computed(() => {
   <div class="flex flex-col gap-8">
     <div class="mb-2 flex flex-col gap-4">
       <div class="flex flex-row items-center justify-center">
-        <ItemTypeSearch @selection="itemType => $router.push({ name: 'itemSales', params: { itemType: itemType } })">
+        <ItemTypeSearch
+          @selection="(itemType) => { if (itemType) $router.push({ name: 'itemSales', params: { itemType: itemType } }) }">
         </ItemTypeSearch>
       </div>
     </div>

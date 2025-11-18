@@ -11,7 +11,7 @@ interface Props {
 const props = defineProps<Props>();
 
 const emit = defineEmits<{
-  (e: "selection", itemType: string): void;
+  (e: "selection", itemType: string | null): void;
 }>();
 
 const filterText = ref("");
@@ -73,7 +73,7 @@ function clear() {
             filter();
           }
         "
-        @clear="$emit('selection', '')"></SearchBox>
+        @clear="() => $emit('selection', null)"></SearchBox>
 
       <!-- Dropdown menu -->
       <div
