@@ -18,7 +18,7 @@ onMounted(async () => {
   let playerCounts = (await getPlayerCounts(startDate)).sort((a, b) => a.dateTime.localeCompare(b.dateTime));
 
   // Generate data points for each interval
-  let intervalMs = 30 * 60 * 1000; // Every 30 mins
+  let intervalMs = 1 * 60 * 60 * 1000; // Every 1 hour
   let numDataPoints = (currentDate.getTime() - startDate.getTime()) / intervalMs;
 
   let data = [] as ChartEntry[];
