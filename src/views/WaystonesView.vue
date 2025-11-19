@@ -198,6 +198,7 @@ function applySort() {
   <Loading v-if="loading" :fill-space="true"></Loading>
   <div v-else class="relative overflow-x-auto">
     <div class="text-gray-400">
+      <div>{{ filteredWaystones.length }} waystones</div>
       <div class="text-gray-500 text-xs">Last updated {{ formatDate(lastUpdated, "") }}</div>
     </div>
 
