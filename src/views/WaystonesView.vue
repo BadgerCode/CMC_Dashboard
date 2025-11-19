@@ -172,8 +172,8 @@ function applySort() {
     </div>
   </div>
 
-  <div class="flex flex-column sm:flex-row flex-wrap space-y-4 sm:space-y-0 items-center justify-between pb-4">
-    <div class="flex flex-row flex-wrap gap-1">
+  <div class="flex flex-column sm:flex-row flex-wrap space-y-4 sm:space-y-0 items-start justify-between pb-4">
+    <div class="flex flex-row flex-wrap gap-2 items-center">
       <DropdownFilter :placeholder="'World'" :icon="'fa-solid fa-globe'" :options="worldFilterOptions" v-model="worldFilter">
       </DropdownFilter>
     </div>
