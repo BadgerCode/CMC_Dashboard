@@ -3,7 +3,7 @@ export interface Painting {
   size: string;
   title: string;
   authorName: string;
-  firstSeenAt: string;
+  createdAt: string;
   collectionId: string | null;
   collectionPosition: string | null;
 }

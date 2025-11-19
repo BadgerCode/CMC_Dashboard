@@ -31,7 +31,7 @@ async function loadPaintings() {
   let lastItem = paintings.value.slice(-1)[0];
 
   if (lastItem != null) {
-    params.append("before", lastItem.firstSeenAt);
+    params.append("before", lastItem.createdAt);
     params.append("lastID", lastItem.id);
   }
 
