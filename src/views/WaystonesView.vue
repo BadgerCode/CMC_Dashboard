@@ -6,6 +6,7 @@ import { formatDate, formatDateNoTime } from "@/utilities/date-format";
 import * as WaystoneAPI from "@/api/waystones/api";
 import DropdownFilter, { type DropdownOption } from "@/components/DropdownFilter.vue";
 import SearchBox from "@/components/SearchBox.vue";
+import Checkbox from "@/components/Checkbox.vue";
 
 interface WaystoneRow {
   rank: number;
@@ -39,6 +40,12 @@ const worldFilterOptions = ref([] as DropdownOption[]);
 const worldFilter = ref([] as string[]);
 
 watch(worldFilter, async (_, __) => {
+  applyFilters();
+});
+
+// New waystones filter
+const newFilter = ref(false);
+watch(newFilter, async (_, __) => {
   applyFilters();
 });
 
@@ -126,6 +133,9 @@ function applyFilters() {
       let trimmedNameFilter = nameFilter.value.trim().toLocaleLowerCase();
       if (trimmedNameFilter.length > 0 && !w.name.toLocaleLowerCase().includes(trimmedNameFilter)) return false;
 
+      // New waystones filter (no previous rank)
+      if (newFilter.value && w.previousRankChange != null) return false;
+
       return true;
     })
   );
@@ -176,6 +186,8 @@ function applySort() {
     <div class="flex flex-row flex-wrap gap-2 items-center">
       <DropdownFilter :placeholder="'World'" :icon="'fa-solid fa-globe'" :options="worldFilterOptions" v-model="worldFilter">
       </DropdownFilter>
+
+      <Checkbox :label="'New Waystones'" v-model="newFilter"></Checkbox>
     </div>
 
     <div>
