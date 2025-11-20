@@ -50,7 +50,8 @@ export interface WaystoneStats {
 }
 
 export async function loadWaystoneStats(date: Date): Promise<WaystoneStats[]> {
-  let url = `${Config.APIURL}/api/waystones/stats?date=${date.toISOString()}`;
+  var dateFormatted = date.toISOString().replace(/T.*/, '');
+  let url = `${Config.APIURL}/api/waystones/stats?date=${dateFormatted}`;
   let httpResponse = await fetch(url, { method: "get" });
 
   if (httpResponse.status !== 200) throw new Error("Failed to retrieve waystones");
