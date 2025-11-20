@@ -42,6 +42,8 @@ export async function loadWaystones(): Promise<ServerWaystones> {
   return waystonesStore;
 }
 
+
+// Waystone stats
 export interface WaystoneStats {
   id: string;
   name: string;
@@ -49,7 +51,15 @@ export interface WaystoneStats {
   visitsThisWeek: number;
 }
 
-export async function loadWaystoneStats(date: Date): Promise<WaystoneStats[]> {
+export interface WaystoneStatsResponse {
+  stats: WaystoneStats[];
+  date: Date;
+}
+
+const minStartDate = Date.UTC(2025, 10, 13, 0, 0, 0); // No records before this date
+export async function loadWaystoneStats(date: Date): Promise<WaystoneStatsResponse> {
+  if (date.getTime() < minStartDate) date = new Date(minStartDate);
+
   var dateFormatted = date.toISOString().replace(/T.*/, '');
   let url = `${Config.APIURL}/api/waystones/stats?date=${dateFormatted}`;
   let httpResponse = await fetch(url, { method: "get" });
@@ -57,5 +67,8 @@ export async function loadWaystoneStats(date: Date): Promise<WaystoneStats[]> {
   if (httpResponse.status !== 200) throw new Error("Failed to retrieve waystones");
 
   let response = await httpResponse.json();
-  return response.items;
+  return {
+    stats: response.items,
+    date: date
+  };
 }
