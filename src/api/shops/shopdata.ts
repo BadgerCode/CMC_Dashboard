@@ -27,7 +27,7 @@ export interface ShopItem {
   type: string;
   quantity: number;
   name: string;
-  snbt: string;
+  // snbt: string;
   parsedSNBT: SNBTData;
 }
 

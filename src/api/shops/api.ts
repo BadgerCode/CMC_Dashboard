@@ -27,7 +27,8 @@ export async function updateShops(): Promise<ShopOverview> {
   let response = await httpResponse.json();
   let responseItems = response.items as ShopData[];
   for (const shop of responseItems) {
-    shop.item.parsedSNBT = parseSNBTData(shop.item.snbt);
+    shop.item.parsedSNBT ??= { enchantments: [] };
+    // shop.item.parsedSNBT = parseSNBTData(shop.item.snbt);
 
     // Work out nearest waystone
     shop.nearestWaystones = nearestNeighbour
