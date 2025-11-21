@@ -18,6 +18,7 @@ import { formatPotionEffect } from "@/utilities/potion-format";
 import { useRoute } from "vue-router";
 import ItemTypeSearch from "./ItemTypeSearch.vue";
 import { getItemInfo } from "@/models/item-info";
+import type { ShopOverview } from "@/store/shops-state";
 
 interface Props {
   itemType: string;
@@ -69,19 +70,6 @@ watch(customDiscFilter, async (_, __) => {
 onMounted(async () => {
   initFlowbite(); // Include on any component where you need flowbite JS functionality
 
-  // Load enchantments
-  // TODO: Combine sales enchantments with shop enchantments
-  enchantments.value.push(...(await loadEnchantments()));
-
-  // Custom music discs
-  // TODO: Combine sales music discs with shop music discs
-  if (props.itemType == "CUSTOM_MUSIC_DISC") customDiscs.value.push(...(await loadDiscs()));
-
-  // Potion effects
-  // TODO: Combine sales potion effects with shop potion effects
-  let isPotion = ["POTION", "SPLASH_POTION", "LINGERING_POTION"].indexOf(props.itemType) != -1;
-  if (isPotion) potionEffects.value.push(...(await loadPotions()));
-
   // Load sales with any filters
   await loadSales();
   loadingSales.value = false;
@@ -89,8 +77,19 @@ onMounted(async () => {
   // Load shop data
   let shopData = await updateShops();
   shops.value = shopData.shops.filter((s) => s.item.type == props.itemType && s.type == "SELLING");
-  applyFilters();
 
+  // Load enchantments
+  enchantments.value.push(...(await loadEnchantments()));
+
+  // Custom music discs
+  if (props.itemType == "CUSTOM_MUSIC_DISC") customDiscs.value.push(...(await loadDiscs()));
+
+  // Potion effects
+  let isPotion = ["POTION", "SPLASH_POTION", "LINGERING_POTION"].indexOf(props.itemType) != -1;
+  if (isPotion) potionEffects.value.push(...(await loadPotions()));
+
+  // Render the item overview
+  applyFilters();
   loadingShops.value = false;
 });
 
@@ -110,8 +109,13 @@ async function loadSales() {
 
 async function loadEnchantments(): Promise<DropdownOption[]> {
   // TODO: Cache
-  let response = await loadItems(`${Config.APIURL}/api/itemtypes/${props.itemType}/enchantments`);
-  return response.map(
+  let allItems = await loadItems(`${Config.APIURL}/api/itemtypes/${props.itemType}/enchantments`);
+  // Combine shop and sale data and get a unique ordered list
+  allItems.push(...shops.value.flatMap(s => s.item.parsedSNBT.enchantments))
+  let uniqueItems = [...new Set(allItems.sort())];
+
+  // shops.value
+  return uniqueItems.map(
     (i: string) =>
       ({
         text: formatEnchantment(i),
@@ -122,8 +126,12 @@ async function loadEnchantments(): Promise<DropdownOption[]> {
 
 async function loadDiscs(): Promise<DropdownOption[]> {
   // TODO: Cache
-  let response = await loadItems(`${Config.APIURL}/api/customDiscs`);
-  return response.map(
+  let allItems = await loadItems(`${Config.APIURL}/api/customDiscs`);
+  // Combine shop and sale data and get a unique ordered list
+  allItems.push(...shops.value.map(s => s.item.parsedSNBT.customDiscSong).filter(s => s != null))
+  let uniqueItems = [...new Set(allItems.sort())];
+
+  return uniqueItems.map(
     (i: string) =>
       ({
         text: formatCustomDisc(i),
@@ -134,8 +142,12 @@ async function loadDiscs(): Promise<DropdownOption[]> {
 
 async function loadPotions(): Promise<DropdownOption[]> {
   // TODO: Cache
-  let response = await loadItems(`${Config.APIURL}/api/itemtypes/${props.itemType}/potionTypes`);
-  return response.map(
+  let allItems = await loadItems(`${Config.APIURL}/api/itemtypes/${props.itemType}/potionTypes`);
+  // Combine shop and sale data and get a unique ordered list
+  allItems.push(...shops.value.map(s => s.item.parsedSNBT.potionEffect).filter(s => s != null))
+  let uniqueItems = [...new Set(allItems.sort())];
+
+  return uniqueItems.map(
     (i: string) =>
       ({
         text: formatPotionEffect(i),
@@ -144,7 +156,7 @@ async function loadPotions(): Promise<DropdownOption[]> {
   );
 }
 
-async function loadItems(url: string): Promise<any[]> {
+async function loadItems(url: string): Promise<string[]> {
   let httpResponse = await fetch(url, { method: "get" });
 
   if (httpResponse.status !== 200) return [];
