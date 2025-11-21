@@ -29,11 +29,11 @@ defineProps<Props>();
       </div>
       <!-- Painting preview -->
       <div>
-        <RouterLink :to="{ name: 'painting', params: { id: snbt.paintingID } }" class="hyperlink">
-          <div class="h-[32px] w-[32px]">
+        <div class="h-[32px] w-[32px]">
+          <RouterLink :to="{ name: 'painting', params: { id: snbt.paintingID } }" class="hyperlink">
             <RenderPainting :painting-id="snbt.paintingID" :size="'SMALL'"></RenderPainting>
-          </div>
-        </RouterLink>
+          </RouterLink>
+        </div>
       </div>
       <!-- Painting author -->
       <div v-if="snbt.paintingAuthor">

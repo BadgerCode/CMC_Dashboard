@@ -190,7 +190,17 @@ function applyFilters() {
 function matchesFilters(item: ShopItem) {
   // Apply name filter
   let trimmedNameFilter = nameFilter.value.trim().toLocaleLowerCase();
-  if (trimmedNameFilter.length > 0 && !item.name.toLocaleLowerCase().includes(trimmedNameFilter)) return false;
+  let itemName = item.name.toLocaleLowerCase();
+  let secondaryName = (
+    item.parsedSNBT.paintingTitle?.toLocaleLowerCase() ??
+    item.parsedSNBT.writtenBookTitle?.toLocaleLowerCase() ??
+    item.parsedSNBT.customDiscSong ??
+    item.parsedSNBT.playerHeadPlayerName ??
+    ""
+  ).toLocaleLowerCase();
+
+  console.log(`Secondary Name for ${item.type}- ${secondaryName}`);
+  if (trimmedNameFilter.length > 0 && !itemName.includes(trimmedNameFilter) && !secondaryName.includes(trimmedNameFilter)) return false;
 
   // Apply enchantments filter
   let enchantment = enchantmentFilter.value.toLocaleLowerCase();
