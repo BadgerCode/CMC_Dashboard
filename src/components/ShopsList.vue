@@ -105,10 +105,10 @@ function applySort(items: ShopData[]) {
           </div>
 
           <!-- Painting info -->
-          <div class="text-xs md:text-sm" v-if="shop.item.parsedSNBT.paintingName">
+          <div class="text-xs md:text-sm" v-if="shop.item.parsedSNBT.paintingTitle">
             Title: <RouterLink :to="{ name: 'painting', params: { id: shop.item.parsedSNBT.paintingID }, }"
               class="hyperlink">
-              {{ shop.item.parsedSNBT.paintingName }}
+              {{ shop.item.parsedSNBT.paintingTitle }}
             </RouterLink>
           </div>
         </td>

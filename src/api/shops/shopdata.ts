@@ -1,5 +1,3 @@
-import type { SNBTData } from "@/utilities/snbt-processor";
-
 export interface ShopData {
   id: number;
   owner: ShopOwner;
@@ -8,7 +6,7 @@ export interface ShopData {
   price: number;
   remaining: number;
   item: ShopItem;
-  nearestWaystones: NearbyWaystone[]
+  nearestWaystones: NearbyWaystone[];
 }
 
 export interface ShopOwner {
@@ -27,12 +25,25 @@ export interface ShopItem {
   type: string;
   quantity: number;
   name: string;
-  // snbt: string;
   parsedSNBT: SNBTData;
+}
+
+export interface SNBTData {
+  playerHeadPlayerName?: string;
+  potionEffect?: string;
+  customDiscSong?: string;
+  writtenBookTitle?: string;
+  writtenBookAuthor?: string;
+  writtenBookPageCount?: string;
+  paintingID?: string;
+  paintingTitle?: string;
+  paintingAuthor?: string;
+  paintingOriginality?: string;
+  enchantments: string[];
 }
 
 export interface NearbyWaystone {
   name: string;
   distance: number;
   directionRotation: number;
-};
+}

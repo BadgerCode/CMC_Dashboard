@@ -1,6 +1,5 @@
 import { Config } from "@/config";
 import type { NearbyWaystone, ShopData } from "./shopdata";
-import { parseSNBTData } from "@/utilities/snbt-processor";
 import { shopsStore, type ShopOverview } from "@/store/shops-state";
 import { loadWaystones } from "../waystones/api";
 import type { Waystone } from "../waystones/waystone";
@@ -28,7 +27,6 @@ export async function updateShops(): Promise<ShopOverview> {
   let responseItems = response.items as ShopData[];
   for (const shop of responseItems) {
     shop.item.parsedSNBT ??= { enchantments: [] };
-    // shop.item.parsedSNBT = parseSNBTData(shop.item.snbt);
 
     // Work out nearest waystone
     shop.nearestWaystones = nearestNeighbour
