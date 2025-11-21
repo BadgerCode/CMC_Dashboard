@@ -7,6 +7,7 @@ import * as WaystoneAPI from "@/api/waystones/api";
 import DropdownFilter, { type DropdownOption } from "@/components/DropdownFilter.vue";
 import SearchBox from "@/components/SearchBox.vue";
 import Checkbox from "@/components/Checkbox.vue";
+import { formatNumber } from "@/utilities/number-format";
 
 interface WaystoneRow {
   rank: number;
@@ -72,8 +73,8 @@ onMounted(async () => {
       world: waystone.world,
       x: waystone.x,
       z: waystone.z,
-      visitsThisWeek: waystone.visitsThisWeek,
-      visitsTotal: waystone.visitsTotal,
+      visitsThisWeek: Number(waystone.visitsThisWeek),
+      visitsTotal: Number(waystone.visitsTotal),
       previousRankChange: previousRank == undefined ? null : previousRank - (i + 1),
     });
   }
@@ -101,9 +102,9 @@ async function loadWaystoneStats(): Promise<{ [id: string]: number }> {
   if (date.getTime() < minStartDate) date = new Date(minStartDate);
 
   // List of stats
-  let stats = (await WaystoneAPI.loadWaystoneStats(date))
-    .stats
-    .sort((a, b) => b.visitsThisWeek - a.visitsThisWeek || a.name.localeCompare(b.name));
+  let stats = (await WaystoneAPI.loadWaystoneStats(date)).stats.sort(
+    (a, b) => b.visitsThisWeek - a.visitsThisWeek || a.name.localeCompare(b.name)
+  );
 
   var previousRanks = {} as { [id: string]: number };
   for (let i = 0; i < stats.length; i++) {
@@ -179,8 +180,7 @@ function applySort() {
 
   <div class="flex flex-column sm:flex-row flex-wrap space-y-4 sm:space-y-0 items-start justify-between pb-4">
     <div class="flex flex-row flex-wrap gap-2 items-center">
-      <DropdownFilter :placeholder="'World'" :icon="'fa-solid fa-globe'" :options="worldFilterOptions"
-        v-model="worldFilter">
+      <DropdownFilter :placeholder="'World'" :icon="'fa-solid fa-globe'" :options="worldFilterOptions" v-model="worldFilter">
       </DropdownFilter>
 
       <Checkbox :label="'New Waystones'" v-model="newFilter"></Checkbox>
@@ -207,13 +207,15 @@ function applySort() {
 
             <!-- Tooltip -->
             <span class="ml-2">
-              <button data-popover-target="popover-description" data-popover-placement="bottom-end" type="button"
-                class="text-gray-400">
+              <button data-popover-target="popover-description" data-popover-placement="bottom-end" type="button" class="text-gray-400">
                 <font-awesome-icon icon="fa-solid fa-circle-question" />
                 <span class="sr-only">Show information</span>
               </button>
 
-              <div data-popover id="popover-description" role="tooltip"
+              <div
+                data-popover
+                id="popover-description"
+                role="tooltip"
                 class="absolute z-10 p-3 invisible inline-block text-sm text-body transition-opacity duration-300 bg-neutral-primary-soft border border-default rounded-base shadow-xs opacity-0 w-72 bg-gray-900">
                 <div class="normal-case font-normal">
                   <p>Rankings are determined by "Visits this week".</p>
@@ -227,24 +229,25 @@ function applySort() {
           <!-- Name -->
           <th class="table-item">
             <span>Name</span>
-            <font-awesome-icon icon="fa-solid fa-sort" class="text-xs ml-1 cursor-pointer"
-              @click="sort('name', true)" />
+            <font-awesome-icon icon="fa-solid fa-sort" class="text-xs ml-1 cursor-pointer" @click="sort('name', true)" />
           </th>
 
           <!-- Location -->
-          <th class="table-item">Location</th>
-          <th class="table-item">World</th>
+          <!-- Mobile -->
+          <th class="table-item table-cell md:hidden">Location</th>
+
+          <!-- Desktop -->
+          <th class="table-item hidden md:table-cell">Location</th>
+          <th class="table-item hidden md:table-cell">World</th>
 
           <!-- Visit stats -->
           <th class="table-item">
             <span>Visits This Week</span>
-            <font-awesome-icon icon="fa-solid fa-sort" class="text-xs ml-1 cursor-pointer"
-              @click="sort('visitsThisWeek', false)" />
+            <font-awesome-icon icon="fa-solid fa-sort" class="text-xs ml-1 cursor-pointer" @click="sort('visitsThisWeek', false)" />
           </th>
           <th class="table-item">
             <span>Visits</span>
-            <font-awesome-icon icon="fa-solid fa-sort" class="text-xs ml-1 cursor-pointer"
-              @click="sort('visitsTotal', false)" />
+            <font-awesome-icon icon="fa-solid fa-sort" class="text-xs ml-1 cursor-pointer" @click="sort('visitsTotal', false)" />
           </th>
         </tr>
       </thead>
@@ -264,14 +267,21 @@ function applySort() {
           <td class="table-item wrap-anywhere">{{ waystone.name }}</td>
 
           <!-- Location -->
-          <td class="table-item">{{ waystone.x }}, {{ waystone.z }}</td>
-          <td class="table-item">{{ waystone.world }}</td>
+          <!-- Mobile -->
+          <td class="table-item table-cell md:hidden">
+            <div>{{ waystone.x }}, {{ waystone.z }}</div>
+            <div>{{ waystone.world }}</div>
+          </td>
+
+          <!-- Desktop -->
+          <td class="table-item hidden md:table-cell">{{ waystone.x }}, {{ waystone.z }}</td>
+          <td class="table-item hidden md:table-cell">{{ waystone.world }}</td>
 
           <!-- Stats -->
           <td class="table-item">
-            <span>{{ waystone.visitsThisWeek }}</span>
+            <span>{{ waystone.visitsThisWeek.toLocaleString() }}</span>
           </td>
-          <td class="table-item">{{ waystone.visitsTotal }}</td>
+          <td class="table-item">{{ waystone.visitsTotal.toLocaleString() }}</td>
         </tr>
       </tbody>
     </table>
