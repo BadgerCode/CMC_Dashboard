@@ -199,7 +199,6 @@ function matchesFilters(item: ShopItem) {
     ""
   ).toLocaleLowerCase();
 
-  console.log(`Secondary Name for ${item.type}- ${secondaryName}`);
   if (trimmedNameFilter.length > 0 && !itemName.includes(trimmedNameFilter) && !secondaryName.includes(trimmedNameFilter)) return false;
 
   // Apply enchantments filter
