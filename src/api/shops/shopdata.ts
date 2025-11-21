@@ -1,3 +1,5 @@
+import type { SNBTData } from "@/models/snbt";
+
 export interface ShopData {
   id: number;
   owner: ShopOwner;
@@ -26,20 +28,6 @@ export interface ShopItem {
   quantity: number;
   name: string;
   parsedSNBT: SNBTData;
-}
-
-export interface SNBTData {
-  playerHeadPlayerName?: string;
-  potionEffect?: string;
-  customDiscSong?: string;
-  writtenBookTitle?: string;
-  writtenBookAuthor?: string;
-  writtenBookPageCount?: string;
-  paintingID?: string;
-  paintingTitle?: string;
-  paintingAuthor?: string;
-  paintingOriginality?: string;
-  enchantments: string[];
 }
 
 export interface NearbyWaystone {

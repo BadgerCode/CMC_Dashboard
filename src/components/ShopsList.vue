@@ -5,6 +5,7 @@ import { computed, ref } from "vue";
 import { formatEnchantment } from "@/utilities/enchantment-format";
 import { formatPotionEffect } from "@/utilities/potion-format";
 import { normalisePrice, simpleNormalisedPrice } from "@/utilities/normalise-price";
+import ItemAttributeDisplay from "./ItemAttributeDisplay.vue";
 
 interface Props {
   shops: ShopData[];
@@ -55,15 +56,13 @@ function applySort(items: ShopData[]) {
         <!-- Mobile -->
         <th class="table-item md:hidden">
           <span>Details</span>
-          <font-awesome-icon icon="fa-solid fa-sort" class="text-xs ml-1 cursor-pointer"
-            @click="sort('price', false)" />
+          <font-awesome-icon icon="fa-solid fa-sort" class="text-xs ml-1 cursor-pointer" @click="sort('price', false)" />
         </th>
 
         <!-- Desktop -->
         <th class="table-item hidden md:table-cell">
           <span>Price</span>
-          <font-awesome-icon icon="fa-solid fa-sort" class="text-xs ml-1 cursor-pointer"
-            @click="sort('price', false)" />
+          <font-awesome-icon icon="fa-solid fa-sort" class="text-xs ml-1 cursor-pointer" @click="sort('price', false)" />
         </th>
         <th class="table-item hidden md:table-cell pr-4">Batch<br />Size</th>
         <th class="table-item hidden md:table-cell">Stock</th>
@@ -81,7 +80,6 @@ function applySort(items: ShopData[]) {
 
         <!-- Item name & key attributes -->
         <td class="table-item wrap-anywhere">
-
           <!-- Item name -->
           <div class="text-white">
             {{ shop.item.name }}
@@ -89,28 +87,12 @@ function applySort(items: ShopData[]) {
 
           <!-- Item type -->
           <div class="text-xs md:text-sm">
-            <RouterLink :to="{ name: 'itemSales', params: { itemType: shop.item.type }, }" class="hyperlink">
+            <RouterLink :to="{ name: 'itemSales', params: { itemType: shop.item.type } }" class="hyperlink">
               {{ formatItemType(shop.item.type) }}
             </RouterLink>
           </div>
 
-          <!-- Enchantments -->
-          <div class="text-xs md:text-sm capitalize" v-for="enchantment in shop.item.parsedSNBT.enchantments">
-            {{ formatEnchantment(enchantment) }}
-          </div>
-
-          <!-- Potion effect -->
-          <div class="text-xs md:text-sm capitalize" v-if="shop.item.parsedSNBT.potionEffect">
-            {{ formatPotionEffect(shop.item.parsedSNBT.potionEffect) }}
-          </div>
-
-          <!-- Painting info -->
-          <div class="text-xs md:text-sm" v-if="shop.item.parsedSNBT.paintingTitle">
-            Title: <RouterLink :to="{ name: 'painting', params: { id: shop.item.parsedSNBT.paintingID }, }"
-              class="hyperlink">
-              {{ shop.item.parsedSNBT.paintingTitle }}
-            </RouterLink>
-          </div>
+          <ItemAttributeDisplay :snbt="shop.item.parsedSNBT" class="text-xs md:text-sm capitalize mt-2"></ItemAttributeDisplay>
         </td>
 
         <!-- Price columns -->
@@ -137,16 +119,13 @@ function applySort(items: ShopData[]) {
 
         <!-- Location -->
         <td class="table-item">
-          <div class="mr-1">
-            {{ shop.location.x }}, {{ shop.location.y }}, {{ shop.location.z }}
-          </div>
+          <div class="mr-1">{{ shop.location.x }}, {{ shop.location.y }}, {{ shop.location.z }}</div>
           <div>({{ shop.location.world }})</div>
 
           <div v-for="waystone in shop.nearestWaystones" class="text-xs mt-2">
             <div>
               {{ waystone.distance }} blocks
-              <font-awesome-icon icon="fa-solid fa-arrow-up"
-                :style="{ transform: 'rotate(' + waystone.directionRotation + 'deg)' }" /> of
+              <font-awesome-icon icon="fa-solid fa-arrow-up" :style="{ transform: 'rotate(' + waystone.directionRotation + 'deg)' }" /> of
             </div>
             <div class="wrap-anywhere">'{{ waystone.name }}'</div>
           </div>
