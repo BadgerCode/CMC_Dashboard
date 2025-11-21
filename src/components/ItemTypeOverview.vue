@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { updateShops } from "@/api/shops/api";
-import type { ShopData } from "@/api/shops/shopdata";
+import type { ShopData, ShopItem } from "@/api/shops/shopdata";
 import { computed, onMounted, onUpdated, ref, watch } from "vue";
 import ShopsList from "./ShopsList.vue";
 import type { SaleSummary } from "@/api/sales/saleSummary";
@@ -76,7 +76,9 @@ onMounted(async () => {
 
   // Load shop data
   let shopData = await updateShops();
-  shops.value = shopData.shops.filter((s) => s.item.type == props.itemType && s.type == "SELLING");
+  shops.value = shopData.shops.filter(
+    (s) => s.type == "SELLING" && (s.item.type == props.itemType || (s.item.childItems ?? []).some((i) => i.type == props.itemType))
+  );
 
   // Load enchantments
   enchantments.value.push(...(await loadEnchantments()));
@@ -110,7 +112,10 @@ async function loadEnchantments(): Promise<DropdownOption[]> {
   // TODO: Cache
   let allItems = await loadItems(`${Config.APIURL}/api/itemtypes/${props.itemType}/enchantments`);
   // Combine shop and sale data and get a unique ordered list
-  allItems.push(...shops.value.flatMap(s => s.item.parsedSNBT.enchantments))
+  allItems.push(...shops.value.flatMap((s) => s.item.parsedSNBT.enchantments));
+  allItems.push(
+    ...shops.value.filter((s) => s.item.childItems != null).flatMap((s) => s.item.childItems!.flatMap((i) => i.parsedSNBT.enchantments))
+  );
   let uniqueItems = [...new Set(allItems.sort())];
 
   // shops.value
@@ -127,7 +132,13 @@ async function loadDiscs(): Promise<DropdownOption[]> {
   // TODO: Cache
   let allItems = await loadItems(`${Config.APIURL}/api/customDiscs`);
   // Combine shop and sale data and get a unique ordered list
-  allItems.push(...shops.value.map(s => s.item.parsedSNBT.customDiscSong).filter(s => s != null))
+  allItems.push(...shops.value.map((s) => s.item.parsedSNBT.customDiscSong).filter((s) => s != null));
+  allItems.push(
+    ...shops.value
+      .filter((s) => s.item.childItems != null)
+      .flatMap((s) => s.item.childItems!.map((i) => i.parsedSNBT.customDiscSong))
+      .filter((s) => s != null)
+  );
   let uniqueItems = [...new Set(allItems.sort())];
 
   return uniqueItems.map(
@@ -143,7 +154,13 @@ async function loadPotions(): Promise<DropdownOption[]> {
   // TODO: Cache
   let allItems = await loadItems(`${Config.APIURL}/api/itemtypes/${props.itemType}/potionTypes`);
   // Combine shop and sale data and get a unique ordered list
-  allItems.push(...shops.value.map(s => s.item.parsedSNBT.potionEffect).filter(s => s != null))
+  allItems.push(...shops.value.map((s) => s.item.parsedSNBT.potionEffect).filter((s) => s != null));
+  allItems.push(
+    ...shops.value
+      .filter((s) => s.item.childItems != null)
+      .flatMap((s) => s.item.childItems!.map((i) => i.parsedSNBT.potionEffect))
+      .filter((s) => s != null)
+  );
   let uniqueItems = [...new Set(allItems.sort())];
 
   return uniqueItems.map(
@@ -166,30 +183,34 @@ async function loadItems(url: string): Promise<string[]> {
 
 function applyFilters() {
   filteredShops.value = shops.value.filter((s) => {
-    // Apply name filter
-    let trimmedNameFilter = nameFilter.value.trim().toLocaleLowerCase();
-    if (trimmedNameFilter.length > 0 && !s.item.name.toLocaleLowerCase().includes(trimmedNameFilter)) return false;
-
-    // Apply enchantments filter
-    let enchantment = enchantmentFilter.value.toLocaleLowerCase();
-    if (enchantment != "" && !s.item.parsedSNBT.enchantments.includes(enchantment)) return false;
-
-    // Apply potion filter
-    if (
-      potionEffectFilter.value.length > 0 &&
-      (!s.item.parsedSNBT.potionEffect || !potionEffectFilter.value.includes(s.item.parsedSNBT.potionEffect))
-    )
-      return false;
-
-    // Custom disc filter
-    if (
-      customDiscFilter.value.length > 0 &&
-      (!s.item.parsedSNBT.customDiscSong || !customDiscFilter.value.includes(s.item.parsedSNBT.customDiscSong))
-    )
-      return false;
-
-    return true;
+    return matchesFilters(s.item) || (s.item.childItems ?? []).some((i) => matchesFilters(i));
   });
+}
+
+function matchesFilters(item: ShopItem) {
+  // Apply name filter
+  let trimmedNameFilter = nameFilter.value.trim().toLocaleLowerCase();
+  if (trimmedNameFilter.length > 0 && !item.name.toLocaleLowerCase().includes(trimmedNameFilter)) return false;
+
+  // Apply enchantments filter
+  let enchantment = enchantmentFilter.value.toLocaleLowerCase();
+  if (enchantment != "" && !item.parsedSNBT.enchantments.includes(enchantment)) return false;
+
+  // Apply potion filter
+  if (
+    potionEffectFilter.value.length > 0 &&
+    (!item.parsedSNBT.potionEffect || !potionEffectFilter.value.includes(item.parsedSNBT.potionEffect))
+  )
+    return false;
+
+  // Custom disc filter
+  if (
+    customDiscFilter.value.length > 0 &&
+    (!item.parsedSNBT.customDiscSong || !customDiscFilter.value.includes(item.parsedSNBT.customDiscSong))
+  )
+    return false;
+
+  return true;
 }
 
 let filtersText = computed(() => {

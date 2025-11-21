@@ -6,7 +6,7 @@ import DropdownFilter, { type DropdownOption } from "@/components/DropdownFilter
 import { formatPotionEffect } from "@/utilities/potion-format";
 import Loading from "@/components/Loading.vue";
 import { formatDate } from "@/utilities/date-format";
-import type { ShopData } from "@/api/shops/shopdata";
+import type { ShopData, ShopItem } from "@/api/shops/shopdata";
 import { updateShops } from "@/api/shops/api";
 import type { ShopOverview } from "@/store/shops-state";
 import ShopsList from "@/components/ShopsList.vue";
@@ -125,36 +125,39 @@ function applyFilters() {
 
   filteredShops.value.push(
     ...shopData.value.shops.filter((s) => {
-      // Apply item type filter
-      if (itemType.length > 0 && s.item.type != itemType) return false;
-
       // Apply buying/selling filter
       if (!buySellFilter.value.includes(s.type)) return false;
-
-      // Apply potion filter
-      if (
-        potionEffectFilter.value.length > 0 &&
-        (!s.item.parsedSNBT.potionEffect || !potionEffectFilter.value.includes(s.item.parsedSNBT.potionEffect))
-      )
-        return false;
-
-      // Apply enchantments filter
-      if (enchantmentFilter.value.length > 0 && !enchantmentFilter.value.some((e) => s.item.parsedSNBT.enchantments.includes(e)))
-        return false;
 
       // Apply owner filter
       if (shopOwner.length > 0 && s.owner.uuid != shopOwner) return false;
 
-      // Apply custom disc filter
-      if (
-        customDiscSongFilter.value.length > 0 &&
-        (!s.item.parsedSNBT.customDiscSong || !customDiscSongFilter.value.includes(s.item.parsedSNBT.customDiscSong))
-      )
-        return false;
-
-      return true;
+      return matchesFilters(s.item, itemType) || (s.item.childItems ?? []).some((i) => matchesFilters(i, itemType));
     })
   );
+}
+
+function matchesFilters(item: ShopItem, itemType: string) {
+  // Apply item type filter
+  if (itemType.length > 0 && item.type != itemType) return false;
+
+  // Apply potion filter
+  if (
+    potionEffectFilter.value.length > 0 &&
+    (!item.parsedSNBT.potionEffect || !potionEffectFilter.value.includes(item.parsedSNBT.potionEffect))
+  )
+    return false;
+
+  // Apply enchantments filter
+  if (enchantmentFilter.value.length > 0 && !enchantmentFilter.value.some((e) => item.parsedSNBT.enchantments.includes(e))) return false;
+
+  // Apply custom disc filter
+  if (
+    customDiscSongFilter.value.length > 0 &&
+    (!item.parsedSNBT.customDiscSong || !customDiscSongFilter.value.includes(item.parsedSNBT.customDiscSong))
+  )
+    return false;
+
+  return true;
 }
 </script>
 

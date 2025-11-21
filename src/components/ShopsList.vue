@@ -5,7 +5,7 @@ import { computed, onMounted, onUpdated, ref } from "vue";
 import { normalisePrice, simpleNormalisedPrice } from "@/utilities/normalise-price";
 import ItemAttributeDisplay from "./ItemAttributeDisplay.vue";
 import { initFlowbite } from "flowbite";
-import { formatPotionEffect, isPotion } from "@/utilities/potion-format";
+import { formatPotionEffect } from "@/utilities/potion-format";
 import { formatEnchantment } from "@/utilities/enchantment-format";
 import { formatCustomDisc } from "@/utilities/custom-disc-format";
 
