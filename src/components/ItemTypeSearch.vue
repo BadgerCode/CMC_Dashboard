@@ -5,6 +5,8 @@ import { debounce } from "lodash";
 import { Config } from "@/config";
 import SearchBox from "./SearchBox.vue";
 
+// TODO: Replace with SearchWithResults
+
 interface Props {
   itemTypes?: string[];
 }
@@ -16,6 +18,7 @@ const emit = defineEmits<{
 
 const filterText = ref("");
 const filteredItemTypes = ref([] as string[]);
+const selection = ref(null as string | null);
 
 onMounted(() => {
   initFlowbite(); // Include on any component where you need flowbite JS functionality
@@ -53,10 +56,16 @@ const filter = debounce(async () => {
   filteredItemTypes.value.push(...response.items);
 }, 350);
 
-function clear() {
-  emit("selection", "");
-  filterText.value = "";
+function makeSelection(item: string | null) {
+  // Clear results
   filteredItemTypes.value.splice(0);
+
+  // Let parent know
+  emit("selection", item);
+
+  // Store selection
+  selection.value = item;
+  filterText.value = item || "";
 }
 </script>
 
@@ -73,17 +82,19 @@ function clear() {
             filter();
           }
         "
-        @clear="() => $emit('selection', null)"></SearchBox>
+        @clear="() => makeSelection(null)"
+        :disabled="selection != null">
+      </SearchBox>
 
       <!-- Dropdown menu -->
       <div
         id="itemTypeSearch"
         class="absolute inset-y-0 z-10 w-60 mt-[40px] hidden group-focus-within:block"
-        v-if="filteredItemTypes.length > 0">
+        v-if="filteredItemTypes.length > 0 && selection == null">
         <ul
           class="max-h-48 p-3 overflow-y-auto text-sm text-gray-200 bg-gray-700 rounded-lg shadow-sm border border-gray-800"
           aria-labelledby="itemTypeSearchButton">
-          <li v-for="itemType in filteredItemTypes" class="hyperlink" @click="emit('selection', itemType)">
+          <li v-for="itemType in filteredItemTypes" class="hyperlink" @click="makeSelection(itemType)">
             <div tabindex="0" class="flex items-center px-4 py-2 ps-2 rounded-sm hover:bg-gray-600 text-gray-300 text-sm font-medium">
               {{ itemType }}
             </div>
