@@ -202,8 +202,9 @@ let filteredAttributes = computed(() => {
               <td class="table-item wrap-anywhere">
                 <div
                   v-for="attribute in subItem.itemAttributes.sort((a, b) => a.key.localeCompare(b.key) || a.value.localeCompare(b.value))">
-                  <span class="capitalize" v-if="attribute.key != 'PAINTING_ID'">{{
-                    formatItemType(attribute.key)?.toLocaleLowerCase() }}: </span>
+                  <span class="capitalize" v-if="attribute.key != 'PAINTING_ID'"
+                    >{{ formatItemType(attribute.key)?.toLocaleLowerCase() }}:
+                  </span>
 
                   <span v-if="attribute.key == 'POTION_EFFECT'" class="capitalize">
                     <RouterLink
@@ -233,7 +234,9 @@ let filteredAttributes = computed(() => {
                   </span>
                   <span v-else-if="attribute.key == 'PAINTING_ID'">
                     <RouterLink :to="{ name: 'painting', params: { id: attribute.value } }" class="hyperlink">
-                      <RenderPainting :painting-id="attribute.value" :size="'large'"></RenderPainting>
+                      <div class="h-[256px] w-[256px]">
+                        <RenderPainting :painting-id="attribute.value" :size="'large'"></RenderPainting>
+                      </div>
                     </RouterLink>
                   </span>
                   <span v-else>{{ attribute.value }}</span>

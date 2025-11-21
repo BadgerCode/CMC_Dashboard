@@ -6,9 +6,9 @@ import { Config } from "@/config";
 import { computed, onMounted, ref } from "vue";
 
 interface Props {
-  authorName?: string
+  authorName?: string;
 }
-const props = defineProps<Props>()
+const props = defineProps<Props>();
 
 const loading = ref(true);
 const paintings = ref([] as Painting[]);
@@ -44,8 +44,7 @@ async function loadPaintings() {
   let url = `${Config.APIURL}/api/paintings?${params.toString()}`;
   let httpResponse = await fetch(url, { method: "get" });
 
-  if (httpResponse.status !== 200)
-    throw new Error("Failed to retrieve paintings");
+  if (httpResponse.status !== 200) throw new Error("Failed to retrieve paintings");
 
   let response = await httpResponse.json();
 
@@ -61,9 +60,7 @@ async function loadNextPage() {
 
 <template>
   <div class="mb-8">
-    <RouterLink :to="{ name: 'gallery' }" class="hyperlink" v-if="showingArtistProfile">
-      Gallery
-    </RouterLink>
+    <RouterLink :to="{ name: 'gallery' }" class="hyperlink" v-if="showingArtistProfile"> Gallery </RouterLink>
     <h1 class="text-3xl font-bold" v-if="!showingArtistProfile">Recent</h1>
     <h1 class="text-3xl font-bold" v-else>Recent {{ authorName }} paintings</h1>
 
@@ -77,13 +74,15 @@ async function loadNextPage() {
     <div v-for="painting in paintings" class="painting flex justify-center items-center flex-col gap-2 mb-4">
       <div class="w-full text-center pl-1">
         <div>
-          <RouterLink :to="{ name: 'painting', params: { id: painting.id }, }" class="hyperlink">
+          <RouterLink :to="{ name: 'painting', params: { id: painting.id } }" class="hyperlink">
             {{ painting.title }}
           </RouterLink>
         </div>
       </div>
 
-      <RenderPainting :painting-id="painting.id" :size="painting.size"></RenderPainting>
+      <div class="h-[256px] w-[256px]">
+        <RenderPainting :painting-id="painting.id"></RenderPainting>
+      </div>
 
       <div class="w-full text-center pl-1">
         <div class="text-sm text-gray-300">
@@ -97,9 +96,7 @@ async function loadNextPage() {
   </div>
 
   <div class="mt-8 text-center" v-if="!loading">
-    <button type="button" class="button" v-on:click="loadNextPage" v-if="!noMoreResults">
-      More
-    </button>
+    <button type="button" class="button" v-on:click="loadNextPage" v-if="!noMoreResults">More</button>
     <div v-else>No more results</div>
   </div>
 </template>
