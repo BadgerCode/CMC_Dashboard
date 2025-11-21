@@ -25,7 +25,6 @@ itemInfo["ENCHANTED_BOOK"] = {
   icon: "fa-solid fa-book-bookmark",
   isSpecialItem: true,
   description: "A book with one or more enchantments, used to enchant other items.",
-  shopCaveats: "Book enchantments are missing from shop listings and filtering will not work.",
 }
 itemInfo["POTION"] = {
   itemType: "POTION",
@@ -53,8 +52,7 @@ itemInfo["CUSTOM_MUSIC_DISC"] = {
   displayName: "Custom Music Discs",
   icon: "fa-solid fa-record-vinyl",
   isSpecialItem: true,
-  description: "Music discs with custom songs. They use music disc 11.",
-  shopCaveats: "Custom music disc titles are missing from shop listings and filtering will not work.",
+  description: "Music discs with custom songs. They may sometimes be shown as music disc 11.",
 }
 itemInfo["LUA_FISH_MUSIC_BOOK"] = {
   itemType: "LUA_FISH_MUSIC_BOOK",
@@ -62,7 +60,6 @@ itemInfo["LUA_FISH_MUSIC_BOOK"] = {
   icon: "fa-solid fa-file-audio",
   isSpecialItem: true,
   description: "Written books that can be used on the Lua_Fish record player to play music.",
-  shopCaveats: "Shop listings will include regular written books too.",
 }
 itemInfo["PLAYER_HEAD"] = {
   itemType: "PLAYER_HEAD",
@@ -70,7 +67,6 @@ itemInfo["PLAYER_HEAD"] = {
   icon: "fa-solid fa-cube",
   isSpecialItem: true,
   description: "Can be used as decoration. Some have additional functionality through Figura.",
-  shopCaveats: "Shop listings will not include the name of the player that the head belongs to."
 }
 itemInfo["PAINTING"] = {
   itemType: "PAINTING",
@@ -93,7 +89,6 @@ itemInfo["WAYSTONE"] = {
   icon: "fa-solid fa-chess-rook",
   isSpecialItem: true,
   description: "Makes it easier for players to teleport back to a location like a town.",
-  shopCaveats: "Shop listings may include regular cobblestone walls."
 }
 
 

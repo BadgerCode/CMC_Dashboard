@@ -6,6 +6,7 @@ export interface ShopOverview {
   itemTypes: string[];
   potionEffects: string[];
   enchantments: string[];
+  customDiscSongs: string[];
   lastUpdated: Date;
 }
 

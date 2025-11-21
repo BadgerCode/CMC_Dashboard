@@ -11,6 +11,8 @@ import { updateShops } from "@/api/shops/api";
 import type { ShopOverview } from "@/store/shops-state";
 import ShopsList from "@/components/ShopsList.vue";
 import SearchWithResults from "@/components/SearchWithResults.vue";
+import { formatCustomDisc } from "@/utilities/custom-disc-format";
+import { formatEnchantment } from "@/utilities/enchantment-format";
 
 const loading = ref(true);
 const shopData = ref(null as ShopOverview | null);
@@ -55,6 +57,14 @@ watch(shopOwnerFilter, async (_, __) => {
   applyFilters();
 });
 
+// Filtering: Custom music disc
+const customDiscSongs = ref([] as DropdownOption[]);
+const customDiscSongFilter = ref([] as string[]);
+
+watch(customDiscSongFilter, async (_, __) => {
+  applyFilters();
+});
+
 // Setup
 onMounted(async () => {
   initFlowbite(); // Include on any component where you need flowbite JS functionality
@@ -65,7 +75,7 @@ onMounted(async () => {
   // Populate enchantments filter
   enchantments.value = shopData.value.enchantments
     .map((e) => ({
-      text: e,
+      text: formatEnchantment(e),
       value: e,
     }))
     .sort((a, b) => a.text.localeCompare(b.text));
@@ -88,6 +98,15 @@ onMounted(async () => {
 
   shopOwners.value = [...new Map(allOwners.map((item) => [item.text, item])).values()];
 
+  // Custom disc filter
+  customDiscSongs.value = shopData.value.customDiscSongs
+    .map((e) => ({
+      text: formatCustomDisc(e),
+      value: e,
+    }))
+    .sort((a, b) => a.text.localeCompare(b.text));
+
+  // Load page
   applyFilters();
   loading.value = false;
 });
@@ -126,6 +145,13 @@ function applyFilters() {
       // Apply owner filter
       if (shopOwner.length > 0 && s.owner.uuid != shopOwner) return false;
 
+      // Apply custom disc filter
+      if (
+        customDiscSongFilter.value.length > 0 &&
+        (!s.item.parsedSNBT.customDiscSong || !customDiscSongFilter.value.includes(s.item.parsedSNBT.customDiscSong))
+      )
+        return false;
+
       return true;
     })
   );
@@ -142,25 +168,42 @@ function applyFilters() {
 
   <div class="flex flex-column flex-wrap space-y-2 items-start justify-between">
     <div class="flex flex-row flex-wrap gap-1">
-      <DropdownFilter :placeholder="'Buy/Sell'" :icon="'fa-solid fa-arrows-left-right'" :options="buySellOptions"
+      <DropdownFilter
+        :placeholder="'Buy/Sell'"
+        :icon="'fa-solid fa-arrows-left-right'"
+        :options="buySellOptions"
         v-model="buySellFilter"></DropdownFilter>
 
-      <DropdownFilter :placeholder="'Potion Effect'" :icon="'fa-solid fa-flask'" :options="potionEffects"
-        v-model="potionEffectFilter">
+      <DropdownFilter :placeholder="'Potion Effect'" :icon="'fa-solid fa-flask'" :options="potionEffects" v-model="potionEffectFilter">
       </DropdownFilter>
 
-      <DropdownFilter :placeholder="'Enchantments'" :icon="'fa-solid fa-wand-sparkles'" :options="enchantments"
-        v-model="enchantmentFilter">
+      <DropdownFilter :placeholder="'Enchantments'" :icon="'fa-solid fa-wand-sparkles'" :options="enchantments" v-model="enchantmentFilter">
       </DropdownFilter>
 
-      <SearchWithResults :placeholder="'Shop owners'" :items="shopOwners"
-        @selection="(item) => (shopOwnerFilter = item?.value ?? '')" @clear="() => (shopOwnerFilter = '')">
+      <DropdownFilter
+        :placeholder="'Custom Discs'"
+        :icon="'fa-solid fa-record-vinyl'"
+        :options="customDiscSongs"
+        v-model="customDiscSongFilter">
+      </DropdownFilter>
+
+      <SearchWithResults
+        :placeholder="'Shop owners'"
+        :items="shopOwners"
+        @selection="(item) => (shopOwnerFilter = item?.value ?? '')"
+        @clear="() => (shopOwnerFilter = '')">
       </SearchWithResults>
     </div>
 
     <div>
-      <ItemTypeSearch :item-types="shopData?.itemTypes ?? []"
-        @selection="(itemType) => { itemTypeFilter = itemType ?? ''; applyFilters(); }">
+      <ItemTypeSearch
+        :item-types="shopData?.itemTypes ?? []"
+        @selection="
+          (itemType) => {
+            itemTypeFilter = itemType ?? '';
+            applyFilters();
+          }
+        ">
       </ItemTypeSearch>
     </div>
   </div>
@@ -174,8 +217,7 @@ function applyFilters() {
     <ShopsList :shops="filteredShops"></ShopsList>
   </div>
 
-  <div v-if="filteredShops.length > maxShops" class="mt-8 text-center text-gray-400">Only showing up to {{ maxShops }}
-    shops</div>
+  <div v-if="filteredShops.length > maxShops" class="mt-8 text-center text-gray-400">Only showing up to {{ maxShops }} shops</div>
 
   <Loading v-if="loading" :fill-space="true"></Loading>
 </template>

@@ -57,5 +57,8 @@ export async function updateShops(): Promise<ShopOverview> {
   // Get enchantments list
   shopsStore.enchantments = [...new Set(shopsStore.shops.flatMap((s) => s.item.parsedSNBT.enchantments))];
 
+  // Get custom discs
+  shopsStore.customDiscSongs = [...new Set(shopsStore.shops.map((s) => s.item.parsedSNBT.customDiscSong).filter((e) => e != null))];
+
   return shopsStore;
 }

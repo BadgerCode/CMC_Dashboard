@@ -2,8 +2,6 @@
 import { formatItemType } from "@/utilities/item-type-format";
 import type { ShopData } from "@/api/shops/shopdata";
 import { computed, ref } from "vue";
-import { formatEnchantment } from "@/utilities/enchantment-format";
-import { formatPotionEffect } from "@/utilities/potion-format";
 import { normalisePrice, simpleNormalisedPrice } from "@/utilities/normalise-price";
 import ItemAttributeDisplay from "./ItemAttributeDisplay.vue";
 
