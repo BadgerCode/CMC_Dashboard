@@ -154,7 +154,7 @@ let filteredAttributes = computed(() => {
                         {{ formatCustomDisc(attribute.value) }}
                       </RouterLink>
                     </span>
-                    <span v-else-if="attribute.key == 'ENCHANTMENT'">
+                    <span v-else-if="attribute.key == 'ENCHANTMENT'" class="capitalize">
                       <RouterLink
                         :to="{ name: 'itemSales', params: { itemType: saleData.itemType }, query: { enchantment: attribute.value } }"
                         class="hyperlink">
