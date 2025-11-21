@@ -166,8 +166,8 @@ function applyFilters() {
     </div>
   </div>
 
-  <div class="flex flex-column flex-wrap space-y-2 items-start justify-between">
-    <div class="flex flex-row flex-wrap gap-1">
+  <div class="flex flex-column md:flex-row flex-wrap space-y-2 items-start justify-between">
+    <div class="flex flex-row flex-wrap flex-1 gap-1">
       <DropdownFilter
         :placeholder="'Buy/Sell'"
         :icon="'fa-solid fa-arrows-left-right'"
