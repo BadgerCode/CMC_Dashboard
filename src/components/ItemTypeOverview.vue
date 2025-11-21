@@ -14,7 +14,7 @@ import { initFlowbite } from "flowbite";
 import { formatEnchantment } from "@/utilities/enchantment-format";
 import { Config } from "@/config";
 import { formatCustomDisc } from "@/utilities/custom-disc-format";
-import { formatPotionEffect } from "@/utilities/potion-format";
+import { formatPotionEffect, isPotion } from "@/utilities/potion-format";
 import { useRoute } from "vue-router";
 import ItemTypeSearch from "./ItemTypeSearch.vue";
 import { getItemInfo } from "@/models/item-info";
@@ -85,8 +85,7 @@ onMounted(async () => {
   if (props.itemType == "CUSTOM_MUSIC_DISC") customDiscs.value.push(...(await loadDiscs()));
 
   // Potion effects
-  let isPotion = ["POTION", "SPLASH_POTION", "LINGERING_POTION"].indexOf(props.itemType) != -1;
-  if (isPotion) potionEffects.value.push(...(await loadPotions()));
+  if (isPotion(props.itemType)) potionEffects.value.push(...(await loadPotions()));
 
   // Render the item overview
   applyFilters();

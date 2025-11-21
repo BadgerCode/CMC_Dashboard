@@ -28,6 +28,8 @@ export interface ShopItem {
   quantity: number;
   name: string;
   parsedSNBT: SNBTData;
+  childItems?: ShopItem[];
+  slot?: number;
 }
 
 export interface NearbyWaystone {
