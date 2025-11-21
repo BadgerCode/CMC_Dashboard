@@ -4,7 +4,7 @@ import { onMounted, ref } from "vue";
 import * as SalesAPI from "@/api/sales/api";
 import RecentSales from "@/components/RecentSales.vue";
 import ItemTypeSearch from "@/components/ItemTypeSearch.vue";
-import { getSpecialItems } from "@/utilities/item-info";
+import { getSpecialItems } from "@/models/item-info";
 
 const loading = ref(true);
 const recentSales = ref([] as SaleSummary[]);

@@ -17,7 +17,7 @@ import { formatCustomDisc } from "@/utilities/custom-disc-format";
 import { formatPotionEffect } from "@/utilities/potion-format";
 import { useRoute } from "vue-router";
 import ItemTypeSearch from "./ItemTypeSearch.vue";
-import { getItemInfo } from "@/utilities/item-info";
+import { getItemInfo } from "@/models/item-info";
 
 interface Props {
   itemType: string;
