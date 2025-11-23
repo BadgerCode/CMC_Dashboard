@@ -5,6 +5,11 @@ import PaintingList from "@/components/PaintingList.vue";
 import { onMounted, ref } from "vue";
 import * as PaintingsAPI from "@/api/paintings/api";
 
+interface Props {
+  authorName: string;
+}
+const props = defineProps<Props>();
+
 const loading = ref(true);
 const paintings = ref([] as Painting[]);
 const noMoreResults = ref(false);
@@ -19,7 +24,7 @@ async function loadNextPage() {
   // Add last item for pagination
   let lastItem = paintings.value.slice(-1)[0];
 
-  let responseItems = await PaintingsAPI.loadPaintings(undefined, lastItem);
+  let responseItems = await PaintingsAPI.loadPaintings(props.authorName, lastItem);
   paintings.value.push(...responseItems);
   noMoreResults.value = responseItems.length === 0;
   loading.value = false;
@@ -28,9 +33,10 @@ async function loadNextPage() {
 
 <template>
   <div class="mb-8">
-    <h1 class="text-3xl font-bold">Recent</h1>
+    <RouterLink :to="{ name: 'gallery' }" class="hyperlink"> Gallery </RouterLink>
+    <h1 class="text-3xl font-bold">Recent {{ authorName }} paintings</h1>
 
-    <p class="text-gray-300">Paintings created by the players of the server</p>
+    <p class="text-gray-300">Paintings created by {{ authorName }}</p>
   </div>
 
   <Loading v-if="loading" :fill-space="true"></Loading>

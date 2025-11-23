@@ -228,7 +228,7 @@ let filteredAttributes = computed(() => {
                     </RouterLink>
                   </span>
                   <span v-else-if="attribute.key == 'PAINTING_AUTHOR_NAME'">
-                    <RouterLink :to="{ name: 'gallery', params: { authorName: attribute.value } }" class="hyperlink">
+                    <RouterLink :to="{ name: 'artist', params: { authorName: attribute.value } }" class="hyperlink">
                       {{ attribute.value }}
                     </RouterLink>
                   </span>

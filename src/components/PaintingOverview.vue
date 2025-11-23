@@ -77,7 +77,7 @@ async function fetchPaintingSales(paintingID: string): Promise<PaintingSaleSumma
       <div class="mb-3 font-normal text-gray-400 flex flex-col gap-4">
         <div>
           <span>By </span>
-          <RouterLink :to="{ name: 'gallery', params: { authorName: paintingData.authorName } }" class="hyperlink">
+          <RouterLink :to="{ name: 'artist', params: { authorName: paintingData.authorName } }" class="hyperlink">
             {{ paintingData.authorName }}
           </RouterLink>
         </div>
