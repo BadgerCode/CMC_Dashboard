@@ -96,7 +96,7 @@ itemInfo["WAYSTONE"] = {
 };
 itemInfo["WARP_PLATE"] = {
   itemType: "WARP_PLATE",
-  displayName: "Warp Plate",
+  displayName: "Warp Plates",
   icon: "fa-solid fa-layer-group",
   isSpecialItem: true,
   description: "Allows teleporting between two locations by linking two warp plates together.",
