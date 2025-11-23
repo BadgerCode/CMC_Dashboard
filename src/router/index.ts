@@ -1,4 +1,3 @@
-import ArtistView from "@/views/ArtistView.vue";
 import GalleryView from "@/views/GalleryView.vue";
 import HomeView from "@/views/HomeView.vue";
 import ItemTypeView from "@/views/ItemTypeView.vue";
@@ -29,21 +28,12 @@ const router = createRouter({
       },
     },
     {
-      path: "/gallery",
+      path: "/gallery/:authorName?",
       name: "gallery",
       component: GalleryView,
       props: true,
       meta: {
         title: "Gallery",
-      },
-    },
-    {
-      path: "/gallery/:authorName",
-      name: "artist",
-      component: ArtistView,
-      props: true,
-      meta: {
-        title: "Artist Page",
       },
     },
     {

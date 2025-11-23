@@ -18,7 +18,6 @@ import { formatPotionEffect, isPotion } from "@/utilities/potion-format";
 import { useRoute } from "vue-router";
 import ItemTypeSearch from "./ItemTypeSearch.vue";
 import { getItemInfo } from "@/models/item-info";
-import type { ShopOverview } from "@/store/shops-state";
 
 interface Props {
   itemType: string;

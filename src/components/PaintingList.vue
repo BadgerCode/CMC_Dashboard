@@ -26,7 +26,7 @@ const props = defineProps<Props>();
     <div class="w-full text-center pl-1">
       <div class="text-sm text-gray-300">
         <span>By </span>
-        <RouterLink :to="{ name: 'artist', params: { authorName: painting.authorName } }" class="hyperlink">
+        <RouterLink :to="{ name: 'gallery', params: { authorName: painting.authorName } }" class="hyperlink">
           {{ painting.authorName }}
         </RouterLink>
       </div>

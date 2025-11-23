@@ -38,7 +38,7 @@ defineProps<Props>();
       <!-- Painting author -->
       <div v-if="snbt.paintingAuthor">
         By
-        <RouterLink :to="{ name: 'artist', params: { authorName: snbt.paintingAuthor } }" class="hyperlink">
+        <RouterLink :to="{ name: 'gallery', params: { authorName: snbt.paintingAuthor } }" class="hyperlink">
           {{ snbt.paintingAuthor }}
         </RouterLink>
       </div>
