@@ -251,6 +251,9 @@ let filtersText = computed(() => {
       <div>
         <h1 class="text-3xl font-bold capitalize">{{ formatItemType(itemType)?.toLocaleLowerCase() }}</h1>
         <p class="text-gray-300" v-if="itemInfo?.description">{{ itemInfo.description }}</p>
+        <p class="text-xs" v-if="itemInfo?.moreInfoLink">
+          <a :href="itemInfo.moreInfoLink" class="hyperlink" target="_blank">More info</a>
+        </p>
       </div>
     </div>
 
