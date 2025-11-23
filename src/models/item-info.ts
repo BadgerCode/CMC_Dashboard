@@ -90,6 +90,13 @@ itemInfo["WAYSTONE"] = {
   isSpecialItem: true,
   description: "Makes it easier for players to teleport back to a location like a town.",
 }
+itemInfo["WARP_PLATE"] = {
+  itemType: "WARP_PLATE",
+  displayName: "Warp Plate",
+  icon: "fa-solid fa-layer-group",
+  isSpecialItem: true,
+  description: "Players can teleport between two linked warp plates.",
+}
 
 
 const specialItems = Object.keys(itemInfo).map(itemType => itemInfo[itemType]!).filter(i => i != undefined && i.isSpecialItem);
