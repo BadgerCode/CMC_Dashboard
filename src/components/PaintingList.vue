@@ -17,6 +17,8 @@ const selectedPaintings = ref([] as Painting[]);
   <div>
     <div class="flex flex-row flex-wrap w-full gap-4 justify-center">
       <div v-for="painting in paintings" class="flex justify-center items-center flex-col gap-2 mb-4">
+
+        <!-- Title -->
         <div class="w-full text-center pl-1">
           <div>
             <RouterLink :to="{ name: 'painting', params: { id: painting.id } }" class="hyperlink">
@@ -25,24 +27,26 @@ const selectedPaintings = ref([] as Painting[]);
           </div>
         </div>
 
-        <div v-if="Config.FEATURE_COLLECTIONS_EDITOR" class="h-[256px] w-[256px]">
-          <input
-            type="checkbox"
-            name="painting-select"
-            :id="`painting-select-${painting.id}`"
-            :value="painting"
-            v-model="selectedPaintings"
-            class="hidden peer" />
-          <label
-            :for="`painting-select-${painting.id}`"
+        <!-- Collection editor -->
+        <div v-if="Config.FEATURE_COLLECTIONS_EDITOR" class="relative h-[256px] w-[256px]">
+          <input type="checkbox" name="painting-select" :id="`painting-select-${painting.id}`" :value="painting"
+            v-model="selectedPaintings" class="hidden peer" />
+          <label :for="`painting-select-${painting.id}`"
             class="h-[256px] w-[256px] inline-flex items-center justify-between p-2 text-body bg-neutral-primary-soft border-1 border-default rounded-base cursor-pointer peer-checked:hover:bg-brand-softer peer-checked:border-brand-subtle peer-checked:bg-brand-softer hover:bg-neutral-secondary-medium peer-checked:text-fg-brand-strong">
             <RenderPainting :painting-id="painting.id"></RenderPainting>
           </label>
+
+          <div class="absolute left-0 bottom-0 bg-gray-950/60 text-xs">
+            {{ painting.collectionId?.substring(0, 8) }}
+          </div>
         </div>
+
+        <!-- Normal render -->
         <div v-else class="h-[256px] w-[256px]">
           <RenderPainting :painting-id="painting.id"></RenderPainting>
         </div>
 
+        <!-- Artist -->
         <div class="w-full text-center pl-1">
           <div class="text-sm text-gray-300">
             <span>By </span>
@@ -54,9 +58,7 @@ const selectedPaintings = ref([] as Painting[]);
       </div>
     </div>
 
-    <CollectionEditor
-      v-if="Config.FEATURE_COLLECTIONS_EDITOR && selectedPaintings.length > 0"
-      :paintings="selectedPaintings"
-      @clear="selectedPaintings.splice(0)"></CollectionEditor>
+    <CollectionEditor v-if="Config.FEATURE_COLLECTIONS_EDITOR && selectedPaintings.length > 0"
+      :paintings="selectedPaintings" @clear="selectedPaintings.splice(0)"></CollectionEditor>
   </div>
 </template>
