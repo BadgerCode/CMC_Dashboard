@@ -79,9 +79,7 @@ async function loadNextPage() {
 
   <Loading v-if="loading" :fill-space="true"></Loading>
 
-  <div class="flex flex-row flex-wrap w-full gap-4 justify-center">
-    <PaintingList :paintings="paintings"></PaintingList>
-  </div>
+  <PaintingList :paintings="paintings"></PaintingList>
 
   <div class="mt-8 text-center" v-if="!loading">
     <button type="button" class="button" v-on:click="loadNextPage" v-if="!noMoreResults">More</button>
