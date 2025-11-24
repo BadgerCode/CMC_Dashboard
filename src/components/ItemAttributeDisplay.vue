@@ -31,7 +31,7 @@ defineProps<Props>();
       <div>
         <div class="h-[32px] w-[32px]">
           <RouterLink :to="{ name: 'painting', params: { id: snbt.paintingID } }" class="hyperlink">
-            <RenderPainting :painting-id="snbt.paintingID" :size="'SMALL'"></RenderPainting>
+            <RenderPainting :painting-id="snbt.paintingID"></RenderPainting>
           </RouterLink>
         </div>
       </div>

@@ -235,7 +235,7 @@ let filteredAttributes = computed(() => {
                   <span v-else-if="attribute.key == 'PAINTING_ID'">
                     <RouterLink :to="{ name: 'painting', params: { id: attribute.value } }" class="hyperlink">
                       <div class="h-[256px] w-[256px]">
-                        <RenderPainting :painting-id="attribute.value" :size="'large'"></RenderPainting>
+                        <RenderPainting :painting-id="attribute.value"></RenderPainting>
                       </div>
                     </RouterLink>
                   </span>

@@ -107,7 +107,6 @@ async function saveCollection() {
 
   for (const painting of props.paintings) {
     painting.collectionId = request.id;
-    painting.collectionPosition = request.paintingIdToPosition[painting.id]!;
   }
   emit("clear");
 }
@@ -158,8 +157,9 @@ async function saveCollection() {
 
             <!-- Num columns -->
             <div class="max-w-sm mx-auto">
-              <label for="painting-collection-cols" class="block mb-2.5 text-sm font-medium text-heading">Num
-                cols:</label>
+              <label for="painting-collection-cols" class="block mb-2.5 text-sm font-medium text-heading">
+                Number of columns
+              </label>
               <input type="number" id="painting-collection-cols" aria-describedby="helper-text-explanation"
                 v-model="numCols"
                 class="block w-full px-3 py-2.5 bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand shadow-xs placeholder:text-body" />
