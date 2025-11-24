@@ -3,6 +3,7 @@ import type { Painting } from "@/api/paintings/painting";
 import { initFlowbite } from "flowbite";
 import { computed, onMounted, onUpdated, ref } from "vue";
 import RenderPainting from "./RenderPainting.vue";
+import { Config } from "@/config";
 
 interface Props {
   paintings: Painting[];
@@ -68,7 +69,40 @@ function move(paintingId: string, direction: string) {
 }
 
 async function saveCollection() {
-  // TODO: Save
+  // Create mappings
+  let x = 0, y = 0;
+  let mappings = {} as { [paintingId: string]: string };
+  for (const painting of props.paintings) {
+    console.log(`${x},${y} - ${painting.title}`);
+
+    mappings[painting.id] = `${x},${y}`;
+    x++;
+
+    if (x >= numCols.value) {
+      x = 0;
+      y++;
+    }
+  }
+
+  // Generate request
+  let request = {
+    id: self.crypto.randomUUID(), // TODO: Handle paintings being in different collections already (maybe serverside)
+    paintingIdToPosition: mappings
+  };
+  console.log(request);
+
+  // Send request
+  const requestHeaders: HeadersInit = new Headers();
+  requestHeaders.set('Content-Type', 'application/json');
+  requestHeaders.set('X-Functions-Key', Config.COLLECTIONS_KEY!);
+
+  let httpResponse = await fetch(`${Config.APIURL}/api/paintingCollections`, {
+    method: "put",
+    headers: requestHeaders,
+    body: JSON.stringify(request)
+  });
+  if (httpResponse.status !== 200) throw new Error("Failed to update painting collection");
+
   console.log("Saved collection")
   emit("clear");
 }
