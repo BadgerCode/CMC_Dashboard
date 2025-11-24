@@ -120,10 +120,10 @@ async function loadEnchantments(): Promise<DropdownOption[]> {
   // shops.value
   return uniqueItems.map(
     (i: string) =>
-      ({
-        text: formatEnchantment(i),
-        value: i,
-      } as DropdownOption)
+    ({
+      text: formatEnchantment(i),
+      value: i,
+    } as DropdownOption)
   );
 }
 
@@ -142,10 +142,10 @@ async function loadDiscs(): Promise<DropdownOption[]> {
 
   return uniqueItems.map(
     (i: string) =>
-      ({
-        text: formatCustomDisc(i),
-        value: i,
-      } as DropdownOption)
+    ({
+      text: formatCustomDisc(i),
+      value: i,
+    } as DropdownOption)
   );
 }
 
@@ -164,10 +164,10 @@ async function loadPotions(): Promise<DropdownOption[]> {
 
   return uniqueItems.map(
     (i: string) =>
-      ({
-        text: formatPotionEffect(i),
-        value: i,
-      } as DropdownOption)
+    ({
+      text: formatPotionEffect(i),
+      value: i,
+    } as DropdownOption)
   );
 }
 
@@ -205,17 +205,11 @@ function matchesFilters(item: ShopItem) {
   if (enchantment != "" && !item.parsedSNBT.enchantments.includes(enchantment)) return false;
 
   // Apply potion filter
-  if (
-    potionEffectFilter.value.length > 0 &&
-    (!item.parsedSNBT.potionEffect || !potionEffectFilter.value.includes(item.parsedSNBT.potionEffect))
-  )
+  if (potionEffectFilter.value.length > 0 && potionEffectFilter.value != item.parsedSNBT.potionEffect)
     return false;
 
   // Custom disc filter
-  if (
-    customDiscFilter.value.length > 0 &&
-    (!item.parsedSNBT.customDiscSong || !customDiscFilter.value.includes(item.parsedSNBT.customDiscSong))
-  )
+  if (customDiscFilter.value.length > 0 && customDiscFilter.value != item.parsedSNBT.customDiscSong)
     return false;
 
   return true;
@@ -236,12 +230,11 @@ let filtersText = computed(() => {
   <div class="flex flex-col gap-8">
     <div class="mb-2 flex flex-col gap-4">
       <div class="flex flex-row items-center justify-center">
-        <ItemTypeSearch
-          @selection="
-            (itemType) => {
-              if (itemType) $router.push({ name: 'itemSales', params: { itemType: itemType } });
-            }
-          ">
+        <ItemTypeSearch @selection="
+          (itemType) => {
+            if (itemType) $router.push({ name: 'itemSales', params: { itemType: itemType } });
+          }
+        ">
         </ItemTypeSearch>
       </div>
     </div>
@@ -265,31 +258,17 @@ let filtersText = computed(() => {
         </div>
 
         <div>
-          <DropdownFilter
-            v-if="enchantments.length > 0"
-            :placeholder="'Enchantments'"
-            :icon="'fa-solid fa-wand-sparkles'"
-            :options="enchantments"
-            :single-selection="true"
+          <DropdownFilter v-if="enchantments.length > 0" :placeholder="'Enchantments'"
+            :icon="'fa-solid fa-wand-sparkles'" :options="enchantments" :single-selection="true"
             v-model="enchantmentFilter">
           </DropdownFilter>
 
-          <DropdownFilter
-            v-if="potionEffects.length > 0"
-            :placeholder="'Potion Effect'"
-            :icon="'fa-solid fa-flask'"
-            :options="potionEffects"
-            :single-selection="true"
-            v-model="potionEffectFilter">
+          <DropdownFilter v-if="potionEffects.length > 0" :placeholder="'Potion Effect'" :icon="'fa-solid fa-flask'"
+            :options="potionEffects" :single-selection="true" v-model="potionEffectFilter">
           </DropdownFilter>
 
-          <DropdownFilter
-            v-if="customDiscs.length > 0"
-            :placeholder="'Custom Discs'"
-            :icon="'fa-solid fa-record-vinyl'"
-            :options="customDiscs"
-            :single-selection="true"
-            v-model="customDiscFilter">
+          <DropdownFilter v-if="customDiscs.length > 0" :placeholder="'Custom Discs'" :icon="'fa-solid fa-record-vinyl'"
+            :options="customDiscs" :single-selection="true" v-model="customDiscFilter">
           </DropdownFilter>
         </div>
       </div>
@@ -312,39 +291,24 @@ let filtersText = computed(() => {
         </div>
 
         <div class="flex flex-row flex-wrap gap-1 items-end">
-          <DropdownFilter
-            v-if="enchantments.length > 0"
-            :placeholder="'Enchantments'"
-            :icon="'fa-solid fa-wand-sparkles'"
-            :options="enchantments"
-            :single-selection="true"
+          <DropdownFilter v-if="enchantments.length > 0" :placeholder="'Enchantments'"
+            :icon="'fa-solid fa-wand-sparkles'" :options="enchantments" :single-selection="true"
             v-model="enchantmentFilter">
           </DropdownFilter>
 
-          <DropdownFilter
-            v-if="potionEffects.length > 0"
-            :placeholder="'Potion Effect'"
-            :icon="'fa-solid fa-flask'"
-            :options="potionEffects"
-            :single-selection="true"
-            v-model="potionEffectFilter">
+          <DropdownFilter v-if="potionEffects.length > 0" :placeholder="'Potion Effect'" :icon="'fa-solid fa-flask'"
+            :options="potionEffects" :single-selection="true" v-model="potionEffectFilter">
           </DropdownFilter>
 
-          <DropdownFilter
-            v-if="customDiscs.length > 0"
-            :placeholder="'Custom Discs'"
-            :icon="'fa-solid fa-record-vinyl'"
-            :options="customDiscs"
-            :single-selection="true"
-            v-model="customDiscFilter">
+          <DropdownFilter v-if="customDiscs.length > 0" :placeholder="'Custom Discs'" :icon="'fa-solid fa-record-vinyl'"
+            :options="customDiscs" :single-selection="true" v-model="customDiscFilter">
           </DropdownFilter>
 
           <SearchBox :placeholder="'Item Name'" v-model="nameFilter"></SearchBox>
         </div>
       </div>
 
-      <div
-        v-if="itemInfo?.shopCaveats"
+      <div v-if="itemInfo?.shopCaveats"
         class="p-4 mb-4 text-sm text-yellow-800 rounded-lg bg-yellow-50 dark:bg-gray-800 dark:text-yellow-300"
         role="alert">
         {{ itemInfo.shopCaveats }}
