@@ -36,8 +36,8 @@ const selectedPaintings = ref([] as Painting[]);
             <RenderPainting :painting-id="painting.id"></RenderPainting>
           </label>
 
-          <div class="absolute left-0 bottom-0 bg-gray-950/60 text-xs">
-            {{ painting.collectionId?.substring(0, 8) }}
+          <div class="absolute left-0 bottom-0 bg-gray-950/60 text-xs" v-if="painting.isMultiCanvas">
+            Multi-canvas
           </div>
         </div>
 

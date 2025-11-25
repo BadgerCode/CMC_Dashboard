@@ -4,5 +4,5 @@ export interface Painting {
   authorName: string;
   firstSeenAt: string;
   createdAt: string;
-  collectionId: string | null;
+  isMultiCanvas: boolean;
 }

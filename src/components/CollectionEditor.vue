@@ -119,10 +119,6 @@ async function saveCollection() {
   if (httpResponse.status !== 200) throw new Error("Failed to update painting collection");
 
   console.log("Saved collection");
-
-  for (const painting of props.paintings) {
-    painting.collectionId = request.id;
-  }
   emit("clear");
 }
 </script>
