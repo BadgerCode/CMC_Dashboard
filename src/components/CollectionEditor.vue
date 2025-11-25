@@ -198,7 +198,7 @@ async function saveCollection() {
             <div>
               <div v-for="row in paintingRows" class="flex flex-row flex-wrap w-full justify-center">
                 <div v-for="painting in row" class="flex justify-center items-center flex-col">
-                  <div class="painting relative h-[192px] w-[192px]">
+                  <div class="painting relative" :class="painting.size.toLowerCase()">
                     <RenderPainting :painting-id="painting.id"></RenderPainting>
 
                     <div class="overlay absolute top-0 bottom-0 left-0 right-0 flex flex-col bg-gray-950/60 justify-between text-xs">
@@ -262,5 +262,25 @@ async function saveCollection() {
 
 .painting:hover .overlay {
   visibility: visible;
+}
+
+.painting {
+  width: 256px;
+  height: 256px;
+}
+
+.painting.small {
+  width: 128px;
+  height: 128px;
+}
+
+.painting.tall {
+  width: 128px;
+  height: 256px;
+}
+
+.painting.wide {
+  width: 256px;
+  height: 128px;
 }
 </style>
