@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import type { Painting } from "@/api/paintings/painting";
 import { initFlowbite } from "flowbite";
-import { computed, onMounted, onUpdated, ref } from "vue";
+import { onMounted, onUpdated, ref } from "vue";
 import RenderPainting from "./RenderPainting.vue";
 import { Config } from "@/config";
+import { toNumber } from "lodash";
 
 interface Props {
   paintings: Painting[];
@@ -14,9 +15,12 @@ const emit = defineEmits<{
   (e: "clear"): void;
 }>();
 
-const numCols = ref(2);
 const title = ref("");
 const author = ref("");
+const showModal = ref(false);
+
+const selectedPaintingId = ref("");
+const positions = ref({} as { [paintingId: string]: string });
 
 onMounted(async () => {
   initFlowbite(); // Include on any component where you need flowbite JS functionality
@@ -28,55 +32,41 @@ onUpdated(() => {
   initFlowbite(); // Include on any component where you need flowbite JS functionality
 });
 
-const paintingRows = computed(() => {
-  let rows = [] as Painting[][];
-  const chunkSize = numCols.value;
-  for (let i = 0; i < props.paintings.length; i += chunkSize) {
-    const chunk = props.paintings.slice(i, i + chunkSize);
-    rows.push(chunk);
+function startEditor() {
+  // Setup positions
+  let x = 0;
+  let y = 0;
+
+  for (const painting of props.paintings) {
+    positions.value[painting.id] = `${x},${y}`;
+
+    x += 2;
+    if (x >= 8) {
+      x = 0;
+      y += 2;
+    }
   }
 
-  return rows;
-});
+  showModal.value = true;
+}
 
-function move(paintingId: string, direction: string) {
-  let currentIndex = props.paintings.findIndex((p) => p.id == paintingId); // 0-based
-  if (currentIndex === -1) {
-    console.error(`Painting '${paintingId}' not found`);
-    return;
-  }
+function getStyle(painting: Painting) {
+  let pos = (positions.value[painting.id] ?? "0,0").split(",");
 
-  let newIndex = currentIndex;
-  if (direction == "left") {
-    newIndex -= 1;
-  } else if (direction == "right") {
-    newIndex += 1;
-  } else if (direction == "up") {
-    newIndex -= numCols.value;
-  } else if (direction == "down") {
-    newIndex += numCols.value;
-  } else {
-    return;
-  }
-
-  if (newIndex < 0 || newIndex >= props.paintings.length) return;
-
-  // Swap neighbour and painting
-  let painting = props.paintings[currentIndex]!;
-  let neighbour = props.paintings[newIndex]!;
-  props.paintings[currentIndex] = neighbour;
-  props.paintings[newIndex] = painting;
+  return {
+    transform: `translate(${toNumber(pos[0]) * 128}px, ${toNumber(pos[1]) * 128}px)`,
+    "transform-origin": "top left",
+  };
 }
 
 async function saveCollection() {
   // Create mappings
   let firstSeenAt = new Date();
   let createdAt = new Date(0);
-  let x = 0,
-    y = 0;
   let mappings = {} as { [paintingId: string]: string };
   for (const painting of props.paintings) {
-    console.log(`${x},${y} - ${painting.title}`);
+    let pos = positions.value[painting.id]!.split(",");
+    console.log(`${pos[0]},${pos[1]} - ${painting.title}`);
 
     // Use the newest painting's first seen at for the collection
     let paintingFirstSeenAt = new Date(painting.firstSeenAt);
@@ -86,13 +76,7 @@ async function saveCollection() {
     let paintingCreatedAt = new Date(painting.createdAt);
     if (paintingCreatedAt > createdAt) createdAt = paintingCreatedAt;
 
-    mappings[painting.id] = `${x},${y}`;
-    x++;
-
-    if (x >= numCols.value) {
-      x = 0;
-      y++;
-    }
+    mappings[painting.id] = `${pos[0]},${pos[1]}`;
   }
 
   // Generate request
@@ -120,6 +104,8 @@ async function saveCollection() {
 
   console.log("Saved collection");
   emit("clear");
+  positions.value = {};
+  showModal.value = false;
 }
 </script>
 
@@ -142,13 +128,7 @@ async function saveCollection() {
             <button type="button" data-dismiss-target="#toast-interactive" class="w-full button-secondary" @click="$emit('clear')">
               Clear
             </button>
-            <button
-              type="button"
-              class="w-full button-primary"
-              data-modal-target="collection-editor-modal"
-              data-modal-show="collection-editor-modal">
-              Create
-            </button>
+            <button type="button" class="w-full button-primary" @click="startEditor()">Create</button>
           </div>
         </div>
       </div>
@@ -157,10 +137,11 @@ async function saveCollection() {
     <!-- Editor modal -->
     <div
       id="collection-editor-modal"
+      v-if="showModal"
       data-modal-backdrop="static"
       tabindex="-1"
       aria-hidden="true"
-      class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-200 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full bg-gray-950/60">
+      class="overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-200 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full bg-gray-950/60">
       <div class="relative p-4 w-full max-w-7xl max-h-full">
         <!-- Modal content -->
         <div class="flex flex-col max-h-full relative bg-neutral-primary-soft border border-default rounded-base shadow-sm p-4 md:p-6">
@@ -183,51 +164,40 @@ async function saveCollection() {
               <input type="text" class="textbox" placeholder="Painting author" v-model="author" />
             </div>
 
-            <!-- Num columns -->
-            <div class="max-w-sm mx-auto">
-              <label for="painting-collection-cols" class="block mb-2.5 text-sm font-medium text-heading"> Number of columns </label>
-              <input
-                type="number"
-                id="painting-collection-cols"
-                aria-describedby="helper-text-explanation"
-                v-model="numCols"
-                class="block w-full px-3 py-2.5 bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand shadow-xs placeholder:text-body" />
-            </div>
-
-            <!-- Paintings -->
-            <div>
-              <div v-for="row in paintingRows" class="flex flex-row flex-wrap w-full justify-center">
-                <div v-for="painting in row" class="flex justify-center items-center flex-col">
+            <div class="flex flex-row">
+              <!-- Paintings -->
+              <div class="flex-1 relative z-0">
+                <div
+                  v-for="painting in paintings"
+                  class="flex absolute justify-center items-center flex-col"
+                  :style="getStyle(painting)"
+                  @click="selectedPaintingId = painting.id">
                   <div class="painting relative" :class="painting.size.toLowerCase()">
                     <RenderPainting :painting-id="painting.id"></RenderPainting>
 
                     <div class="overlay absolute top-0 bottom-0 left-0 right-0 flex flex-col bg-gray-950/60 justify-between text-xs">
                       <div>{{ painting.title }}</div>
 
-                      <div class="flex flex-row justify-center">
-                        <button type="button" class="button-secondary" @click="move(painting.id, 'up')">
-                          <font-awesome-icon icon="fa-solid fa-arrow-up" class="rotate-0" />
-                        </button>
-                      </div>
-
-                      <div class="flex flex-row justify-center">
-                        <button type="button" class="button-secondary" @click="move(painting.id, 'left')">
-                          <font-awesome-icon icon="fa-solid fa-arrow-up" class="rotate-270" />
-                        </button>
-                        <button type="button" class="button-secondary" @click="move(painting.id, 'right')">
-                          <font-awesome-icon icon="fa-solid fa-arrow-up" class="rotate-90" />
-                        </button>
-                      </div>
-
-                      <div class="flex flex-row justify-center">
-                        <button type="button" class="button-secondary" @click="move(painting.id, 'down')">
-                          <font-awesome-icon icon="fa-solid fa-arrow-up" class="rotate-180" />
-                        </button>
-                      </div>
-
                       <div class="text-xs">{{ painting.authorName }}</div>
                     </div>
                   </div>
+                </div>
+              </div>
+
+              <!-- Positions -->
+              <div class="z-100">
+                <div v-for="painting in paintings" class="mb-2">
+                  <label
+                    :for="`painting-pos-${painting.id}`"
+                    class="block mb-2.5 text-sm font-medium"
+                    :class="{ 'text-blue-600': selectedPaintingId == painting.id, 'text-heading': selectedPaintingId != painting.id }">
+                    {{ painting.title }}
+                  </label>
+                  <input
+                    type="text"
+                    :id="`painting-pos-${painting.id}`"
+                    v-model="positions[painting.id]"
+                    class="block px-3 py-2.5 bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand shadow-xs placeholder:text-body" />
                 </div>
               </div>
             </div>
@@ -236,14 +206,13 @@ async function saveCollection() {
           <!-- Modal footer -->
           <div class="flex items-center justify-end border-t border-default space-x-4 pt-4 md:pt-5">
             <button
-              data-modal-hide="collection-editor-modal"
               type="button"
               class="text-white bg-brand box-border border border-transparent hover:bg-brand-strong focus:ring-4 focus:ring-brand-medium shadow-xs font-medium leading-5 rounded-base text-sm px-4 py-2.5 focus:outline-none"
               @click="saveCollection()">
               Save
             </button>
             <button
-              data-modal-hide="collection-editor-modal"
+              @click="showModal = false"
               type="button"
               class="text-body bg-neutral-secondary-medium box-border border border-default-medium hover:bg-neutral-tertiary-medium hover:text-heading focus:ring-4 focus:ring-neutral-tertiary shadow-xs font-medium leading-5 rounded-base text-sm px-4 py-2.5 focus:outline-none">
               Cancel
