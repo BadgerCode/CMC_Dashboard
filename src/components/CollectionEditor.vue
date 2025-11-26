@@ -8,21 +8,32 @@ import { toNumber } from "lodash";
 import DropdownFilter, { type DropdownOption } from "./DropdownFilter.vue";
 import Checkbox from "./Checkbox.vue";
 
+// Saved collections
+export interface SavedCollection {
+  id: string;
+  title: string;
+  author: string;
+  numPaintings: number;
+}
+
 interface Props {
   paintings: Painting[];
 }
 const props = defineProps<Props>();
 
 const emit = defineEmits<{
+  (e: "collectionCreated", collection: SavedCollection): void;
   (e: "clear"): void;
 }>();
 
+// Collection info
 const title = ref("");
 const author = ref("");
 const showModal = ref(false);
-
-const selectedPaintingId = ref("");
 const positions = ref({} as { [paintingId: string]: string });
+
+// Editor
+const selectedPaintingId = ref("");
 
 // Automatic ordering
 const widthBlocks = ref(8);
@@ -53,6 +64,7 @@ function startEditor() {
   widthBlocks.value = 8;
   startAtBottom.value = false;
   selectedPaintingId.value = "";
+  positions.value = {};
 
   // Automatically arrange the paintings
   arrangePaintings();
@@ -172,6 +184,7 @@ async function saveCollection() {
   if (httpResponse.status !== 200) throw new Error("Failed to update painting collection");
 
   console.log("Saved collection");
+  emit("collectionCreated", { id: request.id, title: request.title, author: request.author, numPaintings: Object.keys(mappings).length });
   emit("clear");
   positions.value = {};
   showModal.value = false;
@@ -201,7 +214,7 @@ function swapPaintings(firstPaintingId: string, secondPaintingId: string) {
   <div>
     <!-- Toast notification -->
     <div
-      id="toast-interactive"
+      id="collection-start"
       class="fixed z-100 bottom-5 right-5 space-y-4 p-3 text-body bg-neutral-primary-soft rounded-base shadow-xs border border-default"
       role="alert">
       <div class="flex">
@@ -213,7 +226,7 @@ function swapPaintings(firstPaintingId: string, secondPaintingId: string) {
           <span class="mb-1 text-base font-medium text-heading">Collection Editor</span>
           <div class="mb-3">{{ paintings.length }} paintings selected</div>
           <div class="grid grid-cols-2 gap-3">
-            <button type="button" data-dismiss-target="#toast-interactive" class="w-full button-secondary" @click="$emit('clear')">
+            <button type="button" data-dismiss-target="#collection-start" class="w-full button-secondary" @click="$emit('clear')">
               Clear
             </button>
             <button type="button" class="w-full button-primary" @click="startEditor()">Create</button>
