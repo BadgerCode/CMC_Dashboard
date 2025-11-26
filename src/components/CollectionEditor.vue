@@ -33,6 +33,11 @@ onUpdated(() => {
 });
 
 function startEditor() {
+  arrangePaintings();
+  showModal.value = true;
+}
+
+function arrangePaintings() {
   // Setup positions
   let x = 0;
   let y = 0;
@@ -50,15 +55,13 @@ function startEditor() {
       y += rowHeight;
     }
   }
-
-  showModal.value = true;
 }
 
 function getStyle(painting: Painting) {
   let pos = (positions.value[painting.id] ?? "0,0").split(",");
 
   return {
-    transform: `translate(${toNumber(pos[0]) * 128}px, ${toNumber(pos[1]) * 128}px)`,
+    transform: `translate(${toNumber(pos[0]) * 96}px, ${toNumber(pos[1]) * 96}px)`,
     "transform-origin": "top left",
   };
 }
@@ -116,8 +119,7 @@ async function saveCollection() {
 <template>
   <div>
     <!-- Toast notification -->
-    <div
-      id="toast-interactive"
+    <div id="toast-interactive"
       class="fixed z-100 bottom-5 right-5 space-y-4 p-3 text-body bg-neutral-primary-soft rounded-base shadow-xs border border-default"
       role="alert">
       <div class="flex">
@@ -129,7 +131,8 @@ async function saveCollection() {
           <span class="mb-1 text-base font-medium text-heading">Collection Editor</span>
           <div class="mb-3">{{ paintings.length }} paintings selected</div>
           <div class="grid grid-cols-2 gap-3">
-            <button type="button" data-dismiss-target="#toast-interactive" class="w-full button-secondary" @click="$emit('clear')">
+            <button type="button" data-dismiss-target="#toast-interactive" class="w-full button-secondary"
+              @click="$emit('clear')">
               Clear
             </button>
             <button type="button" class="w-full button-primary" @click="startEditor()">Create</button>
@@ -139,16 +142,12 @@ async function saveCollection() {
     </div>
 
     <!-- Editor modal -->
-    <div
-      id="collection-editor-modal"
-      v-if="showModal"
-      data-modal-backdrop="static"
-      tabindex="-1"
-      aria-hidden="true"
+    <div id="collection-editor-modal" v-if="showModal" data-modal-backdrop="static" tabindex="-1" aria-hidden="true"
       class="overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-200 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full bg-gray-950/60">
       <div class="relative p-4 w-full max-w-7xl max-h-full">
         <!-- Modal content -->
-        <div class="flex flex-col max-h-full relative bg-neutral-primary-soft border border-default rounded-base shadow-sm p-4 md:p-6">
+        <div
+          class="flex flex-col max-h-full relative bg-neutral-primary-soft border border-default rounded-base shadow-sm p-4 md:p-6">
           <!-- Modal header -->
           <div class="flex items-center justify-between border-b border-default pb-4 md:pb-5">
             <h3 class="text-lg font-medium text-heading">Collection Editor</h3>
@@ -156,30 +155,31 @@ async function saveCollection() {
 
           <!-- Modal body -->
           <div class="space-y-4 md:space-y-6 py-4 md:py-6 h-[600px] overflow-y-auto">
-            <!-- Title -->
-            <div class="max-w-sm mx-auto">
-              <label class="block mb-2.5 text-sm font-medium text-heading">Title</label>
-              <input type="text" class="textbox" placeholder="Painting title (e.g. shulker box name)" v-model="title" />
-            </div>
+            <div class="flex flex-row">
+              <!-- Title -->
+              <div class="max-w-sm mx-auto">
+                <label class="block mb-2.5 text-sm font-medium text-heading">Title</label>
+                <input type="text" class="textbox" placeholder="Painting title (e.g. shulker box name)"
+                  v-model="title" />
+              </div>
 
-            <!-- Author -->
-            <div class="max-w-sm mx-auto">
-              <label class="block mb-2.5 text-sm font-medium text-heading">Author</label>
-              <input type="text" class="textbox" placeholder="Painting author" v-model="author" />
+              <!-- Author -->
+              <div class="max-w-sm mx-auto">
+                <label class="block mb-2.5 text-sm font-medium text-heading">Author</label>
+                <input type="text" class="textbox" placeholder="Painting author" v-model="author" />
+              </div>
             </div>
 
             <div class="flex flex-row">
               <!-- Paintings -->
               <div class="flex-1 relative z-0">
-                <div
-                  v-for="painting in paintings"
-                  class="flex absolute justify-center items-center flex-col"
-                  :style="getStyle(painting)"
-                  @click="selectedPaintingId = painting.id">
+                <div v-for="painting in paintings" class="flex absolute justify-center items-center flex-col cursor-pointer"
+                  :style="getStyle(painting)" @click="selectedPaintingId = painting.id">
                   <div class="painting relative" :class="painting.size.toLowerCase()">
                     <RenderPainting :painting-id="painting.id"></RenderPainting>
 
-                    <div class="overlay absolute top-0 bottom-0 left-0 right-0 flex flex-col bg-gray-950/60 justify-between text-xs">
+                    <div
+                      class="overlay absolute top-0 bottom-0 left-0 right-0 flex flex-col bg-gray-950/60 justify-between text-xs">
                       <div>{{ painting.title }}</div>
 
                       <div class="text-xs">{{ painting.authorName }}</div>
@@ -188,20 +188,63 @@ async function saveCollection() {
                 </div>
               </div>
 
-              <!-- Positions -->
-              <div class="z-100">
-                <div v-for="painting in paintings" class="mb-2">
-                  <label
-                    :for="`painting-pos-${painting.id}`"
-                    class="block mb-2.5 text-sm font-medium"
-                    :class="{ 'text-blue-600': selectedPaintingId == painting.id, 'text-heading': selectedPaintingId != painting.id }">
-                    {{ painting.title }}
-                  </label>
-                  <input
-                    type="text"
-                    :id="`painting-pos-${painting.id}`"
-                    v-model="positions[painting.id]"
-                    class="block px-3 py-2.5 bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand shadow-xs placeholder:text-body" />
+              <!-- SIDE BAR -->
+              <div class="z-100 p-2 w-[300px]">
+
+                <div id="collection-controls" data-accordion="collapse" class="accordion">
+
+                  <!-- Automatic ordering -->
+                  <h2 id="collection-controls-auto-heading">
+                    <button type="button" class="accordion-header-button"
+                      data-accordion-target="#collection-controls-auto" aria-expanded="true"
+                      aria-controls="collection-controls-auto">
+                      <span>Automatic</span>
+                      <font-awesome-icon data-accordion-icon icon="fa-solid fa-angle-up"
+                        class="w-5 h-5 rotate-180 shrink-0" />
+                    </button>
+                  </h2>
+
+                  <div id="collection-controls-auto" class="accordion-body hidden"
+                    aria-labelledby="collection-controls-auto-heading">
+                    <div class="text-body">
+
+                      <!-- Apply -->
+                      <button @click="arrangePaintings()" type="button" class="button-secondary">
+                        Apply
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Manual ordering -->
+                  <h2 id="collection-controls-manual-heading">
+                    <button type="button" class="accordion-header-button"
+                      data-accordion-target="#collection-controls-manual" aria-expanded="false"
+                      aria-controls="collection-controls-manual">
+                      <span>Manual</span>
+                      <font-awesome-icon data-accordion-icon icon="fa-solid fa-angle-up"
+                        class="w-5 h-5 rotate-180 shrink-0" />
+                    </button>
+                  </h2>
+
+                  <div id="collection-controls-manual" class="accordion-body hidden"
+                    aria-labelledby="collection-controls-manual-heading">
+                    <div class="text-body">
+                      <!-- Positions -->
+                      <div class="max-h-[400px] overflow-x-scroll">
+                        <div v-for="painting in paintings" class="mb-2">
+                          <!-- Painting name -->
+                          <label :for="`painting-pos-${painting.id}`" class="block mb-1 text-sm font-medium"
+                            :class="{ 'text-blue-600': selectedPaintingId == painting.id, 'text-heading': selectedPaintingId != painting.id }">
+                            {{ painting.title }}
+                          </label>
+
+                          <!-- Position -->
+                          <input type="text" :id="`painting-pos-${painting.id}`" v-model="positions[painting.id]"
+                            class="block px-3 py-2.5 bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand shadow-xs placeholder:text-body" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -209,16 +252,10 @@ async function saveCollection() {
 
           <!-- Modal footer -->
           <div class="flex items-center justify-end border-t border-default space-x-4 pt-4 md:pt-5">
-            <button
-              type="button"
-              class="text-white bg-brand box-border border border-transparent hover:bg-brand-strong focus:ring-4 focus:ring-brand-medium shadow-xs font-medium leading-5 rounded-base text-sm px-4 py-2.5 focus:outline-none"
-              @click="saveCollection()">
+            <button type="button" class="button-primary" @click="saveCollection()">
               Save
             </button>
-            <button
-              @click="showModal = false"
-              type="button"
-              class="text-body bg-neutral-secondary-medium box-border border border-default-medium hover:bg-neutral-tertiary-medium hover:text-heading focus:ring-4 focus:ring-neutral-tertiary shadow-xs font-medium leading-5 rounded-base text-sm px-4 py-2.5 focus:outline-none">
+            <button @click="showModal = false" type="button" class="button-secondary">
               Cancel
             </button>
           </div>
@@ -238,22 +275,22 @@ async function saveCollection() {
 }
 
 .painting {
-  width: 256px;
-  height: 256px;
+  width: 192px;
+  height: 192px;
 }
 
 .painting.small {
-  width: 128px;
-  height: 128px;
+  width: 96px;
+  height: 96px;
 }
 
 .painting.tall {
-  width: 128px;
-  height: 256px;
+  width: 96px;
+  height: 192px;
 }
 
 .painting.wide {
-  width: 256px;
-  height: 128px;
+  width: 192px;
+  height: 96px;
 }
 </style>
