@@ -84,6 +84,8 @@ async function fetchPaintingSales(paintingID: string): Promise<PaintingSaleSumma
         <div class="h-[256px] w-[256px]">
           <RenderPainting :painting-id="paintingData.id"></RenderPainting>
         </div>
+
+        <div v-if="paintingData.isMultiCanvas">This painting is made from multiple canvases.</div>
       </div>
     </div>
 

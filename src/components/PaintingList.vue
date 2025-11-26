@@ -28,7 +28,7 @@ const selectedPaintings = ref([] as Painting[]);
         </div>
 
         <!-- Collection editor -->
-        <div v-if="Config.FEATURE_COLLECTIONS" class="relative h-[256px] w-[256px]">
+        <div v-if="Config.FEATURE_COLLECTIONS_EDITOR" class="relative h-[256px] w-[256px]">
           <input type="checkbox" name="painting-select" :id="`painting-select-${painting.id}`" :value="painting"
             v-model="selectedPaintings" class="hidden peer" :disabled="painting.isMultiCanvas" />
           <label :for="`painting-select-${painting.id}`"
@@ -58,7 +58,7 @@ const selectedPaintings = ref([] as Painting[]);
       </div>
     </div>
 
-    <CollectionEditor v-if="Config.FEATURE_COLLECTIONS && selectedPaintings.length > 0"
+    <CollectionEditor v-if="Config.FEATURE_COLLECTIONS_EDITOR && selectedPaintings.length > 0"
       :paintings="selectedPaintings" @clear="selectedPaintings.splice(0)"></CollectionEditor>
   </div>
 </template>
