@@ -37,13 +37,17 @@ function startEditor() {
   let x = 0;
   let y = 0;
 
+  let rowHeight = 1;
   for (const painting of props.paintings) {
     positions.value[painting.id] = `${x},${y}`;
 
-    x += 2;
+    let size = painting.size.toLowerCase();
+    x += size == "large" || size == "wide" ? 2 : 1;
+    rowHeight = Math.max(rowHeight, size == "large" || size == "tall" ? 2 : 1);
+
     if (x >= 8) {
       x = 0;
-      y += 2;
+      y += rowHeight;
     }
   }
 
