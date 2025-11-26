@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import type { Painting } from "@/api/paintings/painting";
 import { initFlowbite } from "flowbite";
-import { onMounted, onUpdated, ref } from "vue";
+import { computed, onMounted, onUpdated, ref } from "vue";
 import RenderPainting from "./RenderPainting.vue";
 import { Config } from "@/config";
 import { toNumber } from "lodash";
+import DropdownFilter, { type DropdownOption } from "./DropdownFilter.vue";
+import Checkbox from "./Checkbox.vue";
 
 interface Props {
   paintings: Painting[];
@@ -22,6 +24,17 @@ const showModal = ref(false);
 const selectedPaintingId = ref("");
 const positions = ref({} as { [paintingId: string]: string });
 
+// Automatic ordering
+const widthBlocks = ref(8);
+const reverseOrder = ref(false);
+const sortOptions = [
+  { text: "Order of selection", value: "selection" },
+  { text: "Painting Name 1/x", value: "fractions" }
+] as DropdownOption[];
+const sortOrder = ref(sortOptions[0]!.value);
+const sortOrderText = computed(() => sortOptions.find(o => o.value == sortOrder.value)?.text);
+
+
 onMounted(async () => {
   initFlowbite(); // Include on any component where you need flowbite JS functionality
   title.value = props.paintings[0]!.title;
@@ -33,24 +46,48 @@ onUpdated(() => {
 });
 
 function startEditor() {
+  // default automatic sorting options
+  sortOrder.value = sortOptions[0]!.value;
+  widthBlocks.value = 8;
+
+  // Automatically arrange the paintings
   arrangePaintings();
+
+  // Show the modal
   showModal.value = true;
 }
 
+const fractionNameRegex = new RegExp(/.*[^\d](\d+)\/\d+.*/);
 function arrangePaintings() {
   // Setup positions
   let x = 0;
   let y = 0;
 
+  // Order paintings
+  let orderedPaintings = props.paintings.slice();
+  if (sortOrder.value == "fractions") orderedPaintings.sort((a, b) => {
+    let aPosition = parseInt(a.title.match(fractionNameRegex)?.[1] ?? "");
+    let bPosition = parseInt(b.title.match(fractionNameRegex)?.[1] ?? "");
+
+    // TODO: Handle just aPosition or just bPosition being null/not a number
+    if (Number.isNaN(aPosition) || Number.isNaN(bPosition))
+      return a.title.localeCompare(b.title);
+
+    return aPosition - bPosition;
+  });
+
+  if (reverseOrder.value) orderedPaintings.reverse();
+
+  // Determine positions
   let rowHeight = 1;
-  for (const painting of props.paintings) {
+  for (const painting of orderedPaintings) {
     positions.value[painting.id] = `${x},${y}`;
 
     let size = painting.size.toLowerCase();
     x += size == "large" || size == "wide" ? 2 : 1;
     rowHeight = Math.max(rowHeight, size == "large" || size == "tall" ? 2 : 1);
 
-    if (x >= 8) {
+    if (x >= widthBlocks.value) {
       x = 0;
       y += rowHeight;
     }
@@ -144,7 +181,7 @@ async function saveCollection() {
     <!-- Editor modal -->
     <div id="collection-editor-modal" v-if="showModal" data-modal-backdrop="static" tabindex="-1" aria-hidden="true"
       class="overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-200 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full bg-gray-950/60">
-      <div class="relative p-4 w-full max-w-7xl max-h-full">
+      <div class="relative p-4 w-full max-h-full">
         <!-- Modal content -->
         <div
           class="flex flex-col max-h-full relative bg-neutral-primary-soft border border-default rounded-base shadow-sm p-4 md:p-6">
@@ -159,22 +196,23 @@ async function saveCollection() {
               <!-- Title -->
               <div class="max-w-sm mx-auto">
                 <label class="block mb-2.5 text-sm font-medium text-heading">Title</label>
-                <input type="text" class="textbox" placeholder="Painting title (e.g. shulker box name)"
+                <input type="text" class="textbox w-80" placeholder="Painting title (e.g. shulker box name)"
                   v-model="title" />
               </div>
 
               <!-- Author -->
               <div class="max-w-sm mx-auto">
                 <label class="block mb-2.5 text-sm font-medium text-heading">Author</label>
-                <input type="text" class="textbox" placeholder="Painting author" v-model="author" />
+                <input type="text" class="textbox w-80" placeholder="Painting author" v-model="author" />
               </div>
             </div>
 
             <div class="flex flex-row">
               <!-- Paintings -->
               <div class="flex-1 relative z-0">
-                <div v-for="painting in paintings" class="flex absolute justify-center items-center flex-col cursor-pointer"
-                  :style="getStyle(painting)" @click="selectedPaintingId = painting.id">
+                <div v-for="painting in paintings"
+                  class="flex absolute justify-center items-center flex-col cursor-pointer" :style="getStyle(painting)"
+                  @click="selectedPaintingId = painting.id">
                   <div class="painting relative" :class="painting.size.toLowerCase()">
                     <RenderPainting :painting-id="painting.id"></RenderPainting>
 
@@ -206,12 +244,36 @@ async function saveCollection() {
 
                   <div id="collection-controls-auto" class="accordion-body hidden"
                     aria-labelledby="collection-controls-auto-heading">
-                    <div class="text-body">
+                    <div class="text-body flex flex-col gap-4">
+
+                      <!-- Number of columns -->
+                      <div class="flex flex-col gap-2">
+                        <label class="block mb-2.5 text-sm font-medium text-heading">
+                          Total width (blocks)
+                        </label>
+                        <input type="text" class="textbox w-full" placeholder="E.g. 2 large paintings is 4 blocks"
+                          v-model="widthBlocks" />
+                      </div>
+
+                      <!-- Sorting -->
+                      <div class="flex flex-col gap-2">
+                        <label class="block text-sm font-medium text-heading">
+                          Sort by: {{ sortOrderText }}
+                        </label>
+
+                        <DropdownFilter :placeholder="'Sort by'" :icon="'fa-solid fa-arrow-down-1-9'"
+                          :options="sortOptions" v-model="sortOrder" :single-selection="true">
+                        </DropdownFilter>
+
+                        <Checkbox :label="'Reverse'" v-model="reverseOrder"></Checkbox>
+                      </div>
 
                       <!-- Apply -->
-                      <button @click="arrangePaintings()" type="button" class="button-secondary">
-                        Apply
-                      </button>
+                      <div class="flex flex-row gap-2 justify-center">
+                        <button @click="arrangePaintings()" type="button" class="button-secondary mt-4">
+                          Apply
+                        </button>
+                      </div>
                     </div>
                   </div>
 
