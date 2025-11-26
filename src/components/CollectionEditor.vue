@@ -52,6 +52,7 @@ function startEditor() {
   sortOrder.value = sortOptions[0]!.value;
   widthBlocks.value = 8;
   startAtBottom.value = false;
+  selectedPaintingId.value = "";
 
   // Automatically arrange the paintings
   arrangePaintings();
@@ -175,6 +176,25 @@ async function saveCollection() {
   positions.value = {};
   showModal.value = false;
 }
+
+// Selection
+function selectPainting(paintingId: string) {
+  if (selectedPaintingId.value == paintingId) selectedPaintingId.value = "";
+  else selectedPaintingId.value = paintingId;
+}
+
+// Swap tool
+function swapPaintings(firstPaintingId: string, secondPaintingId: string) {
+  // Swap
+  let firstPos = positions.value[firstPaintingId]!;
+  let secondPos = positions.value[secondPaintingId]!;
+
+  positions.value[firstPaintingId] = secondPos;
+  positions.value[secondPaintingId] = firstPos;
+
+  // Reset selection
+  selectedPaintingId.value = "";
+}
 </script>
 
 <template>
@@ -241,12 +261,22 @@ async function saveCollection() {
                   v-for="painting in paintings"
                   class="flex absolute justify-center items-center flex-col cursor-pointer"
                   :style="getStyle(painting)"
-                  @click="selectedPaintingId = painting.id">
-                  <div class="painting relative" :class="painting.size.toLowerCase()">
+                  @click="selectPainting(painting.id)">
+                  <div class="painting relative" :class="[painting.size.toLowerCase(), { selected: selectedPaintingId == painting.id }]">
                     <RenderPainting :painting-id="painting.id"></RenderPainting>
 
                     <div class="overlay absolute top-0 bottom-0 left-0 right-0 flex flex-col bg-gray-950/60 justify-between text-xs">
                       <div>{{ painting.title }}</div>
+
+                      <div class="flex flex-row justify-center">
+                        <button
+                          v-if="selectedPaintingId && selectedPaintingId != painting.id"
+                          @click="swapPaintings(selectedPaintingId, painting.id)"
+                          type="button"
+                          class="button-secondary mt-4">
+                          Swap
+                        </button>
+                      </div>
 
                       <div class="text-xs">{{ painting.authorName }}</div>
                     </div>
@@ -358,6 +388,10 @@ async function saveCollection() {
 <style lang="css" scoped>
 .painting .overlay {
   visibility: hidden;
+}
+
+.painting.selected {
+  border: 2px solid #00a2ff;
 }
 
 .painting:hover .overlay {
