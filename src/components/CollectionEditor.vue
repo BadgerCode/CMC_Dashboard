@@ -229,17 +229,17 @@ function swapPaintings(firstPaintingId: string, secondPaintingId: string) {
       data-modal-backdrop="static"
       tabindex="-1"
       aria-hidden="true"
-      class="overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-200 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full bg-gray-950/60">
-      <div class="relative p-4 w-full max-h-full">
+      class="overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 bottom-0 z-200 justify-center items-center w-full md:inset-0 h-full bg-gray-950/60">
+      <div class="relative p-4 w-full h-full">
         <!-- Modal content -->
-        <div class="flex flex-col max-h-full relative bg-neutral-primary-soft border border-default rounded-base shadow-sm p-4 md:p-6">
+        <div class="flex flex-col h-full relative bg-neutral-primary-soft border border-default rounded-base shadow-sm p-4 md:p-6">
           <!-- Modal header -->
           <div class="flex items-center justify-between border-b border-default pb-4 md:pb-5">
             <h3 class="text-lg font-medium text-heading">Collection Editor</h3>
           </div>
 
           <!-- Modal body -->
-          <div class="space-y-4 md:space-y-6 py-4 md:py-6 h-[600px] overflow-y-auto">
+          <div class="space-y-4 md:space-y-6 py-4 md:py-6 flex-1 overflow-y-auto">
             <div class="flex flex-row">
               <!-- Title -->
               <div class="max-w-sm mx-auto">
