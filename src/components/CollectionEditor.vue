@@ -31,6 +31,8 @@ const sortOptions = [
   { text: "Order of selection", value: "selection" },
   { text: "Painting Name 1", value: "simpleNumber" },
   { text: "Painting Name 1/x", value: "fractions" },
+  { text: "Oldest first", value: "createdAtAsc" },
+  { text: "Newest first", value: "createdAtDesc" },
 ] as DropdownOption[];
 const sortOrder = ref(sortOptions[0]!.value);
 const sortOrderText = computed(() => sortOptions.find((o) => o.value == sortOrder.value)?.text);
@@ -75,6 +77,13 @@ function arrangePaintings() {
       if (Number.isNaN(aPosition) || Number.isNaN(bPosition)) return a.title.localeCompare(b.title);
 
       return aPosition - bPosition;
+    });
+  } else if (sortOrder.value == "createdAtAsc" || sortOrder.value == "createdAtDesc") {
+    orderedPaintings.sort((a, b) => {
+      let first = sortOrder.value == "createdAtAsc" ? a.createdAt : b.createdAt;
+      let second = sortOrder.value == "createdAtAsc" ? b.createdAt : a.createdAt;
+
+      return new Date(first).getTime() - new Date(second).getTime();
     });
   }
 
