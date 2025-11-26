@@ -63,11 +63,15 @@ async function loadNextPage() {
 </script>
 
 <template>
-  <div class="flex flex-row justify-between mb-2">
+  <div class="flex flex-col sm:flex-row justify-between mb-2 gap-2">
     <div>
       <RouterLink v-if="artistName" :to="{ name: 'gallery' }" class="hyperlink">Back to Gallery </RouterLink>
     </div>
-    <SearchWithResults :items="artists" :placeholder="'Artist'" @selection="(a) => (artistName = a?.text)"></SearchWithResults>
+
+    <div class="self-end">
+      <SearchWithResults :items="artists" :placeholder="'Artist'" @selection="(a) => (artistName = a?.text)">
+      </SearchWithResults>
+    </div>
   </div>
 
   <div class="mb-8">
