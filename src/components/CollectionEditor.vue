@@ -49,6 +49,7 @@ function startEditor() {
   // default automatic sorting options
   sortOrder.value = sortOptions[0]!.value;
   widthBlocks.value = 8;
+  startAtBottom.value = false;
 
   // Automatically arrange the paintings
   arrangePaintings();
