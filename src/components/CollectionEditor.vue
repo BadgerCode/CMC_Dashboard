@@ -26,7 +26,7 @@ const positions = ref({} as { [paintingId: string]: string });
 
 // Automatic ordering
 const widthBlocks = ref(8);
-const reverseOrder = ref(false);
+const startAtBottom = ref(false);
 const sortOptions = [
   { text: "Order of selection", value: "selection" },
   { text: "Painting Name 1/x", value: "fractions" }
@@ -76,10 +76,9 @@ function arrangePaintings() {
     return aPosition - bPosition;
   });
 
-  if (reverseOrder.value) orderedPaintings.reverse();
-
   // Determine positions
   let rowHeight = 1;
+  let paintingHeight = 0;
   for (const painting of orderedPaintings) {
     positions.value[painting.id] = `${x},${y}`;
 
@@ -88,10 +87,13 @@ function arrangePaintings() {
     rowHeight = Math.max(rowHeight, size == "large" || size == "tall" ? 2 : 1);
 
     if (x >= widthBlocks.value) {
+      paintingHeight += rowHeight;
       x = 0;
       y += rowHeight;
     }
   }
+
+  // TODO: Implement startAtBottom
 }
 
 function getStyle(painting: Painting) {
@@ -265,7 +267,7 @@ async function saveCollection() {
                           :options="sortOptions" v-model="sortOrder" :single-selection="true">
                         </DropdownFilter>
 
-                        <Checkbox :label="'Reverse'" v-model="reverseOrder"></Checkbox>
+                        <!-- <Checkbox :label="'Start at bottom'" v-model="startAtBottom"></Checkbox> -->
                       </div>
 
                       <!-- Apply -->
