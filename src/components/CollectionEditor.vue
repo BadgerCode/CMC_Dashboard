@@ -75,6 +75,12 @@ function startEditor() {
   showModal.value = true;
 }
 
+interface PaintingRow {
+  paintings: Painting[];
+  height: number;
+  width: number;
+}
+
 const fractionNameRegex = new RegExp(/.*[^\d](\d+)\/\d+.*/);
 const simpleNumberNameRegex = new RegExp(/.*[^\d](\d+)[\s.]*/);
 function arrangePaintings() {
@@ -109,34 +115,48 @@ function arrangePaintings() {
     });
   }
 
-  // Determine positions
-  let x = 0;
-  let y = 0;
-  let minY = 0;
-  let rowHeight = 1;
+  // Determine rows
+  let rows = [] as PaintingRow[];
+  let currentRow = { paintings: [], height: 0, width: 0 } as PaintingRow;
+  rows.push(currentRow);
+
   for (const painting of orderedPaintings) {
-    positions.value[painting.id] = `${x},${y}`;
-
     let size = painting.size.toLowerCase();
-    x += size == "large" || size == "wide" ? 2 : 1;
-    rowHeight = Math.max(rowHeight, size == "large" || size == "tall" ? 2 : 1);
-    minY = Math.min(minY, y);
+    let width = size == "large" || size == "wide" ? 2 : 1;
+    let height = size == "large" || size == "tall" ? 2 : 1;
 
-    if (x >= widthBlocks.value) {
-      x = 0;
-      y += !startAtBottom.value ? rowHeight : -rowHeight;
+    // If the painting won't fit, start a new row
+    if (currentRow.width + width > widthBlocks.value) {
+      currentRow = { paintings: [], height: 0, width: 0 };
+      rows.push(currentRow);
     }
+
+    // Add the painting to the row
+    currentRow.width += width;
+    currentRow.paintings.push(painting);
+    currentRow.height = Math.max(currentRow.height, height);
   }
 
-  // Top-to-bottom reordering
-  if (startAtBottom.value && y < 0) {
-    let offset = minY * -1; // Account for the final row
+  //
+  // Determine positions
+  if (startAtBottom.value) rows.reverse();
 
-    for (const painting of orderedPaintings) {
-      let pos = positions.value[painting.id]!.split(",");
-      let updatedY = parseInt(pos[1]!) + offset;
-      positions.value[painting.id] = `${pos[0]},${updatedY}`;
+  let x = 0;
+  let y = 0;
+  for (const row of rows) {
+    for (const painting of row.paintings) {
+      positions.value[painting.id] = `${x},${y}`;
+
+      let size = painting.size.toLowerCase();
+      let width = size == "large" || size == "wide" ? 2 : 1;
+
+      // Increase x position
+      x += width;
     }
+
+    // Increase y position, move to next row
+    x = 0;
+    y += row.height;
   }
 }
 
@@ -145,7 +165,7 @@ function getStyle(painting: Painting) {
 
   return {
     transform: `translate(${toNumber(pos[0]) * 96}px, ${toNumber(pos[1]) * 96}px)`,
-    "transform-origin": startAtBottom.value == false ? "top left" : "bottom left",
+    "transform-origin": "top left",
   };
 }
 
