@@ -40,8 +40,10 @@ const widthBlocks = ref(8);
 const startAtBottom = ref(false);
 const sortOptions = [
   { text: "Order of selection", value: "selection" },
-  { text: "Painting Name 1", value: "simpleNumber" },
-  { text: "Painting Name 1/x", value: "fractions" },
+  { text: "'Painting Name 1'", value: "simpleNumber" },
+  { text: "'Painting Name 1/x'", value: "fractions" },
+  { text: "A-Z", value: "nameAsc" },
+  { text: "Z-A", value: "nameDesc" },
   { text: "Oldest first", value: "createdAtAsc" },
   { text: "Newest first", value: "createdAtDesc" },
 ] as DropdownOption[];
@@ -97,6 +99,13 @@ function arrangePaintings() {
       let second = sortOrder.value == "createdAtAsc" ? b.createdAt : a.createdAt;
 
       return new Date(first).getTime() - new Date(second).getTime();
+    });
+  } else if (sortOrder.value == "nameAsc" || sortOrder.value == "nameDesc") {
+    orderedPaintings.sort((a, b) => {
+      let first = sortOrder.value == "nameAsc" ? a.title : b.title;
+      let second = sortOrder.value == "nameAsc" ? b.title : a.title;
+
+      return first.localeCompare(second);
     });
   }
 
