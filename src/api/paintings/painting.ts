@@ -7,4 +7,5 @@ export interface Painting {
   firstSeenAt: string;
   createdAt: string;
   isMultiCanvas: boolean;
+  collectionId?: string;
 }

@@ -86,6 +86,12 @@ async function fetchPaintingSales(paintingID: string): Promise<PaintingSaleSumma
         </div>
 
         <div v-if="paintingData.isMultiCanvas">This painting is made from multiple canvases.</div>
+        <div v-else-if="paintingData.collectionId">
+          <div>This painting is is part of a multi-canvas image.</div>
+          <div>
+            <RouterLink :to="{ name: 'painting', params: { id: paintingData.collectionId } }" class="hyperlink">See here</RouterLink>
+          </div>
+        </div>
       </div>
     </div>
 
