@@ -82,7 +82,7 @@ interface PaintingRow {
 }
 
 const fractionNameRegex = new RegExp(/.*[^\d](\d+)\/\d+.*/);
-const simpleNumberNameRegex = new RegExp(/.*[^\d](\d+)[\s.]*/);
+const simpleNumberNameRegex = new RegExp(/(\d+)[\s.]*$/);
 function arrangePaintings() {
   // Order paintings
   let orderedPaintings = props.paintings.slice();
