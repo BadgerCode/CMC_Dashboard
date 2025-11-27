@@ -279,7 +279,11 @@ function swapPaintings(firstPaintingId: string, secondPaintingId: string) {
                     <RenderPainting :painting-id="painting.id"></RenderPainting>
 
                     <div class="overlay absolute top-0 bottom-0 left-0 right-0 flex flex-col bg-gray-950/60 justify-between text-xs">
-                      <div>{{ painting.title }}</div>
+                      <div>
+                        <RouterLink :to="{ name: 'painting', params: { id: painting.id } }" class="hyperlink" target="_blank">
+                          {{ painting.title }}
+                        </RouterLink>
+                      </div>
 
                       <div class="flex flex-row justify-center">
                         <button
