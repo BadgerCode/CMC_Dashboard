@@ -238,6 +238,7 @@ async function savePainting() {
     body: JSON.stringify(request),
   });
   if (httpResponse.status !== 200) {
+    // TODO: show error toast
     alert("Failed to update multi-canvas painting");
     throw new Error("Failed to update multi-canvas painting");
   }

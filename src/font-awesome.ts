@@ -36,6 +36,8 @@ import {
   faArrowDown19,
   faPenToSquare,
   faCheck,
+  faRotateLeft,
+  faLinkSlash,
   // Don't forget to add it below too!
 } from "@fortawesome/free-solid-svg-icons";
 
@@ -71,6 +73,8 @@ library.add(
   faGripVertical,
   faArrowDown19,
   faPenToSquare,
+  faRotateLeft,
+  faLinkSlash
 );
 
 // Regular icons

@@ -21,6 +21,28 @@ onMounted(async () => {
 onUpdated(() => {
   initFlowbite(); // Include on any component where you need flowbite JS functionality
 });
+
+async function splitMultiPartPainting(painting: Painting) {
+  if (!confirm(`Are you sure you want to split apart the painting '${painting.title}' by '${painting.authorName}'?`)) return;
+
+  const requestHeaders: HeadersInit = new Headers();
+  requestHeaders.set("Content-Type", "application/json");
+  requestHeaders.set("X-Functions-Key", Config.MULTICANVAS_EDITOR_KEY!);
+
+  let httpResponse = await fetch(`${Config.APIURL}/api/multicanvaspaintings/${painting.id}`, {
+    method: "delete",
+    headers: requestHeaders,
+  });
+
+  if (httpResponse.status !== 200) {
+    // TODO: show error toast
+    alert("Failed to split apart multi-canvas painting");
+    throw new Error("Failed to split apart multi-canvas painting");
+  }
+
+  // TODO: Show toast & automatically reload painting list
+  alert("Multi-canvas painting has been split. Please reload");
+}
 </script>
 
 <template>
@@ -53,6 +75,12 @@ onUpdated(() => {
           </label>
 
           <div class="absolute left-0 bottom-0 bg-gray-950/60 text-xs" v-if="painting.isMultiCanvas">Multi-canvas</div>
+          <div class="absolute right-0 bottom-0 text-xs" v-if="painting.isMultiCanvas">
+            <button type="button" class="button-icon-only" aria-label="Split" @click="splitMultiPartPainting(painting)">
+              <span class="sr-only">Split</span>
+              <font-awesome-icon icon="fa-solid fa-link-slash" />
+            </button>
+          </div>
         </div>
 
         <!-- Normal render -->
