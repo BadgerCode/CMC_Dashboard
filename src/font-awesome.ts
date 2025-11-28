@@ -35,6 +35,7 @@ import {
   faGripVertical,
   faArrowDown19,
   faPenToSquare,
+  faCheck,
   // Don't forget to add it below too!
 } from "@fortawesome/free-solid-svg-icons";
 
@@ -47,6 +48,7 @@ library.add(
   faMagnifyingGlass,
   faClock,
   faChevronDown,
+  faCheck,
   faXmark,
   faGlobe,
   faArrowsLeftRight,

@@ -237,9 +237,12 @@ async function savePainting() {
     headers: requestHeaders,
     body: JSON.stringify(request),
   });
-  if (httpResponse.status !== 200) throw new Error("Failed to update painting collection");
+  if (httpResponse.status !== 200) {
+    alert("Failed to update multi-canvas painting");
+    throw new Error("Failed to update multi-canvas painting");
+  }
 
-  console.log("Saved collection");
+  console.log("Saved multi-canvas painting");
   emit("paintingCreated", { id: request.id, title: request.title, author: request.author, numPaintings: Object.keys(mappings).length });
   emit("clear");
   positions.value = {};
@@ -278,7 +281,7 @@ function swapPaintings(firstPaintingId: string, secondPaintingId: string) {
           <span class="sr-only">Refresh icon</span>
         </div>
         <div class="ms-3 text-sm font-normal text-body">
-          <span class="mb-1 text-base font-medium text-heading">Multi-Canvas Painting Editor</span>
+          <span class="mb-1 text-base font-medium text-heading">Multi-Canvas Painting</span>
           <div class="mb-3">{{ canvases.length }} paintings selected</div>
           <div class="grid grid-cols-2 gap-3">
             <button type="button" data-dismiss-target="#collection-start" class="w-full button-secondary"
@@ -300,7 +303,7 @@ function swapPaintings(firstPaintingId: string, secondPaintingId: string) {
           class="flex flex-col h-full relative bg-neutral-primary-soft border border-default rounded-base shadow-sm p-4 md:p-6">
           <!-- Modal header -->
           <div class="flex items-center justify-between border-b border-default pb-4 md:pb-5">
-            <h3 class="text-lg font-medium text-heading">Collection Editor</h3>
+            <h3 class="text-lg font-medium text-heading">Multi-Canvas Painting Editor</h3>
           </div>
 
           <!-- Modal body -->

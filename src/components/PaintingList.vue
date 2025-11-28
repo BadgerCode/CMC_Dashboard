@@ -36,7 +36,7 @@ onUpdated(() => {
           </div>
         </div>
 
-        <!-- Collection editor -->
+        <!-- Multi-canvas editor -->
         <div v-if="Config.FEATURE_MULTICANVAS_EDITOR" class="relative h-[256px] w-[256px]">
           <input
             type="checkbox"
@@ -72,6 +72,7 @@ onUpdated(() => {
       </div>
     </div>
 
+    <!-- Multi canvas editor -->
     <MultiCanvasPaintingEditor
       v-if="Config.FEATURE_MULTICANVAS_EDITOR && selectedPaintings.length > 0"
       :canvases="selectedPaintings"
@@ -80,33 +81,25 @@ onUpdated(() => {
 
     <!-- Success toast -->
     <div
-      v-for="collection in savedMultiCanvasPaintings"
-      :id="`toast-success-${collection.id}`"
-      class="flex justify-center items-center fixed z-100 bottom-5 right-5 p-3 text-body bg-neutral-primary-soft rounded-base shadow-xs border border-default"
+      v-for="painting in savedMultiCanvasPaintings"
+      :id="`toast-success-${painting.id}`"
+      class="flex justify-center items-center fixed z-100 bottom-5 right-5 p-3 text-body bg-neutral-primary-soft rounded-base shadow-xs border border-default gap-2"
       role="alert">
       <!-- Icon -->
       <div class="inline-flex items-center justify-center shrink-0 w-7 h-7 text-fg-success bg-success-soft rounded">
-        <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 11.917 9.724 16.5 19 7.5" />
-        </svg>
+        <font-awesome-icon icon="fa-solid fa-check" class="w-5 h-5" />
         <span class="sr-only">Check icon</span>
       </div>
 
       <!-- Text -->
       <div class="ms-3 text-sm font-normal">
-        Saved '{{ collection.title }}' by '{{ collection.author }}' with {{ collection.numPaintings }} paintings
+        Saved '{{ painting.title }}' by '{{ painting.author }}' with {{ painting.numPaintings }} paintings
       </div>
 
       <!-- Close -->
-      <button
-        type="button"
-        class="ms-auto flex items-center justify-center text-body hover:text-heading bg-transparent box-border border border-transparent hover:bg-neutral-secondary-medium focus:ring-4 focus:ring-neutral-tertiary font-medium leading-5 rounded text-sm h-8 w-8 focus:outline-none"
-        :data-dismiss-target="`#toast-success-${collection.id}`"
-        aria-label="Close">
+      <button type="button" class="button-icon-only" aria-label="Close" :data-dismiss-target="`#toast-success-${painting.id}`">
         <span class="sr-only">Close</span>
-        <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18 17.94 6M18 18 6.06 6" />
-        </svg>
+        <font-awesome-icon icon="fa-solid fa-xmark" class="w-5 h-5" />
       </button>
     </div>
   </div>
