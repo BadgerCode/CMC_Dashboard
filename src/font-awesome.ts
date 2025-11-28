@@ -34,6 +34,7 @@ import {
   faLayerGroup,
   faGripVertical,
   faArrowDown19,
+  faPenToSquare,
   // Don't forget to add it below too!
 } from "@fortawesome/free-solid-svg-icons";
 
@@ -66,7 +67,8 @@ library.add(
   faAngleUp,
   faLayerGroup,
   faGripVertical,
-  faArrowDown19
+  faArrowDown19,
+  faPenToSquare,
 );
 
 // Regular icons

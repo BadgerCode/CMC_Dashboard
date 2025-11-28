@@ -9,10 +9,12 @@ export interface DropdownOption {
 
 interface Props {
   placeholder: string;
-  icon: string;
+  icon?: string;
   options: DropdownOption[];
   defaultSelection?: string[];
   singleSelection?: boolean;
+  fullWidth?: boolean;
+  hideCount?: boolean;
 }
 const props = defineProps<Props>();
 
@@ -40,10 +42,12 @@ function clear() {
       :id="`${id}Button`"
       :data-dropdown-toggle="id"
       class="inline-flex items-center text-gray-500 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-3 py-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
+      :class="{'w-full': fullWidth}"
       type="button">
-      <font-awesome-icon :icon="icon" class="w-3 h-3 text-gray-400 me-3" />
+      <font-awesome-icon v-if="icon" :icon="icon" class="w-3 h-3 text-gray-400 me-3" />
       <span>{{ placeholder }}</span>
-      <span v-if="selectionCount > 0" class="ml-1">({{ selectionCount }})</span>
+      <span class="flex-1"></span>
+      <span v-if="selectionCount > 0 && !hideCount" class="ml-1">({{ selectionCount }})</span>
       <font-awesome-icon icon="fa-solid fa-chevron-down" class="w-2.5 h-2.5 ms-2.5" />
     </button>
 

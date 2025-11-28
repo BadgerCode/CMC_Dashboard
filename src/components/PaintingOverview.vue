@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import type { Painting } from "@/api/paintings/painting";
-import type { PaintingSaleSummary } from "@/api/paintings/paintingSaleSummary";
 import type { SaleSummary } from "@/api/sales/saleSummary";
-import { Config } from "@/config";
 import { onMounted, ref } from "vue";
 import RenderPainting from "./RenderPainting.vue";
 import RecentSales from "./RecentSales.vue";
 import Loading from "./Loading.vue";
+import * as PaintingsAPI from "@/api/paintings/api";
 
 interface Props {
   paintingId: string;
@@ -19,47 +18,15 @@ const paintingSales = ref([] as SaleSummary[]);
 
 onMounted(async () => {
   // Load painting data
-  paintingData.value = await fetchPainting(props.paintingId);
+  paintingData.value = await PaintingsAPI.fetchPainting(props.paintingId);
 
   // Load other sales
-  paintingSales.value = (await fetchPaintingSales(props.paintingId)).map(
-    (s) =>
-      ({
-        id: s.id,
-        occurredAt: s.occurredAt,
-        type: s.type,
-        itemType: "PAINTING",
-        quantity: s.quantity,
-        totalPrice: s.totalPrice,
-        isEnchanted: false,
-        itemAttributes: s.additionalAttributes,
-        customName: s.customName,
-        insideContainer: s.insideContainer,
-      } as SaleSummary)
-  );
+  paintingSales.value = await PaintingsAPI.fetchPaintingSales(props.paintingId);
 
   loading.value = false;
 });
 
-async function fetchPainting(paintingID: string): Promise<Painting | null> {
-  let url = `${Config.APIURL}/api/paintings/${paintingID}`;
-  let httpResponse = await fetch(url, { method: "get" });
 
-  if (httpResponse.status !== 200) return null;
-
-  let response = await httpResponse.json();
-  return response.result;
-}
-
-async function fetchPaintingSales(paintingID: string): Promise<PaintingSaleSummary[]> {
-  let url = `${Config.APIURL}/api/paintings/${paintingID}/sales`;
-  let httpResponse = await fetch(url, { method: "get" });
-
-  if (httpResponse.status !== 200) return [];
-
-  let response = await httpResponse.json();
-  return response.items;
-}
 </script>
 
 <template>
@@ -89,7 +56,8 @@ async function fetchPaintingSales(paintingID: string): Promise<PaintingSaleSumma
         <div v-else-if="paintingData.collectionId">
           <div>This painting is is part of a multi-canvas image.</div>
           <div>
-            <RouterLink :to="{ name: 'painting', params: { id: paintingData.collectionId } }" class="hyperlink">See here</RouterLink>
+            <RouterLink :to="{ name: 'painting', params: { id: paintingData.collectionId } }" class="hyperlink">See here
+            </RouterLink>
           </div>
         </div>
       </div>
