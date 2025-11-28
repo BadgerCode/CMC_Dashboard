@@ -37,7 +37,7 @@ onUpdated(() => {
         </div>
 
         <!-- Collection editor -->
-        <div v-if="Config.FEATURE_COLLECTIONS_EDITOR" class="relative h-[256px] w-[256px]">
+        <div v-if="Config.FEATURE_MULTICANVAS_EDITOR" class="relative h-[256px] w-[256px]">
           <input
             type="checkbox"
             name="painting-select"
@@ -73,7 +73,7 @@ onUpdated(() => {
     </div>
 
     <CollectionEditor
-      v-if="Config.FEATURE_COLLECTIONS_EDITOR && selectedPaintings.length > 0"
+      v-if="Config.FEATURE_MULTICANVAS_EDITOR && selectedPaintings.length > 0"
       :paintings="selectedPaintings"
       @collection-created="(collection) => savedCollections.push(collection)"
       @clear="selectedPaintings.splice(0)"></CollectionEditor>

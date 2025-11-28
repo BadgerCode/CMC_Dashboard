@@ -17,8 +17,6 @@ export async function loadPaintings(authorName?: string, lastItem?: Painting): P
     params.append("authorName", authorName);
   }
 
-  if (Config.FEATURE_COLLECTIONS) params.append("testCollections", "true");
-
   // Send request
   let url = `${Config.APIURL}/api/paintings?${params.toString()}`;
   let httpResponse = await fetch(url, { method: "get" });

@@ -1,7 +1,6 @@
 export const Config = {
   APIURL: import.meta.env.VITE_API_URL as string,
   MAX_CACHE_AGE_MINS: 10,
-  FEATURE_COLLECTIONS: true,
-  FEATURE_COLLECTIONS_EDITOR: import.meta.env.VITE_FEATURE_COLLECTIONS == "true",
-  COLLECTIONS_KEY: import.meta.env.VITE_COLLECTIONS_KEY as string | undefined,
+  FEATURE_MULTICANVAS_EDITOR: import.meta.env.VITE_FEATURE_MULTICANVAS_EDITOR == "true",
+  MULTICANVAS_EDITOR_KEY: import.meta.env.VITE_MULTICANVAS_EDITOR_KEY as string | undefined,
 };

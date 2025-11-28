@@ -230,9 +230,9 @@ async function saveCollection() {
   // Send request
   const requestHeaders: HeadersInit = new Headers();
   requestHeaders.set("Content-Type", "application/json");
-  requestHeaders.set("X-Functions-Key", Config.COLLECTIONS_KEY!);
+  requestHeaders.set("X-Functions-Key", Config.MULTICANVAS_EDITOR_KEY!);
 
-  let httpResponse = await fetch(`${Config.APIURL}/api/paintingCollections`, {
+  let httpResponse = await fetch(`${Config.APIURL}/api/multicanvaspaintings`, {
     method: "post",
     headers: requestHeaders,
     body: JSON.stringify(request),
