@@ -8,6 +8,9 @@ import SearchWithResults from "@/components/SearchWithResults.vue";
 import { Config } from "@/config";
 import type { DropdownOption } from "@/components/DropdownFilter.vue";
 import { useRouter } from "vue-router";
+import SearchBox from "@/components/SearchBox.vue";
+import { debounce } from "lodash";
+import DropdownFilter from "@/components/DropdownFilter.vue";
 
 interface ArtistSummary {
   id: string;
@@ -30,15 +33,36 @@ const noMoreResults = ref(false);
 const artists = ref([] as DropdownOption[]);
 
 // Filters
+// Filter- Artist name
 const artistName = ref(undefined as string | undefined);
-watch(artistName, async (newArtistName, __) => {
-  router.push({ name: "gallery", params: { authorName: newArtistName } });
+watch(artistName, async (_, __) => {
+  loadGallery();
 });
 
+// Name filter
+const nameFilter = ref("");
+watch(nameFilter, async (_, __) => {
+  loadGallery();
+});
+
+// Size filter
+const sizeFilter = ref("");
+const sizeOptions = [
+  { text: "Small", value: "Small" },
+  { text: "Tall", value: "Tall" },
+  { text: "Wide", value: "Wide" },
+  { text: "Large", value: "Large" },
+  { text: "Very Large", value: "MultiCanvas" },
+] as DropdownOption[];
+watch(sizeFilter, async (_, __) => {
+  loadGallery();
+});
+
+// Startup
 onMounted(async () => {
   artistName.value = props.authorName;
   await loadArtists();
-  await loadNextPage();
+  await loadGallery();
 });
 
 async function loadArtists() {
@@ -49,13 +73,20 @@ async function loadArtists() {
   artists.value = response.items.map((i: ArtistSummary) => ({ text: i.name, value: `${i.name}-${i.id}` } as DropdownOption));
 }
 
+const loadGallery = debounce(async () => {
+  loading.value = true;
+  paintings.value.splice(0);
+  noMoreResults.value = false;
+  await loadNextPage();
+}, 350);
+
 async function loadNextPage() {
   if (noMoreResults.value) return;
 
   // Add last item for pagination
   let lastItem = paintings.value.slice(-1)[0];
 
-  let responseItems = await PaintingsAPI.loadPaintings(artistName.value, lastItem);
+  let responseItems = await PaintingsAPI.loadPaintings(artistName.value, lastItem, nameFilter.value, sizeFilter.value);
   paintings.value.push(...responseItems);
   noMoreResults.value = responseItems.length === 0;
   loading.value = false;
@@ -65,28 +96,40 @@ async function loadNextPage() {
 <template>
   <div class="flex flex-col sm:flex-row justify-between mb-2 gap-2">
     <div>
-      <RouterLink v-if="artistName" :to="{ name: 'gallery' }" class="hyperlink">Back to Gallery </RouterLink>
-    </div>
-
-    <div class="self-end">
-      <SearchWithResults :items="artists" :placeholder="'Artist'" @selection="(a) => (artistName = a?.text)">
-      </SearchWithResults>
+      <RouterLink v-if="props.authorName" :to="{ name: 'gallery' }" class="hyperlink">Back to all paintings</RouterLink>
     </div>
   </div>
 
   <div class="mb-8">
-    <h1 class="text-3xl font-bold">Recent</h1>
+    <h1 class="text-3xl font-bold" v-if="!props.authorName">Recent</h1>
+    <h1 class="text-3xl font-bold" v-else>{{ props.authorName }}'s Artwork</h1>
 
-    <p class="text-gray-300" v-if="!artistName">Paintings created by the players of the server</p>
-    <p class="text-gray-300" v-else>Paintings created by {{ artistName }}</p>
+    <p class="text-gray-300" v-if="!props.authorName">Paintings created by the players of the server</p>
   </div>
 
-  <Loading v-if="loading" :fill-space="true"></Loading>
+  <div class="flex flex-col md:flex-row flex-wrap space-y-2 items-start justify-between">
+    <div class="flex flex-row flex-wrap flex-1 gap-2">
+      <SearchWithResults
+        v-if="!props.authorName"
+        :items="artists"
+        :placeholder="'Artist'"
+        @selection="(item) => (artistName = item?.text ?? '')"
+        @clear="() => (artistName = '')"></SearchWithResults>
 
-  <PaintingList :paintings="paintings"></PaintingList>
+      <DropdownFilter :placeholder="'Size'" :options="sizeOptions" :single-selection="true" v-model="sizeFilter"> </DropdownFilter>
+    </div>
 
-  <div class="mt-8 text-center" v-if="!loading">
-    <button type="button" class="button" v-on:click="loadNextPage" v-if="!noMoreResults">More</button>
-    <div v-else>No more results</div>
+    <SearchBox :placeholder="'Painting Name'" v-model="nameFilter"></SearchBox>
+  </div>
+
+  <div class="mt-6">
+    <Loading v-if="loading" :fill-space="true"></Loading>
+
+    <PaintingList :paintings="paintings"></PaintingList>
+
+    <div class="mt-8 text-center" v-if="!loading">
+      <button type="button" class="button" v-on:click="loadNextPage" v-if="!noMoreResults">More</button>
+      <div v-else>No more results</div>
+    </div>
   </div>
 </template>

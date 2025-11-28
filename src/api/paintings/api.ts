@@ -3,7 +3,7 @@ import type { Painting } from "./painting";
 import type { PaintingSaleSummary } from "./paintingSaleSummary";
 import type { SaleSummary } from "../sales/saleSummary";
 
-export async function loadPaintings(authorName?: string, lastItem?: Painting): Promise<Painting[]> {
+export async function loadPaintings(authorName?: string, lastItem?: Painting, title?: string, size?: string): Promise<Painting[]> {
   const params = new URLSearchParams();
 
   // Add last item for pagination
@@ -12,10 +12,10 @@ export async function loadPaintings(authorName?: string, lastItem?: Painting): P
     params.append("lastID", lastItem.id);
   }
 
-  // Add author name for artist pages
-  if (authorName != null) {
-    params.append("authorName", authorName);
-  }
+  // Optional filters
+  if (authorName) params.append("authorName", authorName);
+  if (title) params.append("title", title);
+  if (size) params.append("size", size);
 
   // Send request
   let url = `${Config.APIURL}/api/paintings?${params.toString()}`;
@@ -28,7 +28,6 @@ export async function loadPaintings(authorName?: string, lastItem?: Painting): P
   return response.items;
 }
 
-
 export async function fetchPainting(paintingID: string): Promise<Painting | null> {
   let url = `${Config.APIURL}/api/paintings/${paintingID}`;
   let httpResponse = await fetch(url, { method: "get" });
@@ -39,7 +38,6 @@ export async function fetchPainting(paintingID: string): Promise<Painting | null
   return response.result;
 }
 
-
 export async function fetchPaintingSales(paintingID: string): Promise<SaleSummary[]> {
   let url = `${Config.APIURL}/api/paintings/${paintingID}/sales`;
   let httpResponse = await fetch(url, { method: "get" });
@@ -47,18 +45,19 @@ export async function fetchPaintingSales(paintingID: string): Promise<SaleSummar
   if (httpResponse.status !== 200) return [];
 
   let response = await httpResponse.json();
-  return (response.items as PaintingSaleSummary[])
-    .map((s) =>
-    ({
-      id: s.id,
-      occurredAt: s.occurredAt,
-      type: s.type,
-      itemType: "PAINTING",
-      quantity: s.quantity,
-      totalPrice: s.totalPrice,
-      isEnchanted: false,
-      itemAttributes: s.additionalAttributes,
-      customName: s.customName,
-      insideContainer: s.insideContainer,
-    } as SaleSummary));
+  return (response.items as PaintingSaleSummary[]).map(
+    (s) =>
+      ({
+        id: s.id,
+        occurredAt: s.occurredAt,
+        type: s.type,
+        itemType: "PAINTING",
+        quantity: s.quantity,
+        totalPrice: s.totalPrice,
+        isEnchanted: false,
+        itemAttributes: s.additionalAttributes,
+        customName: s.customName,
+        insideContainer: s.insideContainer,
+      } as SaleSummary)
+  );
 }

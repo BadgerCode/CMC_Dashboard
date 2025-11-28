@@ -169,7 +169,7 @@ function matchesFilters(item: ShopItem, itemType: string) {
     </div>
   </div>
 
-  <div class="flex flex-column md:flex-row flex-wrap space-y-2 items-start justify-between">
+  <div class="flex flex-col md:flex-row flex-wrap space-y-2 items-start justify-between">
     <div class="flex flex-row flex-wrap flex-1 gap-1">
       <DropdownFilter
         :placeholder="'Buy/Sell'"
