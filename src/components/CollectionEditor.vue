@@ -351,7 +351,7 @@ function swapPaintings(firstPaintingId: string, secondPaintingId: string) {
                       <!-- Number of columns -->
                       <div class="flex flex-col gap-2">
                         <label class="block mb-2.5 text-sm font-medium text-heading"> Total width (blocks) </label>
-                        <input type="text" class="textbox w-full" placeholder="E.g. 2 large paintings is 4 blocks" v-model="widthBlocks" />
+                        <input type="number" class="textbox w-full" placeholder="E.g. 2 large paintings is 4 blocks" v-model="widthBlocks" />
                       </div>
 
                       <!-- Sorting -->
