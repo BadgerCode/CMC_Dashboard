@@ -114,6 +114,7 @@ async function loadNextPage() {
         v-if="!props.authorName"
         :items="artists"
         :placeholder="'Artist'"
+        :icon="'fa-solid fa-user'"
         @selection="(item) => (artistName = item?.text ?? '')"
         @clear="() => (artistName = '')"></SearchWithResults>
 

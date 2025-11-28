@@ -192,6 +192,7 @@ function matchesFilters(item: ShopItem, itemType: string) {
 
       <SearchWithResults
         :placeholder="'Shop owners'"
+        :icon="'fa-solid fa-user'"
         :items="shopOwners"
         @selection="(item) => (shopOwnerFilter = item?.value ?? '')"
         @clear="() => (shopOwnerFilter = '')">

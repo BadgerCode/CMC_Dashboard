@@ -8,6 +8,7 @@ import type { DropdownOption } from "./DropdownFilter.vue";
 interface Props {
   placeholder: string;
   items: DropdownOption[];
+  icon?: string;
 }
 const props = defineProps<Props>();
 
@@ -58,6 +59,7 @@ function makeSelection(item: DropdownOption | null) {
       <SearchBox
         :placeholder="placeholder"
         :model-value="filterText"
+        :icon="icon"
         @update:model-value="
           (text) => {
             filterText = text;
