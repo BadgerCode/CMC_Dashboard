@@ -3,7 +3,7 @@ import type { Painting } from "@/api/paintings/painting";
 import RenderPainting from "./RenderPainting.vue";
 import { onMounted, onUpdated, ref } from "vue";
 import { Config } from "@/config";
-import CollectionEditor, { type SavedCollection } from "./CollectionEditor.vue";
+import MultiCanvasPaintingEditor, { type SavedMultiCanvasPainting } from "./MultiCanvasPaintingEditor.vue";
 import { initFlowbite } from "flowbite";
 
 interface Props {
@@ -12,7 +12,7 @@ interface Props {
 const props = defineProps<Props>();
 
 const selectedPaintings = ref([] as Painting[]);
-const savedCollections = ref([] as SavedCollection[]);
+const savedMultiCanvasPaintings = ref([] as SavedMultiCanvasPainting[]);
 
 onMounted(async () => {
   initFlowbite(); // Include on any component where you need flowbite JS functionality
@@ -72,15 +72,15 @@ onUpdated(() => {
       </div>
     </div>
 
-    <CollectionEditor
+    <MultiCanvasPaintingEditor
       v-if="Config.FEATURE_MULTICANVAS_EDITOR && selectedPaintings.length > 0"
-      :paintings="selectedPaintings"
-      @collection-created="(collection) => savedCollections.push(collection)"
-      @clear="selectedPaintings.splice(0)"></CollectionEditor>
+      :canvases="selectedPaintings"
+      @painting-created="(painting) => savedMultiCanvasPaintings.push(painting)"
+      @clear="selectedPaintings.splice(0)"></MultiCanvasPaintingEditor>
 
     <!-- Success toast -->
     <div
-      v-for="collection in savedCollections"
+      v-for="collection in savedMultiCanvasPaintings"
       :id="`toast-success-${collection.id}`"
       class="flex justify-center items-center fixed z-100 bottom-5 right-5 p-3 text-body bg-neutral-primary-soft rounded-base shadow-xs border border-default"
       role="alert">

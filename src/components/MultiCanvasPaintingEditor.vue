@@ -11,8 +11,8 @@ import type { SaleSummary } from "@/api/sales/saleSummary";
 import * as PaintingsAPI from "@/api/paintings/api";
 import Loading from "./Loading.vue";
 
-// Saved collections
-export interface SavedCollection {
+// Saved paintings
+export interface SavedMultiCanvasPainting {
   id: string;
   title: string;
   author: string;
@@ -20,12 +20,12 @@ export interface SavedCollection {
 }
 
 interface Props {
-  paintings: Painting[];
+  canvases: Painting[];
 }
 const props = defineProps<Props>();
 
 const emit = defineEmits<{
-  (e: "collectionCreated", collection: SavedCollection): void;
+  (e: "paintingCreated", painting: SavedMultiCanvasPainting): void;
   (e: "clear"): void;
 }>();
 
@@ -33,7 +33,7 @@ const emit = defineEmits<{
 const showModal = ref(false);
 const modalLoading = ref(false);
 
-// Collection info
+// Painting info
 const title = ref("");
 const titleOptions = ref([] as DropdownOption[]);
 const editingTitle = ref(false);
@@ -76,7 +76,7 @@ async function startEditor() {
   title.value = "";
   titleOptions.value = [];
   editingTitle.value = false;
-  author.value = props.paintings[0]!.authorName;
+  author.value = props.canvases[0]!.authorName;
 
   // default automatic sorting options
   sortOrder.value = sortOptions[0]!.value;
@@ -90,11 +90,11 @@ async function startEditor() {
   showModal.value = true;
 
   // Load previous sales after showing the modal
-  previousSales.value = await PaintingsAPI.fetchPaintingSales(props.paintings[0]!.id);
+  previousSales.value = await PaintingsAPI.fetchPaintingSales(props.canvases[0]!.id);
 
   // Populate names dropdown
   let previousNames = previousSales.value.map(s => s.customName?.trim()).filter(s => s);
-  previousNames.push(props.paintings[0]!.title.trim()); // Add first painting name as default option
+  previousNames.push(props.canvases[0]!.title.trim()); // Add first painting name as default option
   titleOptions.value = [...new Set(previousNames)].map(s => ({ text: s, value: s } as DropdownOption));
   title.value = titleOptions.value[0]!.value;
 
@@ -112,7 +112,7 @@ const fractionNameRegex = new RegExp(/.*[^\d](\d+)\/\d+.*/);
 const simpleNumberNameRegex = new RegExp(/(\d+)[\s.]*$/);
 function arrangePaintings() {
   // Order paintings
-  let orderedPaintings = props.paintings.slice();
+  let orderedPaintings = props.canvases.slice();
   if (sortOrder.value == "simpleNumber" || sortOrder.value == "fractions") {
     let regex = simpleNumberNameRegex;
     if (sortOrder.value == "fractions") regex = fractionNameRegex;
@@ -196,20 +196,20 @@ function getStyle(painting: Painting) {
   };
 }
 
-async function saveCollection() {
+async function savePainting() {
   // Create mappings
   let firstSeenAt = new Date();
   let createdAt = new Date(0);
   let mappings = {} as { [paintingId: string]: string };
-  for (const painting of props.paintings) {
+  for (const painting of props.canvases) {
     let pos = positions.value[painting.id]!.split(",");
     console.log(`${pos[0]},${pos[1]} - ${painting.title}`);
 
-    // Use the newest painting's first seen at for the collection
+    // Use the newest canvas's first seen at for the multi-canvas painting
     let paintingFirstSeenAt = new Date(painting.firstSeenAt);
     if (paintingFirstSeenAt < firstSeenAt) firstSeenAt = paintingFirstSeenAt;
 
-    // Use the oldest painting's created at for the collection
+    // Use the oldest canvas's created at for the multi-canvas painting
     let paintingCreatedAt = new Date(painting.createdAt);
     if (paintingCreatedAt > createdAt) createdAt = paintingCreatedAt;
 
@@ -240,7 +240,7 @@ async function saveCollection() {
   if (httpResponse.status !== 200) throw new Error("Failed to update painting collection");
 
   console.log("Saved collection");
-  emit("collectionCreated", { id: request.id, title: request.title, author: request.author, numPaintings: Object.keys(mappings).length });
+  emit("paintingCreated", { id: request.id, title: request.title, author: request.author, numPaintings: Object.keys(mappings).length });
   emit("clear");
   positions.value = {};
   showModal.value = false;
@@ -278,8 +278,8 @@ function swapPaintings(firstPaintingId: string, secondPaintingId: string) {
           <span class="sr-only">Refresh icon</span>
         </div>
         <div class="ms-3 text-sm font-normal text-body">
-          <span class="mb-1 text-base font-medium text-heading">Collection Editor</span>
-          <div class="mb-3">{{ paintings.length }} paintings selected</div>
+          <span class="mb-1 text-base font-medium text-heading">Multi-Canvas Painting Editor</span>
+          <div class="mb-3">{{ canvases.length }} paintings selected</div>
           <div class="grid grid-cols-2 gap-3">
             <button type="button" data-dismiss-target="#collection-start" class="w-full button-secondary"
               @click="$emit('clear')">
@@ -305,7 +305,8 @@ function swapPaintings(firstPaintingId: string, secondPaintingId: string) {
 
           <!-- Modal body -->
           <Loading v-if="modalLoading" :fill-space="true"></Loading>
-          <div v-else class="space-y-4 md:space-y-6 py-4 md:py-6 flex-1 overflow-y-auto">
+          <div v-else class="flex flex-col space-y-4 md:space-y-6 py-4 md:py-6 flex-1 overflow-y-auto">
+            <!-- Top controls -->
             <div class="flex flex-row">
               <!-- Title -->
               <div class="max-w-sm mx-auto">
@@ -331,10 +332,11 @@ function swapPaintings(firstPaintingId: string, secondPaintingId: string) {
               </div>
             </div>
 
-            <div class="flex flex-row">
+            <!-- Editor body -->
+            <div class="flex flex-row flex-1">
               <!-- Paintings -->
-              <div class="flex-1 relative z-0">
-                <div v-for="painting in paintings"
+              <div class="flex-1 relative z-0 overflow-auto">
+                <div v-for="painting in canvases"
                   class="flex absolute justify-center items-center flex-col cursor-pointer" :style="getStyle(painting)"
                   @click="selectPainting(painting.id)">
                   <div class="painting relative"
@@ -367,7 +369,8 @@ function swapPaintings(firstPaintingId: string, secondPaintingId: string) {
               <!-- SIDE BAR -->
               <div class="z-100 p-2 w-[300px]">
                 <div id="collection-controls" data-accordion="collapse" class="accordion">
-                  <!-- Automatic ordering -->
+
+                  <!-- Automatic ordering title -->
                   <h2 id="collection-controls-auto-heading">
                     <button type="button" class="accordion-header-button"
                       data-accordion-target="#collection-controls-auto" aria-expanded="true"
@@ -378,6 +381,7 @@ function swapPaintings(firstPaintingId: string, secondPaintingId: string) {
                     </button>
                   </h2>
 
+                  <!-- Automatic ordering content -->
                   <div id="collection-controls-auto" class="accordion-body hidden"
                     aria-labelledby="collection-controls-auto-heading">
                     <div class="text-body flex flex-col gap-4">
@@ -406,7 +410,7 @@ function swapPaintings(firstPaintingId: string, secondPaintingId: string) {
                     </div>
                   </div>
 
-                  <!-- Manual ordering -->
+                  <!-- Manual ordering title -->
                   <h2 id="collection-controls-manual-heading">
                     <button type="button" class="accordion-header-button"
                       data-accordion-target="#collection-controls-manual" aria-expanded="false"
@@ -417,12 +421,13 @@ function swapPaintings(firstPaintingId: string, secondPaintingId: string) {
                     </button>
                   </h2>
 
+                  <!-- Manual ordering content -->
                   <div id="collection-controls-manual" class="accordion-body hidden"
                     aria-labelledby="collection-controls-manual-heading">
                     <div class="text-body">
                       <!-- Positions -->
-                      <div class="max-h-[400px] overflow-x-scroll">
-                        <div v-for="painting in paintings" class="mb-2">
+                      <div class="max-h-[400px]">
+                        <div v-for="painting in canvases" class="mb-2">
                           <!-- Painting name -->
                           <label :for="`painting-pos-${painting.id}`" class="block mb-1 text-sm font-medium" :class="{
                             'text-blue-600': selectedPaintingId == painting.id,
@@ -445,7 +450,7 @@ function swapPaintings(firstPaintingId: string, secondPaintingId: string) {
 
           <!-- Modal footer -->
           <div class="flex items-center justify-end border-t border-default space-x-4 pt-4 md:pt-5">
-            <button type="button" class="button-primary" @click="saveCollection()"
+            <button type="button" class="button-primary" @click="savePainting()"
               :disabled="modalLoading">Save</button>
             <button @click="showModal = false" type="button" class="button-secondary">Cancel</button>
           </div>

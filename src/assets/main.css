@@ -73,5 +73,5 @@
 }
 
 .accordion-body {
-  @apply border border-s-0 border-e-0 border-t-0 border-b-default px-4 py-2;
+  @apply border border-s-0 border-e-0 border-t-0 border-b-default px-4 py-2 overflow-auto;
 }
