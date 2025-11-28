@@ -101,7 +101,7 @@ async function loadNextPage() {
   </div>
 
   <div class="mb-8">
-    <h1 class="text-3xl font-bold" v-if="!props.authorName">Recent</h1>
+    <h1 class="text-3xl font-bold" v-if="!props.authorName">Recently Created</h1>
     <h1 class="text-3xl font-bold" v-else>{{ props.authorName }}'s Artwork</h1>
 
     <p class="text-gray-300" v-if="!props.authorName">Paintings created by the players of the server</p>
