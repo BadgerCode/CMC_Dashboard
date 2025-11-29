@@ -198,8 +198,8 @@ let filteredAttributes = computed(() => {
               </td>
               <td class="table-item wrap-anywhere">
                 <!-- Custom name -->
-                <div v-if="saleData.customName" class="text-gray-400 italic">
-                  <span>{{ saleData.customName }}</span>
+                <div v-if="subItem.customName" class="text-xs md:text-sm italic">
+                  <span>{{ subItem.customName }}</span>
                 </div>
 
                 <!-- Item type -->
