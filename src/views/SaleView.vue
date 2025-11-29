@@ -21,6 +21,7 @@ interface SoldItem {
   quantity: number;
   isEnchanted: boolean;
   itemAttributes: ItemAttribute[];
+  customName: string | null;
 }
 
 interface SaleData extends SoldItem {
@@ -28,7 +29,6 @@ interface SaleData extends SoldItem {
   type: string;
   totalPrice: number;
   containedItems: ContainerItem[];
-  customName: string | null;
 }
 
 interface ContainerItem extends SoldItem {
@@ -139,6 +139,7 @@ let filteredAttributes = computed(() => {
                   <td class="table-item wrap-anywhere capitalize">
                     {{ formatItemType(attribute.key)?.toLocaleLowerCase() }}
                   </td>
+
                   <td class="table-item wrap-anywhere">
                     <span v-if="attribute.key == 'POTION_EFFECT'" class="capitalize">
                       <RouterLink
@@ -196,7 +197,15 @@ let filteredAttributes = computed(() => {
                 {{ subItem.slot != null ? subItem.slot + 1 : "" }}
               </td>
               <td class="table-item wrap-anywhere">
-                {{ formatItemType(subItem.itemType) }}
+                <!-- Custom name -->
+                <div v-if="saleData.customName" class="text-gray-400 italic">
+                  <span>{{ saleData.customName }}</span>
+                </div>
+
+                <!-- Item type -->
+                <div>
+                  {{ formatItemType(subItem.itemType) }}
+                </div>
               </td>
               <td class="table-item">{{ subItem.quantity }}</td>
               <td class="table-item wrap-anywhere">
