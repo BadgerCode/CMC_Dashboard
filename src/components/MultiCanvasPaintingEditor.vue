@@ -26,7 +26,9 @@ const props = defineProps<Props>();
 
 const emit = defineEmits<{
   (e: "paintingCreated", painting: SavedMultiCanvasPainting): void;
+  (e: "selectAll"): void;
   (e: "clear"): void;
+  (e: "reload"): void;
 }>();
 
 // Modal control
@@ -93,9 +95,9 @@ async function startEditor() {
   previousSales.value = await PaintingsAPI.fetchPaintingSales(props.canvases[0]!.id);
 
   // Populate names dropdown
-  let previousNames = previousSales.value.map(s => s.customName?.trim()).filter(s => s);
+  let previousNames = previousSales.value.map((s) => s.customName?.trim()).filter((s) => s);
   previousNames.push(props.canvases[0]!.title.trim()); // Add first painting name as default option
-  titleOptions.value = [...new Set(previousNames)].map(s => ({ text: s, value: s } as DropdownOption));
+  titleOptions.value = [...new Set(previousNames)].map((s) => ({ text: s, value: s } as DropdownOption));
   title.value = titleOptions.value[0]!.value;
 
   // Done loading
@@ -196,6 +198,35 @@ function getStyle(painting: Painting) {
   };
 }
 
+
+
+// APIs
+// Remove flag
+async function removeMultiCanvasFlag() {
+  let paintingIds = props.canvases.map(p => p.id);
+  console.log("Removing multi-canvas flag from paintings");
+  console.log(paintingIds);
+
+  // Send request
+  const requestHeaders: HeadersInit = new Headers();
+  requestHeaders.set("Content-Type", "application/json");
+  requestHeaders.set("X-Functions-Key", Config.MULTICANVAS_EDITOR_KEY!);
+
+  let httpResponse = await fetch(`${Config.APIURL}/api/multicanvasflag`, {
+    method: "delete",
+    headers: requestHeaders,
+    body: JSON.stringify({ paintingIds: paintingIds }),
+  });
+  if (httpResponse.status !== 200) {
+    // TODO: show error toast
+    alert("Failed to remove multi-canvas flags");
+    throw new Error("Failed to remove multi-canvas flags");
+  }
+
+  emit('reload');
+}
+
+// Save
 async function savePainting() {
   // Create mappings
   let firstSeenAt = new Date();
@@ -245,7 +276,6 @@ async function savePainting() {
 
   console.log("Saved multi-canvas painting");
   emit("paintingCreated", { id: request.id, title: request.title, author: request.author, numPaintings: Object.keys(mappings).length });
-  emit("clear");
   positions.value = {};
   showModal.value = false;
 }
@@ -273,7 +303,8 @@ function swapPaintings(firstPaintingId: string, secondPaintingId: string) {
 <template>
   <div>
     <!-- Toast notification -->
-    <div id="collection-start"
+    <div
+      id="collection-start"
       class="fixed z-100 bottom-5 right-5 space-y-4 p-3 text-body bg-neutral-primary-soft rounded-base shadow-xs border border-default"
       role="alert">
       <div class="flex">
@@ -284,11 +315,25 @@ function swapPaintings(firstPaintingId: string, secondPaintingId: string) {
         <div class="ms-3 text-sm font-normal text-body">
           <span class="mb-1 text-base font-medium text-heading">Multi-Canvas Painting</span>
           <div class="mb-3">{{ canvases.length }} paintings selected</div>
+
+          <!-- Buttons -->
           <div class="grid grid-cols-2 gap-3">
-            <button type="button" data-dismiss-target="#collection-start" class="w-full button-secondary"
-              @click="$emit('clear')">
+            <!-- Select all -->
+            <button type="button" data-dismiss-target="#collection-start" class="w-full button-secondary" @click="$emit('selectAll')">
+              Select all
+            </button>
+
+            <!-- Clear selection -->
+            <button type="button" data-dismiss-target="#collection-start" class="w-full button-secondary" @click="$emit('clear')">
               Clear
             </button>
+
+            <!-- Remove flag -->
+            <button type="button" data-dismiss-target="#collection-start" class="w-full button-secondary" @click="removeMultiCanvasFlag()">
+              Remove Multi-Canvas Flag
+            </button>
+
+            <!-- Open editor -->
             <button type="button" class="w-full button-primary" @click="startEditor()">Create</button>
           </div>
         </div>
@@ -296,12 +341,16 @@ function swapPaintings(firstPaintingId: string, secondPaintingId: string) {
     </div>
 
     <!-- Editor modal -->
-    <div id="collection-editor-modal" v-if="showModal" data-modal-backdrop="static" tabindex="-1" aria-hidden="true"
+    <div
+      id="collection-editor-modal"
+      v-if="showModal"
+      data-modal-backdrop="static"
+      tabindex="-1"
+      aria-hidden="true"
       class="overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 bottom-0 z-200 justify-center items-center w-full md:inset-0 h-full bg-gray-950/60">
       <div class="relative p-4 w-full h-full">
         <!-- Modal content -->
-        <div
-          class="flex flex-col h-full relative bg-neutral-primary-soft border border-default rounded-base shadow-sm p-4 md:p-6">
+        <div class="flex flex-col h-full relative bg-neutral-primary-soft border border-default rounded-base shadow-sm p-4 md:p-6">
           <!-- Modal header -->
           <div class="flex items-center justify-between border-b border-default pb-4 md:pb-5">
             <h3 class="text-lg font-medium text-heading">Multi-Canvas Painting Editor</h3>
@@ -316,12 +365,18 @@ function swapPaintings(firstPaintingId: string, secondPaintingId: string) {
               <div class="max-w-sm mx-auto">
                 <label class="block mb-2.5 text-sm font-medium text-heading">Title</label>
                 <div class="flex flex-row gap-2 w-80">
-                  <DropdownFilter v-if="!editingTitle" :placeholder="title" :options="titleOptions"
-                    :single-selection="true" v-model="title" class="flex-1" :full-width="true" :hide-count="true">
+                  <DropdownFilter
+                    v-if="!editingTitle"
+                    :placeholder="title"
+                    :options="titleOptions"
+                    :single-selection="true"
+                    v-model="title"
+                    class="flex-1"
+                    :full-width="true"
+                    :hide-count="true">
                   </DropdownFilter>
 
-                  <input v-else type="text" class="textbox flex-1" placeholder="Painting title (e.g. shulker box name)"
-                    v-model="title" />
+                  <input v-else type="text" class="textbox flex-1" placeholder="Painting title (e.g. shulker box name)" v-model="title" />
 
                   <button @click="editingTitle = !editingTitle" type="button" class="button-secondary" title="Edit">
                     <font-awesome-icon icon="fa-solid fa-pen-to-square" />
@@ -340,25 +395,29 @@ function swapPaintings(firstPaintingId: string, secondPaintingId: string) {
             <div class="flex flex-row flex-1">
               <!-- Paintings -->
               <div class="flex-1 relative z-0 overflow-auto">
-                <div v-for="painting in canvases"
-                  class="flex absolute justify-center items-center flex-col cursor-pointer" :style="getStyle(painting)"
+                <div
+                  v-for="painting in canvases"
+                  class="flex absolute justify-center items-center flex-col cursor-pointer"
+                  :style="getStyle(painting)"
                   @click="selectPainting(painting.id)">
-                  <div class="painting relative"
-                    :class="[painting.size.toLowerCase(), { selected: selectedPaintingId == painting.id }]">
+                  <div class="painting relative" :class="[painting.size.toLowerCase(), { selected: selectedPaintingId == painting.id }]">
                     <RenderPainting :painting-id="painting.id"></RenderPainting>
 
-                    <div
-                      class="overlay absolute top-0 bottom-0 left-0 right-0 flex flex-col bg-gray-950/60 justify-between text-xs">
+                    <div class="overlay absolute top-0 bottom-0 left-0 right-0 flex flex-col bg-gray-950/60 justify-between text-xs">
                       <div>
-                        <RouterLink :to="{ name: 'painting', params: { id: painting.id } }"
-                          class="hyperlink bg-gray-950/60 p-1" target="_blank">
+                        <RouterLink
+                          :to="{ name: 'painting', params: { id: painting.id } }"
+                          class="hyperlink bg-gray-950/60 p-1"
+                          target="_blank">
                           {{ painting.title }}
                         </RouterLink>
                       </div>
 
                       <div class="flex flex-row justify-center">
-                        <button v-if="selectedPaintingId && selectedPaintingId != painting.id"
-                          @click="swapPaintings(selectedPaintingId, painting.id)" type="button"
+                        <button
+                          v-if="selectedPaintingId && selectedPaintingId != painting.id"
+                          @click="swapPaintings(selectedPaintingId, painting.id)"
+                          type="button"
                           class="button-secondary mt-4">
                           Swap
                         </button>
@@ -373,26 +432,29 @@ function swapPaintings(firstPaintingId: string, secondPaintingId: string) {
               <!-- SIDE BAR -->
               <div class="z-100 p-2 w-[300px]">
                 <div id="collection-controls" data-accordion="collapse" class="accordion">
-
                   <!-- Automatic ordering title -->
                   <h2 id="collection-controls-auto-heading">
-                    <button type="button" class="accordion-header-button"
-                      data-accordion-target="#collection-controls-auto" aria-expanded="true"
+                    <button
+                      type="button"
+                      class="accordion-header-button"
+                      data-accordion-target="#collection-controls-auto"
+                      aria-expanded="true"
                       aria-controls="collection-controls-auto">
                       <span>Automatic</span>
-                      <font-awesome-icon data-accordion-icon icon="fa-solid fa-angle-up"
-                        class="w-5 h-5 rotate-180 shrink-0" />
+                      <font-awesome-icon data-accordion-icon icon="fa-solid fa-angle-up" class="w-5 h-5 rotate-180 shrink-0" />
                     </button>
                   </h2>
 
                   <!-- Automatic ordering content -->
-                  <div id="collection-controls-auto" class="accordion-body hidden"
-                    aria-labelledby="collection-controls-auto-heading">
+                  <div id="collection-controls-auto" class="accordion-body hidden" aria-labelledby="collection-controls-auto-heading">
                     <div class="text-body flex flex-col gap-4">
                       <!-- Number of columns -->
                       <div class="flex flex-col gap-2">
                         <label class="block mb-2.5 text-sm font-medium text-heading"> Total width (blocks) </label>
-                        <input type="number" class="textbox w-full" placeholder="E.g. 2 large paintings is 4 blocks"
+                        <input
+                          type="number"
+                          class="textbox w-full"
+                          placeholder="E.g. 2 large paintings is 4 blocks"
                           v-model="widthBlocks" />
                       </div>
 
@@ -400,8 +462,12 @@ function swapPaintings(firstPaintingId: string, secondPaintingId: string) {
                       <div class="flex flex-col gap-2">
                         <label class="block text-sm font-medium text-heading"> Sort by: {{ sortOrderText }} </label>
 
-                        <DropdownFilter :placeholder="'Sort by'" :icon="'fa-solid fa-arrow-down-1-9'"
-                          :options="sortOptions" v-model="sortOrder" :single-selection="true">
+                        <DropdownFilter
+                          :placeholder="'Sort by'"
+                          :icon="'fa-solid fa-arrow-down-1-9'"
+                          :options="sortOptions"
+                          v-model="sortOrder"
+                          :single-selection="true">
                         </DropdownFilter>
 
                         <Checkbox :label="'Start at bottom'" v-model="startAtBottom"></Checkbox>
@@ -416,32 +482,39 @@ function swapPaintings(firstPaintingId: string, secondPaintingId: string) {
 
                   <!-- Manual ordering title -->
                   <h2 id="collection-controls-manual-heading">
-                    <button type="button" class="accordion-header-button"
-                      data-accordion-target="#collection-controls-manual" aria-expanded="false"
+                    <button
+                      type="button"
+                      class="accordion-header-button"
+                      data-accordion-target="#collection-controls-manual"
+                      aria-expanded="false"
                       aria-controls="collection-controls-manual">
                       <span>Manual</span>
-                      <font-awesome-icon data-accordion-icon icon="fa-solid fa-angle-up"
-                        class="w-5 h-5 rotate-180 shrink-0" />
+                      <font-awesome-icon data-accordion-icon icon="fa-solid fa-angle-up" class="w-5 h-5 rotate-180 shrink-0" />
                     </button>
                   </h2>
 
                   <!-- Manual ordering content -->
-                  <div id="collection-controls-manual" class="accordion-body hidden"
-                    aria-labelledby="collection-controls-manual-heading">
+                  <div id="collection-controls-manual" class="accordion-body hidden" aria-labelledby="collection-controls-manual-heading">
                     <div class="text-body">
                       <!-- Positions -->
                       <div class="max-h-[400px]">
                         <div v-for="painting in canvases" class="mb-2">
                           <!-- Painting name -->
-                          <label :for="`painting-pos-${painting.id}`" class="block mb-1 text-sm font-medium" :class="{
-                            'text-blue-600': selectedPaintingId == painting.id,
-                            'text-heading': selectedPaintingId != painting.id,
-                          }">
+                          <label
+                            :for="`painting-pos-${painting.id}`"
+                            class="block mb-1 text-sm font-medium"
+                            :class="{
+                              'text-blue-600': selectedPaintingId == painting.id,
+                              'text-heading': selectedPaintingId != painting.id,
+                            }">
                             {{ painting.title }}
                           </label>
 
                           <!-- Position -->
-                          <input type="text" :id="`painting-pos-${painting.id}`" v-model="positions[painting.id]"
+                          <input
+                            type="text"
+                            :id="`painting-pos-${painting.id}`"
+                            v-model="positions[painting.id]"
                             class="block px-3 py-2.5 bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand shadow-xs placeholder:text-body" />
                         </div>
                       </div>
@@ -454,8 +527,7 @@ function swapPaintings(firstPaintingId: string, secondPaintingId: string) {
 
           <!-- Modal footer -->
           <div class="flex items-center justify-end border-t border-default space-x-4 pt-4 md:pt-5">
-            <button type="button" class="button-primary" @click="savePainting()"
-              :disabled="modalLoading">Save</button>
+            <button type="button" class="button-primary" @click="savePainting()" :disabled="modalLoading">Save</button>
             <button @click="showModal = false" type="button" class="button-secondary">Cancel</button>
           </div>
         </div>

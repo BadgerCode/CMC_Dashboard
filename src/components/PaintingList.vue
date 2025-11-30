@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Painting } from "@/api/paintings/painting";
 import RenderPainting from "./RenderPainting.vue";
-import { onMounted, onUpdated, ref } from "vue";
+import { onMounted, onUpdated, ref, watch } from "vue";
 import { Config } from "@/config";
 import MultiCanvasPaintingEditor, { type SavedMultiCanvasPainting } from "./MultiCanvasPaintingEditor.vue";
 import { initFlowbite } from "flowbite";
@@ -11,8 +11,17 @@ interface Props {
 }
 const props = defineProps<Props>();
 
+const emit = defineEmits<{
+  (e: "reload"): void;
+}>();
+
+
+// Multi-canvas stuff
 const selectedPaintings = ref([] as Painting[]);
 const savedMultiCanvasPaintings = ref([] as SavedMultiCanvasPainting[]);
+watch(props.paintings, () => {
+  selectedPaintings.value.splice(0);
+});
 
 onMounted(async () => {
   initFlowbite(); // Include on any component where you need flowbite JS functionality
@@ -40,8 +49,7 @@ async function splitMultiPartPainting(painting: Painting) {
     throw new Error("Failed to split apart multi-canvas painting");
   }
 
-  // TODO: Show toast & automatically reload painting list
-  alert("Multi-canvas painting has been split. Please reload");
+  emit('reload');
 }
 </script>
 
@@ -104,8 +112,10 @@ async function splitMultiPartPainting(painting: Painting) {
     <MultiCanvasPaintingEditor
       v-if="Config.FEATURE_MULTICANVAS_EDITOR && selectedPaintings.length > 0"
       :canvases="selectedPaintings"
-      @painting-created="(painting) => savedMultiCanvasPaintings.push(painting)"
-      @clear="selectedPaintings.splice(0)"></MultiCanvasPaintingEditor>
+      @painting-created="(painting) => {savedMultiCanvasPaintings.push(painting); emit('reload'); selectedPaintings.splice(0);}"
+      @select-all="selectedPaintings = paintings.slice()"
+      @clear="selectedPaintings.splice(0)"
+      @reload="$emit('reload')"></MultiCanvasPaintingEditor>
 
     <!-- Success toast -->
     <div

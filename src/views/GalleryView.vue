@@ -142,7 +142,7 @@ async function loadNextPage() {
   <div class="mt-6">
     <Loading v-if="loading" :fill-space="true"></Loading>
 
-    <PaintingList :paintings="paintings"></PaintingList>
+    <PaintingList :paintings="paintings" @reload="loadGallery()"></PaintingList>
 
     <div class="mt-8 text-center" v-if="!loading">
       <button type="button" class="button" v-on:click="loadNextPage" v-if="!noMoreResults">More</button>
