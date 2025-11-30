@@ -40,6 +40,7 @@ const title = ref("");
 const titleOptions = ref([] as DropdownOption[]);
 const editingTitle = ref(false);
 const author = ref("");
+const editingAuthor = ref(false);
 const positions = ref({} as { [paintingId: string]: string });
 
 // Editor
@@ -79,6 +80,7 @@ async function startEditor() {
   titleOptions.value = [];
   editingTitle.value = false;
   author.value = props.canvases[0]!.authorName;
+  editingAuthor.value = false;
 
   // default automatic sorting options
   sortOrder.value = sortOptions[0]!.value;
@@ -198,12 +200,10 @@ function getStyle(painting: Painting) {
   };
 }
 
-
-
 // APIs
 // Remove flag
 async function removeMultiCanvasFlag() {
-  let paintingIds = props.canvases.map(p => p.id);
+  let paintingIds = props.canvases.map((p) => p.id);
   console.log("Removing multi-canvas flag from paintings");
   console.log(paintingIds);
 
@@ -223,7 +223,7 @@ async function removeMultiCanvasFlag() {
     throw new Error("Failed to remove multi-canvas flags");
   }
 
-  emit('reload');
+  emit("reload");
 }
 
 // Save
@@ -361,6 +361,7 @@ function swapPaintings(firstPaintingId: string, secondPaintingId: string) {
           <div v-else class="flex flex-col space-y-4 md:space-y-6 py-4 md:py-6 flex-1 overflow-y-auto">
             <!-- Top controls -->
             <div class="flex flex-row">
+
               <!-- Title -->
               <div class="max-w-sm mx-auto">
                 <label class="block mb-2.5 text-sm font-medium text-heading">Title</label>
@@ -384,10 +385,17 @@ function swapPaintings(firstPaintingId: string, secondPaintingId: string) {
                 </div>
               </div>
 
-              <!-- Author -->
+              <!-- Artist -->
               <div class="max-w-sm mx-auto">
-                <label class="block mb-2.5 text-sm font-medium text-heading">Author</label>
-                <input type="text" class="textbox w-80" placeholder="Painting author" v-model="author" />
+                <label class="block mb-2.5 text-sm font-medium text-heading">Artist</label>
+
+                <div class="flex flex-row gap-2 w-80">
+                  <input type="text" class="textbox w-80" placeholder="Painting artist" v-model="author" :disabled="!editingAuthor" />
+
+                  <button @click="editingAuthor = !editingAuthor" type="button" class="button-secondary" title="Edit">
+                    <font-awesome-icon icon="fa-solid fa-pen-to-square" />
+                  </button>
+                </div>
               </div>
             </div>
 

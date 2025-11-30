@@ -45,7 +45,11 @@
 }
 
 .textbox {
-  @apply block p-2 text-sm text-white border border-gray-600 rounded-lg bg-gray-700 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-400 cursor-text;
+  @apply bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-lg focus:ring-brand focus:border-brand block px-3 py-2.5 shadow-xs placeholder:text-body;
+}
+
+.textbox:disabled {
+  @apply bg-neutral-secondary-medium border border-default-medium text-fg-disabled text-sm rounded-lg focus:ring-brand focus:border-brand block px-3 py-2.5 shadow-xs placeholder:text-body;
 }
 
 .textbox.withicon {
