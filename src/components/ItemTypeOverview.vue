@@ -99,12 +99,13 @@ onUpdated(() => {
 
 async function loadSales() {
   let salesFilters = {
+    itemType: props.itemType,
     enchantment: enchantmentFilter.value,
     potionEffect: potionEffectFilter.value,
     customDisc: customDiscFilter.value,
-  };
+  } as SalesAPI.SalesFilters;
 
-  filteredSales.value = await SalesAPI.loadSalesForItemType(props.itemType, salesFilters);
+  filteredSales.value = await SalesAPI.loadSales(salesFilters);
 }
 
 async function loadEnchantments(): Promise<DropdownOption[]> {

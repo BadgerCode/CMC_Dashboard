@@ -3,19 +3,28 @@ import type { Painting } from "./painting";
 import type { PaintingSaleSummary } from "./paintingSaleSummary";
 import type { SaleSummary } from "../sales/saleSummary";
 
-export async function loadPaintings(authorName?: string, lastItem?: Painting, title?: string, size?: string): Promise<Painting[]> {
+export interface PaintingsFilter {
+  authorName?: string;
+  lastItem?: Painting;
+  title?: string;
+  size?: string;
+  onlyPossibleMultiCanvas?: boolean;
+}
+
+export async function loadPaintings(filters: PaintingsFilter): Promise<Painting[]> {
   const params = new URLSearchParams();
 
   // Add last item for pagination
-  if (lastItem != null) {
-    params.append("before", lastItem.createdAt);
-    params.append("lastID", lastItem.id);
+  if (filters.lastItem != null) {
+    params.append("before", filters.lastItem.createdAt);
+    params.append("lastID", filters.lastItem.id);
   }
 
   // Optional filters
-  if (authorName) params.append("authorName", authorName);
-  if (title) params.append("title", title);
-  if (size) params.append("size", size);
+  if (filters.authorName) params.append("authorName", filters.authorName);
+  if (filters.title) params.append("title", filters.title);
+  if (filters.size) params.append("size", filters.size);
+  if (filters.onlyPossibleMultiCanvas) params.append("possibleMultiCanvas", "true");
 
   // Send request
   let url = `${Config.APIURL}/api/paintings?${params.toString()}`;

@@ -21,9 +21,7 @@ async function loadNextPage() {
 async function loadSales() {
   if (noMoreResults.value) return;
 
-  let lastItem = recentSales.value.slice(-1)[0];
-
-  let newSales = await SalesAPI.loadSales(lastItem);
+  let newSales = await SalesAPI.loadSales({ lastItem: recentSales.value.slice(-1)[0] } as SalesAPI.SalesFilters);
 
   recentSales.value.push(...newSales);
   noMoreResults.value = newSales.length === 0;
@@ -40,7 +38,11 @@ async function loadSales() {
 
     <div class="flex flex-row items-center justify-center">
       <ItemTypeSearch
-        @selection="(itemType) => { if (itemType) $router.push({ name: 'itemSales', params: { itemType: itemType } }) }">
+        @selection="
+          (itemType) => {
+            if (itemType) $router.push({ name: 'itemSales', params: { itemType: itemType } });
+          }
+        ">
       </ItemTypeSearch>
     </div>
   </div>

@@ -11,6 +11,7 @@ import { useRouter } from "vue-router";
 import SearchBox from "@/components/SearchBox.vue";
 import { debounce } from "lodash";
 import DropdownFilter from "@/components/DropdownFilter.vue";
+import Checkbox from "@/components/Checkbox.vue";
 
 interface ArtistSummary {
   id: string;
@@ -58,6 +59,12 @@ watch(sizeFilter, async (_, __) => {
   loadGallery();
 });
 
+// Possible multi-canvas filter
+const multiCanvasCheckFilter = ref(false);
+watch(multiCanvasCheckFilter, async (_, __) => {
+  loadGallery();
+});
+
 // Startup
 onMounted(async () => {
   artistName.value = props.authorName;
@@ -84,9 +91,15 @@ async function loadNextPage() {
   if (noMoreResults.value) return;
 
   // Add last item for pagination
-  let lastItem = paintings.value.slice(-1)[0];
+  let filters = {
+    lastItem: paintings.value.slice(-1)[0],
+    authorName: artistName.value,
+    title: nameFilter.value,
+    size: sizeFilter.value,
+    onlyPossibleMultiCanvas: multiCanvasCheckFilter.value
+  } as PaintingsAPI.PaintingsFilter;
 
-  let responseItems = await PaintingsAPI.loadPaintings(artistName.value, lastItem, nameFilter.value, sizeFilter.value);
+  let responseItems = await PaintingsAPI.loadPaintings(filters);
   paintings.value.push(...responseItems);
   noMoreResults.value = responseItems.length === 0;
   loading.value = false;
@@ -119,6 +132,8 @@ async function loadNextPage() {
         @clear="() => (artistName = '')"></SearchWithResults>
 
       <DropdownFilter :placeholder="'Size'" :options="sizeOptions" :single-selection="true" v-model="sizeFilter"> </DropdownFilter>
+
+      <Checkbox :label="'Possible Multi-Canvas'" v-model="multiCanvasCheckFilter"></Checkbox>
     </div>
 
     <SearchBox :placeholder="'Painting Name'" v-model="nameFilter"></SearchBox>

@@ -2,39 +2,23 @@ import { Config } from "@/config";
 import type { SaleSummary } from "./saleSummary";
 
 export interface SalesFilters {
+  itemType?: string | null;
+  lastItem?: SaleSummary | null;
   enchantment?: string;
   potionEffect?: string;
   customDisc?: string;
 }
 
-export async function loadSales(
-  lastItem?: SaleSummary | null | undefined
-): Promise<SaleSummary[]> {
-  return await loadSalesInternal(null, null, lastItem);
-}
-
-export async function loadSalesForItemType(
-  itemType: string,
-  filters?: SalesFilters,
-  lastItem?: SaleSummary | null | undefined
-): Promise<SaleSummary[]> {
-  return await loadSalesInternal(itemType, filters, lastItem);
-}
-
-async function loadSalesInternal(
-  itemType: string | null,
-  filters: SalesFilters | null | undefined,
-  lastItem: SaleSummary | null | undefined
-): Promise<SaleSummary[]> {
+export async function loadSales(filters: SalesFilters): Promise<SaleSummary[]> {
   const params = new URLSearchParams();
 
-  if (lastItem != null) {
-    params.append("before", lastItem.occurredAt);
-    params.append("lastID", lastItem.id);
+  if (filters.lastItem) {
+    params.append("before", filters.lastItem.occurredAt);
+    params.append("lastID", filters.lastItem.id);
   }
 
-  if (itemType != null) {
-    params.append("itemType", itemType);
+  if (filters.itemType) {
+    params.append("itemType", filters.itemType);
   }
 
   if (filters?.enchantment != null)
