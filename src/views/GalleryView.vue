@@ -118,7 +118,7 @@ async function loadNextPage() {
     <h1 class="text-3xl font-bold" v-else>{{ props.authorName }}'s Artwork</h1>
 
     <p class="text-gray-300" v-if="!props.authorName">Paintings created by the players of the server</p>
-    <p class="text-gray-500 text-sm mt-2">Note: Only paintings sold through shops or auctions since Oct 25th will be shown.</p>
+    <p class="hint-text mt-2">Note: Only paintings sold through shops or auctions since Oct 25th will be shown.</p>
   </div>
 
   <div class="flex flex-col md:flex-row flex-wrap space-y-2 items-start justify-between">

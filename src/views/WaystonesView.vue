@@ -195,7 +195,7 @@ function applySort() {
   <div v-else class="relative overflow-x-auto">
     <div class="text-gray-400">
       <div>{{ filteredWaystones.length }} waystones</div>
-      <div class="text-gray-500 text-xs">Last updated {{ formatDate(lastUpdated, "") }}</div>
+      <div class="hint-text">Last updated {{ formatDate(lastUpdated, "") }}</div>
     </div>
 
     <table class="w-full text-left rtl:text-right text-gray-400 text-xs md:text-base">

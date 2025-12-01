@@ -3,6 +3,11 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* Text */
+.hint-text {
+  @apply text-gray-500 text-sm;
+}
+
 /* Links */
 .hyperlink {
   @apply text-blue-500 hover:underline cursor-pointer;

@@ -56,7 +56,7 @@ async function loadServerStats(): Promise<ServerStats | null> {
               class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white flex flex-col lg:flex-row lg:items-center gap-2">
               <div>SMP Online</div>
               <div>Dashboard</div>
-              <div class="text-gray-500 text-sm">(unofficial)</div>
+              <div class="hint-text">(unofficial)</div>
             </div>
           </RouterLink>
 

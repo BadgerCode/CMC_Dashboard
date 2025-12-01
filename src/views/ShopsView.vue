@@ -215,7 +215,7 @@ function matchesFilters(item: ShopItem, itemType: string) {
   <div class="relative overflow-x-auto" v-if="!loading">
     <div class="text-gray-400">
       <div>{{ filteredShops.length }} shops</div>
-      <div class="text-gray-500 text-xs" v-if="!loading">Last updated {{ formatDate(shopData?.lastUpdated, "") }}</div>
+      <div class="hint-text" v-if="!loading">Last updated {{ formatDate(shopData?.lastUpdated, "") }}</div>
     </div>
 
     <ShopsList :shops="filteredShops"></ShopsList>

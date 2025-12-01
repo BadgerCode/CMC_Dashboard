@@ -6,6 +6,7 @@ import RenderPainting from "./RenderPainting.vue";
 import RecentSales from "./RecentSales.vue";
 import Loading from "./Loading.vue";
 import * as PaintingsAPI from "@/api/paintings/api";
+import { formatDate } from "@/utilities/date-format";
 
 interface Props {
   paintingId: string;
@@ -25,8 +26,6 @@ onMounted(async () => {
 
   loading.value = false;
 });
-
-
 </script>
 
 <template>
@@ -37,17 +36,27 @@ onMounted(async () => {
       <p>Maybe it hasn't been sold yet?</p>
     </div>
     <div v-else class="p-6 bg-gray-800 border border-gray-700 rounded-lg shadow-sm">
+      <!-- Title -->
       <div class="flex flex-col gap-1">
         <h2 class="text-2xl font-bold">Painting - {{ paintingData.title }}</h2>
       </div>
 
       <div class="mb-3 font-normal text-gray-400 flex flex-col gap-4">
+        <!-- Extra info -->
         <div>
-          <span>By </span>
-          <RouterLink :to="{ name: 'gallery', params: { authorName: paintingData.authorName } }" class="hyperlink">
-            {{ paintingData.authorName }}
-          </RouterLink>
+          <!-- Artist -->
+          <div>
+            <span>By </span>
+            <RouterLink :to="{ name: 'gallery', params: { authorName: paintingData.authorName } }" class="hyperlink">
+              {{ paintingData.authorName }}
+            </RouterLink>
+          </div>
+
+          <!-- Created date -->
+          <div>Created {{ formatDate(paintingData.createdAt) }}</div>
         </div>
+
+        <!-- The painting -->
         <div class="h-[256px] w-[256px]">
           <RenderPainting :painting-id="paintingData.id"></RenderPainting>
         </div>
@@ -56,8 +65,7 @@ onMounted(async () => {
         <div v-else-if="paintingData.collectionId">
           <div>This painting is is part of a multi-canvas image.</div>
           <div>
-            <RouterLink :to="{ name: 'painting', params: { id: paintingData.collectionId } }" class="hyperlink">See here
-            </RouterLink>
+            <RouterLink :to="{ name: 'painting', params: { id: paintingData.collectionId } }" class="hyperlink">See here </RouterLink>
           </div>
         </div>
       </div>
