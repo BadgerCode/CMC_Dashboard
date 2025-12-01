@@ -70,7 +70,7 @@ async function loadSales() {
     <div class="pb-4">
       <h1 class="text-3xl font-bold">Latest Sales</h1>
       <p class="text-gray-300">Shops and auctions</p>
-      <p class="hint-text">{{ formatNumber(serverStore.numSales, 0) }} total sales</p>
+      <p class="hint-text" v-if="serverStore.loaded">{{ formatNumber(serverStore.numSales, 0) }} total sales</p>
     </div>
   </div>
 

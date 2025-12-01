@@ -142,8 +142,9 @@ async function loadNextPage() {
 
   <!-- Stats -->
   <div>
-    <p v-if="!loading && !props.authorName" class="hint-text">{{ formatNumber(serverStore.numPaintings, 0) }} total
-      paintings</p>
+    <p v-if="serverStore.loaded && !props.authorName" class="hint-text">
+      {{ formatNumber(serverStore.numPaintings, 0) }} total paintings
+    </p>
   </div>
 
   <!-- Paintings list -->

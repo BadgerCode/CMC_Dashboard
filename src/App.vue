@@ -11,11 +11,9 @@ const path = computed(() => {
   return route.fullPath.replace(route.hash, "");
 });
 
-const stats = ref(null as ServerOverview | null);
-
 onMounted(async () => {
   initFlowbite(); // Include on any component where you need flowbite JS functionality
-  stats.value = await loadServerStats();
+  await loadServerStats();
 });
 
 onUpdated(() => {
@@ -35,6 +33,7 @@ async function loadServerStats(): Promise<ServerOverview | null> {
   serverStore.numSales = response.numSales;
   serverStore.numPaintings = response.numPaintings;
   serverStore.lastUpdated = lastResponse;
+  serverStore.loaded = true;
 
   return serverStore;
 }
@@ -104,10 +103,10 @@ async function loadServerStats(): Promise<ServerOverview | null> {
             {{ $route.meta.title }}
           </h1>
 
-          <div v-if="stats != null" class="text-gray-200 flex flex-col text-right">
-            <div>Server {{ stats.status }}</div>
+          <div v-if="serverStore.loaded" class="text-gray-200 flex flex-col text-right">
+            <div>Server {{ serverStore.status }}</div>
             <div>
-              <RouterLink :to="{ name: 'playercounts' }" class="hyperlink">{{ stats.numPlayers }} players</RouterLink>
+              <RouterLink :to="{ name: 'playercounts' }" class="hyperlink">{{ serverStore.numPlayers }} players</RouterLink>
             </div>
           </div>
         </div>
