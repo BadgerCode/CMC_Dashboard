@@ -5,6 +5,8 @@ import * as SalesAPI from "@/api/sales/api";
 import RecentSales from "@/components/RecentSales.vue";
 import ItemTypeSearch from "@/components/ItemTypeSearch.vue";
 import { getSpecialItems } from "@/models/item-info";
+import { serverStore } from "@/store/server-state";
+import { formatNumber } from "@/utilities/number-format";
 
 const loading = ref(true);
 const recentSales = ref([] as SaleSummary[]);
@@ -37,12 +39,11 @@ async function loadSales() {
     </div>
 
     <div class="flex flex-row items-center justify-center">
-      <ItemTypeSearch
-        @selection="
-          (itemType) => {
-            if (itemType) $router.push({ name: 'itemSales', params: { itemType: itemType } });
-          }
-        ">
+      <ItemTypeSearch @selection="
+        (itemType) => {
+          if (itemType) $router.push({ name: 'itemSales', params: { itemType: itemType } });
+        }
+      ">
       </ItemTypeSearch>
     </div>
   </div>
@@ -69,6 +70,7 @@ async function loadSales() {
     <div class="pb-4">
       <h1 class="text-3xl font-bold">Latest Sales</h1>
       <p class="text-gray-300">Shops and auctions</p>
+      <p class="hint-text">{{ formatNumber(serverStore.numSales, 0) }} total sales</p>
     </div>
   </div>
 

@@ -3,12 +3,7 @@ import { initFlowbite } from "flowbite";
 import { computed, onMounted, onUpdated, ref } from "vue";
 import { useRoute } from "vue-router";
 import { Config } from "./config";
-
-interface ServerStats {
-  numPlayers: number;
-  lastResponse: Date;
-  status: string;
-}
+import { serverStore, type ServerOverview } from "./store/server-state";
 
 const route = useRoute();
 
@@ -16,7 +11,7 @@ const path = computed(() => {
   return route.fullPath.replace(route.hash, "");
 });
 
-const stats = ref(null as ServerStats | null);
+const stats = ref(null as ServerOverview | null);
 
 onMounted(async () => {
   initFlowbite(); // Include on any component where you need flowbite JS functionality
@@ -27,7 +22,7 @@ onUpdated(() => {
   initFlowbite(); // Include on any component where you need flowbite JS functionality
 });
 
-async function loadServerStats(): Promise<ServerStats | null> {
+async function loadServerStats(): Promise<ServerOverview | null> {
   let httpResponse = await fetch(`${Config.APIURL}/api/serverstats`, { method: "get" });
 
   if (httpResponse.status !== 200) return null;
@@ -35,11 +30,13 @@ async function loadServerStats(): Promise<ServerStats | null> {
   let response = await httpResponse.json();
   let lastResponse = new Date(response.lastResponse);
 
-  return {
-    numPlayers: response.numPlayers,
-    lastResponse: lastResponse,
-    status: Date.now() - lastResponse.getTime() < 130000 ? "Online" : "Offline",
-  } as ServerStats;
+  serverStore.numPlayers = response.numPlayers;
+  serverStore.status = Date.now() - lastResponse.getTime() < 130000 ? "Online" : "Offline";
+  serverStore.numSales = response.numSales;
+  serverStore.numPaintings = response.numPaintings;
+  serverStore.lastUpdated = lastResponse;
+
+  return serverStore;
 }
 </script>
 

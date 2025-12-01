@@ -12,6 +12,8 @@ import SearchBox from "@/components/SearchBox.vue";
 import { debounce } from "lodash";
 import DropdownFilter from "@/components/DropdownFilter.vue";
 import Checkbox from "@/components/Checkbox.vue";
+import { serverStore } from "@/store/server-state";
+import { formatNumber } from "@/utilities/number-format";
 
 interface ArtistSummary {
   id: string;
@@ -113,6 +115,7 @@ async function loadNextPage() {
     </div>
   </div>
 
+  <!-- Heading -->
   <div class="mb-8">
     <h1 class="text-3xl font-bold" v-if="!props.authorName">Recently Created</h1>
     <h1 class="text-3xl font-bold" v-else>{{ props.authorName }}'s Artwork</h1>
@@ -121,24 +124,29 @@ async function loadNextPage() {
     <p class="hint-text mt-2">Note: Only paintings sold through shops or auctions since Oct 25th will be shown.</p>
   </div>
 
+  <!-- Filter controls -->
   <div class="flex flex-col md:flex-row flex-wrap space-y-2 items-start justify-between">
     <div class="flex flex-row flex-wrap flex-1 gap-2">
-      <SearchWithResults
-        v-if="!props.authorName"
-        :items="artists"
-        :placeholder="'Artist'"
-        :icon="'fa-solid fa-user'"
-        @selection="(item) => (artistName = item?.text ?? '')"
-        @clear="() => (artistName = '')"></SearchWithResults>
+      <SearchWithResults v-if="!props.authorName" :items="artists" :placeholder="'Artist'" :icon="'fa-solid fa-user'"
+        @selection="(item) => (artistName = item?.text ?? '')" @clear="() => (artistName = '')"></SearchWithResults>
 
-      <DropdownFilter :placeholder="'Size'" :options="sizeOptions" :single-selection="true" v-model="sizeFilter"> </DropdownFilter>
+      <DropdownFilter :placeholder="'Size'" :options="sizeOptions" :single-selection="true" v-model="sizeFilter">
+      </DropdownFilter>
 
-      <Checkbox v-if="Config.FEATURE_MULTICANVAS_EDITOR" :label="'Possible Multi-Canvas'" v-model="multiCanvasCheckFilter"></Checkbox>
+      <Checkbox v-if="Config.FEATURE_MULTICANVAS_EDITOR" :label="'Possible Multi-Canvas'"
+        v-model="multiCanvasCheckFilter"></Checkbox>
     </div>
 
     <SearchBox :placeholder="'Painting Name'" v-model="nameFilter"></SearchBox>
   </div>
 
+  <!-- Stats -->
+  <div>
+    <p v-if="!loading && !props.authorName" class="hint-text">{{ formatNumber(serverStore.numPaintings, 0) }} total
+      paintings</p>
+  </div>
+
+  <!-- Paintings list -->
   <div class="mt-6">
     <Loading v-if="loading" :fill-space="true"></Loading>
 
