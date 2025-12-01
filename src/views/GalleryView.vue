@@ -133,7 +133,7 @@ async function loadNextPage() {
 
       <DropdownFilter :placeholder="'Size'" :options="sizeOptions" :single-selection="true" v-model="sizeFilter"> </DropdownFilter>
 
-      <Checkbox :label="'Possible Multi-Canvas'" v-model="multiCanvasCheckFilter"></Checkbox>
+      <Checkbox v-if="Config.FEATURE_MULTICANVAS_EDITOR" :label="'Possible Multi-Canvas'" v-model="multiCanvasCheckFilter"></Checkbox>
     </div>
 
     <SearchBox :placeholder="'Painting Name'" v-model="nameFilter"></SearchBox>
