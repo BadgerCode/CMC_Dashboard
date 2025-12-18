@@ -116,16 +116,18 @@ async function loadEnchantments(): Promise<DropdownOption[]> {
   allItems.push(
     ...shops.value.filter((s) => s.item.childItems != null).flatMap((s) => s.item.childItems!.flatMap((i) => i.parsedSNBT.enchantments))
   );
-  let uniqueItems = [...new Set(allItems.sort())];
+  let uniqueItems = [...new Set(allItems)];
 
   // shops.value
-  return uniqueItems.map(
-    (i: string) =>
-    ({
-      text: formatEnchantment(i),
-      value: i,
-    } as DropdownOption)
-  );
+  return uniqueItems
+    .map(
+      (i: string) =>
+      ({
+        text: formatEnchantment(i),
+        value: i,
+      } as DropdownOption)
+    )
+    .sort((a, b) => a.text.localeCompare(b.text));
 }
 
 async function loadDiscs(): Promise<DropdownOption[]> {
@@ -139,15 +141,17 @@ async function loadDiscs(): Promise<DropdownOption[]> {
       .flatMap((s) => s.item.childItems!.map((i) => i.parsedSNBT.customDiscSong))
       .filter((s) => s != null)
   );
-  let uniqueItems = [...new Set(allItems.sort())];
+  let uniqueItems = [...new Set(allItems)];
 
-  return uniqueItems.map(
-    (i: string) =>
-    ({
-      text: formatCustomDisc(i),
-      value: i,
-    } as DropdownOption)
-  );
+  return uniqueItems
+    .map(
+      (i: string) =>
+      ({
+        text: formatCustomDisc(i),
+        value: i,
+      } as DropdownOption)
+    )
+    .sort((a, b) => a.text.localeCompare(b.text));
 }
 
 async function loadPotions(): Promise<DropdownOption[]> {
@@ -161,15 +165,17 @@ async function loadPotions(): Promise<DropdownOption[]> {
       .flatMap((s) => s.item.childItems!.map((i) => i.parsedSNBT.potionEffect))
       .filter((s) => s != null)
   );
-  let uniqueItems = [...new Set(allItems.sort())];
+  let uniqueItems = [...new Set(allItems)];
 
-  return uniqueItems.map(
-    (i: string) =>
-    ({
-      text: formatPotionEffect(i),
-      value: i,
-    } as DropdownOption)
-  );
+  return uniqueItems
+    .map(
+      (i: string) =>
+      ({
+        text: formatPotionEffect(i),
+        value: i,
+      } as DropdownOption)
+    )
+    .sort((a, b) => a.text.localeCompare(b.text));
 }
 
 async function loadItems(url: string): Promise<string[]> {
