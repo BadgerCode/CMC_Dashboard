@@ -10,6 +10,7 @@ import { formatItemType } from "@/utilities/item-type-format";
 import Loading from "./Loading.vue";
 import DropdownFilter, { type DropdownOption } from "./DropdownFilter.vue";
 import * as SalesAPI from "@/api/sales/api";
+import * as CustomDiscsAPI from "@/api/customDiscs/api";
 import { initFlowbite } from "flowbite";
 import { formatEnchantment } from "@/utilities/enchantment-format";
 import { Config } from "@/config";
@@ -133,26 +134,8 @@ async function loadEnchantments(): Promise<DropdownOption[]> {
     .sort((a, b) => a.text.localeCompare(b.text));
 }
 
-interface CustomDiscsResponse {
-  unsoldDiscs: number;
-  discs: CustomDisc[];
-}
-
-interface CustomDisc {
-  name: string;
-  displayName: string;
-}
-
 async function loadDiscs(): Promise<DropdownOption[]> {
-  // TODO: Cache
-  // TODO: use fancy names in shops filter (only show discs available to shops)
-  // TODO: use fancy names anytime we display a custom disc (e.g. sales)
-  let httpResponse = await fetch(`${Config.APIURL}/api/v2/customDiscs`, { method: "get" });
-  if (httpResponse.status !== 200) return [];
-
-  let response = (await httpResponse.json()).result as CustomDiscsResponse;
-  numUndiscoveredMusicDiscs.value = response.unsoldDiscs;
-
+  let response = await CustomDiscsAPI.retrieveCustomDiscs();
   return response.discs.map((d) => ({ text: d.displayName, value: d.name } as DropdownOption)).sort((a, b) => a.text.localeCompare(b.text));
 }
 

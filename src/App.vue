@@ -4,6 +4,7 @@ import { computed, onMounted, onUpdated, ref } from "vue";
 import { useRoute } from "vue-router";
 import { Config } from "./config";
 import { serverStore, type ServerOverview } from "./store/server-state";
+import * as CustomDiscsAPI from "@/api/customDiscs/api";
 
 const route = useRoute();
 
@@ -14,6 +15,9 @@ const path = computed(() => {
 onMounted(async () => {
   initFlowbite(); // Include on any component where you need flowbite JS functionality
   await loadServerStats();
+
+  // Load custom music disc pretty names
+  await CustomDiscsAPI.retrieveCustomDiscs();
 });
 
 onUpdated(() => {
