@@ -136,6 +136,7 @@ async function loadEnchantments(): Promise<DropdownOption[]> {
 
 async function loadDiscs(): Promise<DropdownOption[]> {
   let response = await CustomDiscsAPI.retrieveCustomDiscs();
+  numUndiscoveredMusicDiscs.value = response.unsoldDiscs;
   return response.discs.map((d) => ({ text: d.displayName, value: d.name } as DropdownOption)).sort((a, b) => a.text.localeCompare(b.text));
 }
 
