@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { initFlowbite } from "flowbite";
-import { computed, onMounted, useId } from "vue";
+import { debounce } from "lodash";
+import { computed, onMounted, ref, useId, watch } from "vue";
+import SearchBox from "./SearchBox.vue";
 
 export interface DropdownOption {
   text: string;
@@ -17,14 +19,42 @@ interface Props {
   hideCount?: boolean;
 }
 const props = defineProps<Props>();
-
 const model = defineModel({ default: [] as string[] | string });
-
 const id = useId();
+
+const filterText = ref("");
+const filteredOptions = ref([] as DropdownOption[]);
 
 onMounted(() => {
   initFlowbite(); // Include on any component where you need flowbite JS functionality
+
+  filterText.value = "";
+  filteredOptions.value = props.options;
 });
+
+// Re-apply filter
+watch(filterText, async (_, __) => {
+  applyFilter();
+});
+
+watch(
+  () => props.options,
+  async (_, __) => {
+    applyFilter();
+  }
+);
+
+const applyFilter = debounce(async () => {
+  let input = filterText.value.toLocaleLowerCase().trim();
+
+  // Clear results
+  if (!input) {
+    filteredOptions.value = props.options;
+    return;
+  }
+
+  filteredOptions.value = props.options.filter((o) => o.text.toLocaleLowerCase().includes(input));
+}, 200);
 
 const selectionCount = computed(() => {
   if (props.singleSelection) return model.value.length > 0 ? 1 : 0;
@@ -33,6 +63,7 @@ const selectionCount = computed(() => {
 
 function clear() {
   model.value = props.singleSelection ? "" : props.defaultSelection ?? [];
+  filterText.value = "";
 }
 </script>
 
@@ -42,7 +73,7 @@ function clear() {
       :id="`${id}Button`"
       :data-dropdown-toggle="id"
       class="inline-flex items-center text-gray-500 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-3 py-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
-      :class="{'w-full': fullWidth}"
+      :class="{ 'w-full': fullWidth }"
       type="button">
       <font-awesome-icon v-if="icon" :icon="icon" class="w-3 h-3 text-gray-400 me-3" />
       <span>{{ placeholder }}</span>
@@ -59,8 +90,12 @@ function clear() {
       data-popper-escaped=""
       data-popper-placement="top"
       style="position: absolute; inset: auto auto 0px 0px; margin: 0px; transform: translate3d(522.5px, 3847.5px, 0px)">
+      <div class="border-b border-default-medium p-2 rounded-t-base">
+        <SearchBox :placeholder="'Search'" v-model="filterText"></SearchBox>
+      </div>
+
       <ul class="max-h-48 overflow-y-auto space-y-1 text-sm text-gray-700 dark:text-gray-200" :aria-labelledby="`${id}Button`">
-        <li v-for="option in options">
+        <li v-for="option in filteredOptions">
           <div class="flex items-center rounded-sm hover:bg-gray-600">
             <input
               :id="`${id}-${option.value}`"

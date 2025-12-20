@@ -72,7 +72,7 @@ function makeSelection(item: string | null) {
 <template>
   <div>
     <label for="table-search" class="sr-only">Search</label>
-    <div class="relative group">
+    <div class="relative group w-80">
       <SearchBox
         :placeholder="'Item types. E.g. Emerald'"
         :model-value="filterText"
