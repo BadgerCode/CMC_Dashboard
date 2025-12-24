@@ -5,6 +5,7 @@ import { useRoute } from "vue-router";
 import { Config } from "./config";
 import { serverStore, type ServerOverview } from "./store/server-state";
 import * as CustomDiscsAPI from "@/api/customDiscs/api";
+import * as VillagerTradesAPI from "@/api/villagerTrades/api";
 
 const route = useRoute();
 
@@ -18,6 +19,7 @@ onMounted(async () => {
 
   // Load custom music disc pretty names
   await CustomDiscsAPI.retrieveCustomDiscs();
+  await VillagerTradesAPI.retrieveVillagerTrades();
 });
 
 onUpdated(() => {
