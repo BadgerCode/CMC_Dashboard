@@ -1,4 +1,5 @@
 export interface VillagerTradesResponse {
+  lastUpdated: string;
   trades: VillagerTrade[];
 }
 

@@ -261,6 +261,7 @@ let filtersText = computed(() => {
         <span>for {{ villagerTrade.quantity }} {{ villagerTrade.itemType }}&nbsp;</span>
         <span>({{ villagerTrade.villager }} villager)</span>
       </p>
+      <p><RouterLink :to="{ name: 'villagerTrades' }" class="hyperlink">See all trades</RouterLink></p>
     </div>
 
     <!-- Latest sales -->

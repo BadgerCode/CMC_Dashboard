@@ -5,6 +5,7 @@ import PaintingView from "@/views/PaintingView.vue";
 import PlayerCountView from "@/views/PlayerCountView.vue";
 import SaleView from "@/views/SaleView.vue";
 import ShopsView from "@/views/ShopsView.vue";
+import VillagerTradesView from "@/views/VillagerTradesView.vue";
 import WaystonesView from "@/views/WaystonesView.vue";
 import { createRouter, createWebHistory } from "vue-router";
 
@@ -79,6 +80,14 @@ const router = createRouter({
         title: "Player Numbers"
       }
     },
+    {
+      path: "/villagers",
+      name: "villagerTrades",
+      component: VillagerTradesView,
+      meta: {
+        title: "Villager Trades"
+      }
+    }
   ],
 });
 

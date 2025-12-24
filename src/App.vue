@@ -19,6 +19,8 @@ onMounted(async () => {
 
   // Load custom music disc pretty names
   await CustomDiscsAPI.retrieveCustomDiscs();
+
+  // Load villager trades
   await VillagerTradesAPI.retrieveVillagerTrades();
 });
 

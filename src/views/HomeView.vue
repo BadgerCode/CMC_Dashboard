@@ -55,7 +55,7 @@ async function loadSales() {
       </div>
     </div>
 
-    <div class="flex flex-row flex-wrap gap-2 md:gap-3">
+    <div class="flex flex-row flex-wrap gap-2 md:gap-3 mb-6">
       <RouterLink v-for="item in getSpecialItems()" :to="{ name: 'itemSales', params: { itemType: item.itemType } }">
         <div
           class="p-1 w-20 h-20 gap-1 md:p-3 md:w-27 md:h-27 md:gap-2 bg-gray-800 flex flex-col items-center text-center justify-center text-gray-300 border-1 border-gray-700 rounded-lg">
@@ -63,6 +63,17 @@ async function loadSales() {
           <div class="text-xs md:text-sm">{{ item.displayName }}</div>
         </div>
       </RouterLink>
+    </div>
+  </div>
+
+  <div class="mb-8">
+    <div class="mb-3 flex flex-row justify-between items-end">
+      <h1 class="text-3xl font-bold">Villager Trades</h1>
+    </div>
+
+    <div>
+      <p class="text-gray-300">Villagers have been updated to sell more items.</p>
+      <RouterLink :to="{ name: 'villagerTrades' }" class="hyperlink">See all trades</RouterLink>
     </div>
   </div>
 

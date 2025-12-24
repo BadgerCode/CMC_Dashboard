@@ -5,9 +5,11 @@ import { reactive } from "vue";
 export interface ItemsOverview {
   customDiscs: CustomDiscsOverview | null;
   villagerTrades: VillagerTrade[];
+  villagerTradesLastUpdated: Date;
 }
 
 export const itemsStore = reactive({
   customDiscs: null,
-  villagerTrades: []
+  villagerTrades: [],
+  villagerTradesLastUpdated: new Date(0),
 } as ItemsOverview);
