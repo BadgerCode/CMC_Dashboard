@@ -21,6 +21,8 @@ import ItemTypeSearch from "./ItemTypeSearch.vue";
 import { getItemInfo } from "@/models/item-info";
 import { itemsStore } from "@/store/items-state";
 import { debounce } from "lodash";
+import { setPageTitle } from "@/router/pageTitle";
+import { capitalizeFirstLetter } from "@/utilities/text-format";
 
 interface Props {
   itemType: string;
@@ -77,6 +79,8 @@ watch(customDiscFilter, async (_, __) => {
 
 onMounted(async () => {
   initFlowbite(); // Include on any component where you need flowbite JS functionality
+
+  setPageTitle(capitalizeFirstLetter(formatItemType(props.itemType).toLocaleLowerCase()));
 
   // Load sales with any filters
   await loadSales();

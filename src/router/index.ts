@@ -8,6 +8,7 @@ import ShopsView from "@/views/ShopsView.vue";
 import VillagerTradesView from "@/views/VillagerTradesView.vue";
 import WaystonesView from "@/views/WaystonesView.vue";
 import { createRouter, createWebHistory } from "vue-router";
+import { setPageTitle } from "./pageTitle";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -90,5 +91,18 @@ const router = createRouter({
     }
   ],
 });
+
+router.beforeEach((to) => {
+  const { title, description } = to.meta;
+  const defaultTitle = 'Dashboard';
+  const defaultDescription = 'Sales and more for the SMP Online server.';
+
+  setPageTitle((title as string | undefined) || defaultTitle);
+
+  const descriptionElement = document.querySelector('head meta[name="description"]')!;
+
+  descriptionElement.setAttribute('content', (description as string | undefined) || defaultDescription);
+});
+
 
 export default router;
