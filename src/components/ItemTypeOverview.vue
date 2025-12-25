@@ -281,7 +281,7 @@ let filtersText = computed(() => {
           <div class="text-gray-400 text-sm capitalize">{{ filtersText }}</div>
         </div>
 
-        <div>
+        <div class="flex flex-row flex-wrap gap-1 items-end">
           <DropdownFilter v-if="enchantments.length > 0" :placeholder="'Enchantments'"
             :icon="'fa-solid fa-wand-sparkles'" :options="enchantments" :single-selection="true"
             v-model="enchantmentFilter">
