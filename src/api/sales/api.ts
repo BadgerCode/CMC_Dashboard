@@ -3,6 +3,7 @@ import type { SaleSummary } from "./saleSummary";
 
 export interface SalesFilters {
   itemType?: string | null;
+  customName?: string | null;
   lastItem?: SaleSummary | null;
   enchantment?: string;
   potionEffect?: string;
@@ -19,6 +20,10 @@ export async function loadSales(filters: SalesFilters): Promise<SaleSummary[]> {
 
   if (filters.itemType) {
     params.append("itemType", filters.itemType);
+  }
+
+  if (filters.customName) {
+    params.append("customName", filters.customName);
   }
 
   if (filters?.enchantment != null)

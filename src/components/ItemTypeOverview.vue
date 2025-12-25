@@ -20,6 +20,7 @@ import { useRoute } from "vue-router";
 import ItemTypeSearch from "./ItemTypeSearch.vue";
 import { getItemInfo } from "@/models/item-info";
 import { itemsStore } from "@/store/items-state";
+import { debounce } from "lodash";
 
 interface Props {
   itemType: string;
@@ -50,31 +51,28 @@ const numUndiscoveredMusicDiscs = ref(0);
 // Name filter
 const nameFilter = ref("");
 watch(nameFilter, async (_, __) => {
-  applyFilters();
+  await reloadSalesAndShops();
 });
 
 // Enchantment filter
 const enchantments = ref([] as DropdownOption[]);
 const enchantmentFilter = ref(route.query["enchantment"]?.toString() ?? "");
 watch(enchantmentFilter, async (_, __) => {
-  await loadSales();
-  applyFilters();
+  await reloadSalesAndShops();
 });
 
 // Potion effect filter
 const potionEffects = ref([] as DropdownOption[]);
 const potionEffectFilter = ref(route.query["potionEffect"]?.toString() ?? "");
 watch(potionEffectFilter, async (_, __) => {
-  await loadSales();
-  applyFilters();
+  await reloadSalesAndShops();
 });
 
 // Custom disc filter
 const customDiscs = ref([] as DropdownOption[]);
 const customDiscFilter = ref(route.query["discName"]?.toString() ?? "");
 watch(customDiscFilter, async (_, __) => {
-  await loadSales();
-  applyFilters();
+  await reloadSalesAndShops();
 });
 
 onMounted(async () => {
@@ -82,7 +80,6 @@ onMounted(async () => {
 
   // Load sales with any filters
   await loadSales();
-  loadingSales.value = false;
 
   // Custom music discs (doesn't rely on shop data)
   if (props.itemType == "CUSTOM_MUSIC_DISC") customDiscs.value.push(...(await loadDiscs()));
@@ -108,16 +105,26 @@ onUpdated(() => {
   initFlowbite(); // Include on any component where you need flowbite JS functionality
 });
 
+const reloadSalesAndShops = debounce(async () => {
+  await loadSales();
+  applyFilters();
+}, 200);
+
 async function loadSales() {
+  filteredSales.value.splice(0);
+
   let salesFilters = {
     itemType: props.itemType,
+    customName: nameFilter.value,
     enchantment: enchantmentFilter.value,
     potionEffect: potionEffectFilter.value,
     customDisc: customDiscFilter.value,
   } as SalesAPI.SalesFilters;
 
   filteredSales.value = await SalesAPI.loadSales(salesFilters);
-}
+
+  loadingSales.value = false;
+};
 
 async function loadEnchantments(): Promise<DropdownOption[]> {
   // TODO: Cache
@@ -261,7 +268,9 @@ let filtersText = computed(() => {
         <span>for {{ villagerTrade.quantity }} {{ villagerTrade.itemType }}&nbsp;</span>
         <span>({{ villagerTrade.villager }} villager)</span>
       </p>
-      <p><RouterLink :to="{ name: 'villagerTrades' }" class="hyperlink">See all trades</RouterLink></p>
+      <p>
+        <RouterLink :to="{ name: 'villagerTrades' }" class="hyperlink">See all trades</RouterLink>
+      </p>
     </div>
 
     <!-- Latest sales -->
@@ -285,6 +294,8 @@ let filtersText = computed(() => {
           <DropdownFilter v-if="customDiscs.length > 0" :placeholder="'Custom Discs'" :icon="'fa-solid fa-record-vinyl'"
             :options="customDiscs" :single-selection="true" v-model="customDiscFilter">
           </DropdownFilter>
+
+          <SearchBox :placeholder="'Item Name'" v-model="nameFilter"></SearchBox>
         </div>
       </div>
 
