@@ -14,6 +14,7 @@ import DropdownFilter from "@/components/DropdownFilter.vue";
 import Checkbox from "@/components/Checkbox.vue";
 import { serverStore } from "@/store/server-state";
 import { formatNumber } from "@/utilities/number-format";
+import { setPageTitle } from "@/router/pageTitle";
 
 interface ArtistSummary {
   id: string;
@@ -70,6 +71,11 @@ watch(multiCanvasCheckFilter, async (_, __) => {
 // Startup
 onMounted(async () => {
   artistName.value = props.authorName;
+
+  if (artistName.value) {
+    setPageTitle(`${artistName.value} Art`);
+  }
+
   await loadArtists();
   await loadGallery();
 });
