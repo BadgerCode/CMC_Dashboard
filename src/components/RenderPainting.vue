@@ -4,13 +4,11 @@ import { Config } from "@/config";
 interface Props {
   paintingId: string;
 }
-defineProps<Props>();
+const props = defineProps<Props>();
 </script>
 
 <template>
-  <img
-    class="player-painting"
-    :src="`${Config.APIURL}/api/paintings/${paintingId}/render`"
+  <img class="player-painting" :src="`${Config.APIURL}/api/paintings/${paintingId}/render`"
     onerror="this.src='/missing-image.svg';this.title='Painting not found'" />
 </template>
 

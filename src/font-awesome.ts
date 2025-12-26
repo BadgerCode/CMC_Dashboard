@@ -1,8 +1,6 @@
 // Core libraries
 import { library } from "@fortawesome/fontawesome-svg-core";
 
-// Add icons
-
 // Solid icons
 import {
   faShop,
@@ -38,9 +36,17 @@ import {
   faCheck,
   faRotateLeft,
   faLinkSlash,
+  faHeart,
   // Don't forget to add it below too!
 } from "@fortawesome/free-solid-svg-icons";
 
+// Regular icons
+import {
+  faHeart as farHeart,
+  // Don't forget to add it below too!
+} from '@fortawesome/free-regular-svg-icons'
+
+// Add icons
 library.add(
   faShop,
   faGavel,
@@ -74,9 +80,7 @@ library.add(
   faArrowDown19,
   faPenToSquare,
   faRotateLeft,
-  faLinkSlash
+  faLinkSlash,
+  faHeart,
+  farHeart,
 );
-
-// Regular icons
-// import { farThumbsUp } from '@fortawesome/free-regular-svg-icons'
-// library.add(farThumbsUp);

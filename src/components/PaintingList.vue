@@ -5,6 +5,7 @@ import { onMounted, onUpdated, ref, watch } from "vue";
 import { Config } from "@/config";
 import MultiCanvasPaintingEditor, { type SavedMultiCanvasPainting } from "./MultiCanvasPaintingEditor.vue";
 import { initFlowbite } from "flowbite";
+import FavouritePainting from "./FavouritePainting.vue";
 
 interface Props {
   paintings: Painting[];
@@ -55,8 +56,8 @@ async function splitMultiPartPainting(painting: Painting) {
 
 <template>
   <div>
-    <div class="flex flex-row flex-wrap w-full gap-4 justify-center">
-      <div v-for="painting in paintings" class="flex justify-center items-center flex-col gap-2 mb-4">
+    <div class="flex flex-row flex-wrap w-full gap-6 justify-center">
+      <div v-for="painting in paintings" class="flex justify-center items-center flex-col gap-1 mb-4">
         <!-- Title -->
         <div class="w-full text-center pl-1">
           <div>
@@ -68,21 +69,20 @@ async function splitMultiPartPainting(painting: Painting) {
 
         <!-- Multi-canvas editor -->
         <div v-if="Config.FEATURE_MULTICANVAS_EDITOR" class="relative h-[256px] w-[256px]">
-          <input
-            type="checkbox"
-            name="painting-select"
-            :id="`painting-select-${painting.id}`"
-            :value="painting"
-            v-model="selectedPaintings"
-            class="hidden peer"
-            :disabled="painting.isMultiCanvas" />
-          <label
-            :for="`painting-select-${painting.id}`"
+          <!-- Hidden selection checkbox -->
+          <input type="checkbox" name="painting-select" :id="`painting-select-${painting.id}`" :value="painting"
+            v-model="selectedPaintings" class="hidden peer" :disabled="painting.isMultiCanvas" />
+
+          <!-- Selectable painting image -->
+          <label :for="`painting-select-${painting.id}`"
             class="h-[256px] w-[256px] inline-flex items-center justify-between p-2 text-body bg-neutral-primary-soft border-1 border-default rounded-base cursor-pointer peer-checked:hover:bg-brand-softer peer-checked:border-brand-subtle peer-checked:bg-brand-softer hover:bg-neutral-secondary-medium peer-checked:text-fg-brand-strong">
             <RenderPainting :painting-id="painting.id"></RenderPainting>
           </label>
 
+          <!-- Multi-canvas label  -->
           <div class="absolute left-0 bottom-0 bg-gray-950/60 text-xs" v-if="painting.isMultiCanvas">Multi-canvas</div>
+
+          <!-- Split multi-canvas -->
           <div class="absolute right-0 bottom-0 text-xs" v-if="painting.isMultiCanvas">
             <button type="button" class="button-icon-only" aria-label="Split" @click="splitMultiPartPainting(painting)">
               <span class="sr-only">Split</span>
@@ -92,35 +92,36 @@ async function splitMultiPartPainting(painting: Painting) {
         </div>
 
         <!-- Normal render -->
-        <div v-else class="h-[256px] w-[256px]">
+        <div v-else class="relative h-[256px] w-[256px]">
           <RenderPainting :painting-id="painting.id"></RenderPainting>
         </div>
 
         <!-- Artist -->
-        <div class="w-full text-center pl-1">
+        <div class="w-full flex flex-row justify-between items-center px-2">
           <div class="text-sm text-gray-300">
             <span>By </span>
             <RouterLink :to="{ name: 'gallery', params: { authorName: painting.authorName } }" class="hyperlink">
               {{ painting.authorName }}
             </RouterLink>
           </div>
+
+          <div class="text-s">
+            <FavouritePainting :painting-id="painting.id" :title="painting.title" :author="painting.authorName">
+            </FavouritePainting>
+          </div>
         </div>
       </div>
     </div>
 
     <!-- Multi canvas editor -->
-    <MultiCanvasPaintingEditor
-      v-if="Config.FEATURE_MULTICANVAS_EDITOR && selectedPaintings.length > 0"
+    <MultiCanvasPaintingEditor v-if="Config.FEATURE_MULTICANVAS_EDITOR && selectedPaintings.length > 0"
       :canvases="selectedPaintings"
-      @painting-created="(painting) => {savedMultiCanvasPaintings.push(painting); emit('reload'); selectedPaintings.splice(0);}"
-      @select-all="selectedPaintings = paintings.slice()"
-      @clear="selectedPaintings.splice(0)"
+      @painting-created="(painting) => { savedMultiCanvasPaintings.push(painting); emit('reload'); selectedPaintings.splice(0); }"
+      @select-all="selectedPaintings = paintings.slice()" @clear="selectedPaintings.splice(0)"
       @reload="$emit('reload')"></MultiCanvasPaintingEditor>
 
     <!-- Success toast -->
-    <div
-      v-for="painting in savedMultiCanvasPaintings"
-      :id="`toast-success-${painting.id}`"
+    <div v-for="painting in savedMultiCanvasPaintings" :id="`toast-success-${painting.id}`"
       class="flex justify-center items-center fixed z-100 bottom-5 right-5 p-3 text-body bg-neutral-primary-soft rounded-base shadow-xs border border-default gap-2"
       role="alert">
       <!-- Icon -->
@@ -135,7 +136,8 @@ async function splitMultiPartPainting(painting: Painting) {
       </div>
 
       <!-- Close -->
-      <button type="button" class="button-icon-only" aria-label="Close" :data-dismiss-target="`#toast-success-${painting.id}`">
+      <button type="button" class="button-icon-only" aria-label="Close"
+        :data-dismiss-target="`#toast-success-${painting.id}`">
         <span class="sr-only">Close</span>
         <font-awesome-icon icon="fa-solid fa-xmark" class="w-5 h-5" />
       </button>
