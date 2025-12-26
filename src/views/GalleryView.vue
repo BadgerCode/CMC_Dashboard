@@ -15,6 +15,7 @@ import Checkbox from "@/components/Checkbox.vue";
 import { serverStore } from "@/store/server-state";
 import { formatNumber } from "@/utilities/number-format";
 import { setPageTitle } from "@/router/pageTitle";
+import { favouritesStore } from "@/store/favourites-state";
 
 interface ArtistSummary {
   id: string;
@@ -68,6 +69,12 @@ watch(multiCanvasCheckFilter, async (_, __) => {
   loadGallery();
 });
 
+// Show favourites
+const showFavourites = ref(false);
+watch(showFavourites, async (_, __) => {
+  loadGallery();
+});
+
 // Startup
 onMounted(async () => {
   artistName.value = props.authorName;
@@ -98,16 +105,37 @@ const loadGallery = debounce(async () => {
 async function loadNextPage() {
   if (noMoreResults.value) return;
 
-  // Add last item for pagination
-  let filters = {
-    lastItem: paintings.value.slice(-1)[0],
-    authorName: artistName.value,
-    title: nameFilter.value,
-    size: sizeFilter.value,
-    onlyPossibleMultiCanvas: multiCanvasCheckFilter.value
-  } as PaintingsAPI.PaintingsFilter;
+  let responseItems = [] as Painting[];
+  if (showFavourites.value) {
+    let skipCount = paintings.value.length;
 
-  let responseItems = await PaintingsAPI.loadPaintings(filters);
+    for (let i = (favouritesStore.paintings.length - skipCount - 1); i >= 0; i--) {
+      const painting = favouritesStore.paintings[i]!;
+      // TODO: Load paintings from the API instead
+      responseItems.push({
+        id: painting.id,
+        title: painting.title,
+        authorName: painting.author,
+        createdAt: new Date(0).toISOString(),
+        firstSeenAt: new Date(0).toISOString(),
+        isMultiCanvas: false,
+        size: ""
+      });
+    }
+  }
+  else {
+    // Add last item for pagination
+    let filters = {
+      lastItem: paintings.value.slice(-1)[0],
+      authorName: artistName.value,
+      title: nameFilter.value,
+      size: sizeFilter.value,
+      onlyPossibleMultiCanvas: multiCanvasCheckFilter.value
+    } as PaintingsAPI.PaintingsFilter;
+
+    responseItems = await PaintingsAPI.loadPaintings(filters);
+  }
+
   paintings.value.push(...responseItems);
   noMoreResults.value = responseItems.length === 0;
   loading.value = false;
@@ -140,7 +168,11 @@ async function loadNextPage() {
       </DropdownFilter>
 
       <Checkbox v-if="Config.FEATURE_MULTICANVAS_EDITOR" :label="'Possible Multi-Canvas'"
-        v-model="multiCanvasCheckFilter"></Checkbox>
+        v-model="multiCanvasCheckFilter">
+      </Checkbox>
+
+      <Checkbox :label="'Favourites'" v-model="showFavourites">
+      </Checkbox>
     </div>
 
     <SearchBox :placeholder="'Painting Name'" v-model="nameFilter"></SearchBox>
