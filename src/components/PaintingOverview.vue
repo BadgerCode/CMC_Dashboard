@@ -8,6 +8,7 @@ import Loading from "./Loading.vue";
 import * as PaintingsAPI from "@/api/paintings/api";
 import { formatDate } from "@/utilities/date-format";
 import FavouritePainting from "./FavouritePainting.vue";
+import { Config } from "@/config";
 
 interface Props {
   paintingId: string;
@@ -61,7 +62,7 @@ onMounted(async () => {
           <!-- Buttons- favouriting -->
           <div class="text-s">
             <FavouritePainting :painting-id="paintingData.id" :title="paintingData.title"
-              :author="paintingData.authorName">
+              :author="paintingData.authorName" v-if="Config.FEATURE_FAVOURITE_PAINTINGS">
             </FavouritePainting>
           </div>
         </div>

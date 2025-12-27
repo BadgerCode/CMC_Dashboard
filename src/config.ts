@@ -3,4 +3,5 @@ export const Config = {
   MAX_CACHE_AGE_MINS: 10,
   FEATURE_MULTICANVAS_EDITOR: import.meta.env.VITE_FEATURE_MULTICANVAS_EDITOR == "true",
   MULTICANVAS_EDITOR_KEY: import.meta.env.VITE_MULTICANVAS_EDITOR_KEY as string | undefined,
+  FEATURE_FAVOURITE_PAINTINGS: import.meta.env.VITE_FEATURE_FAVOURITE_PAINTINGS == "true",
 };
