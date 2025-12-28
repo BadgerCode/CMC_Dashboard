@@ -43,7 +43,7 @@ const itemInfo = computed(() => {
 
 // Villager trade
 const villagerTrade = computed(() => {
-  let itemType = props.itemType.replace("_", " ").toLocaleLowerCase();
+  let itemType = props.itemType.replace(/_/g, " ").toLocaleLowerCase();
   return itemsStore.villagerTrades.find(t => t.itemType?.toLocaleLowerCase() == itemType);
 });
 

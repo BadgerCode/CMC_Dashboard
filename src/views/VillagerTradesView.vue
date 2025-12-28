@@ -53,7 +53,7 @@ const trades = computed(() =>
         <tr v-for="trade in trades" class="stripped-row">
           <td class="table-item">
             <RouterLink
-              :to="{ name: 'itemSales', params: { itemType: trade.itemType.replace(' ', '_').toLocaleUpperCase() } }"
+              :to="{ name: 'itemSales', params: { itemType: trade.itemType.replace(/ /g, '_').toLocaleUpperCase() } }"
               class="hyperlink">
               {{ trade.itemType }}
             </RouterLink>
