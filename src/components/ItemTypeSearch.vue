@@ -4,6 +4,7 @@ import { onMounted, ref } from "vue";
 import { debounce } from "lodash";
 import { Config } from "@/config";
 import SearchBox from "./SearchBox.vue";
+import { formatItemType } from "@/utilities/item-type-format";
 
 // TODO: Replace with SearchWithResults
 
@@ -43,6 +44,9 @@ const filter = debounce(async () => {
 
   // If item types haven't been passed in, get them via the API
   const params = new URLSearchParams();
+
+  // Allow using spaces instead of underscores
+  input = input.replace(/ /g, "_");
 
   params.append("itemType", input);
 
@@ -95,8 +99,8 @@ function makeSelection(item: string | null) {
           class="max-h-48 p-3 overflow-y-auto text-sm text-gray-200 bg-gray-700 rounded-lg shadow-sm border border-gray-800"
           aria-labelledby="itemTypeSearchButton">
           <li v-for="itemType in filteredItemTypes" class="hyperlink" @click="makeSelection(itemType)">
-            <div tabindex="0" class="flex items-center px-4 py-2 ps-2 rounded-sm hover:bg-gray-600 text-gray-300 text-sm font-medium">
-              {{ itemType }}
+            <div tabindex="0" class="flex items-center px-4 py-2 ps-2 rounded-sm hover:bg-gray-600 text-gray-300 text-sm font-medium capitalize">
+              {{ formatItemType(itemType).toLocaleLowerCase() }}
             </div>
           </li>
         </ul>
