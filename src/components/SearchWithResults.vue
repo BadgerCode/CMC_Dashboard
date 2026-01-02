@@ -9,6 +9,7 @@ interface Props {
   placeholder: string;
   items: DropdownOption[];
   icon?: string;
+  disabled?: boolean;
 }
 const props = defineProps<Props>();
 
@@ -67,7 +68,7 @@ function makeSelection(item: DropdownOption | null) {
           }
         "
         @clear="makeSelection(null)"
-        :disabled="selection != null">
+        :disabled="selection != null || disabled">
       </SearchBox>
 
       <!-- Dropdown menu -->
