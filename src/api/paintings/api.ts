@@ -9,6 +9,7 @@ export interface PaintingsFilter {
   title?: string;
   size?: string;
   onlyPossibleMultiCanvas?: boolean;
+  ids?: string[];
 }
 
 export async function loadPaintings(filters: PaintingsFilter): Promise<Painting[]> {
@@ -25,6 +26,11 @@ export async function loadPaintings(filters: PaintingsFilter): Promise<Painting[
   if (filters.title) params.append("title", filters.title);
   if (filters.size) params.append("size", filters.size);
   if (filters.onlyPossibleMultiCanvas) params.append("possibleMultiCanvas", "true");
+  if (filters.ids) {
+    for (const id of filters.ids) {
+      params.append("paintingId", id);
+    }
+  }
 
   // Send request
   let url = `${Config.APIURL}/api/paintings?${params.toString()}`;

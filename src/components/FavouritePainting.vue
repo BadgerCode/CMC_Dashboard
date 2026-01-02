@@ -18,8 +18,6 @@ function toggleFavourite() {
   else {
     favouritesStore.addPainting({
       id: props.paintingId,
-      author: props.author,
-      title: props.title,
       favouritedAt: new Date().toISOString()
     });
   }

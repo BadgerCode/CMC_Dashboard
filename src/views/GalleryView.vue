@@ -105,36 +105,28 @@ const loadGallery = debounce(async () => {
 async function loadNextPage() {
   if (noMoreResults.value) return;
 
-  let responseItems = [] as Painting[];
+  // Filter to favourites
+  let paintingIdFilter: string[] = [];
   if (showFavourites.value) {
     let skipCount = paintings.value.length;
 
-    for (let i = (favouritesStore.paintings.length - skipCount - 1); i >= 0; i--) {
+    for (let i = favouritesStore.paintings.length - skipCount - 1; i >= 0; i--) {
       const painting = favouritesStore.paintings[i]!;
-      // TODO: Load paintings from the API instead
-      responseItems.push({
-        id: painting.id,
-        title: painting.title,
-        authorName: painting.author,
-        createdAt: new Date(0).toISOString(),
-        firstSeenAt: new Date(0).toISOString(),
-        isMultiCanvas: false,
-        size: ""
-      });
+      paintingIdFilter.push(painting.id);
     }
   }
-  else {
-    // Add last item for pagination
-    let filters = {
-      lastItem: paintings.value.slice(-1)[0],
-      authorName: artistName.value,
-      title: nameFilter.value,
-      size: sizeFilter.value,
-      onlyPossibleMultiCanvas: multiCanvasCheckFilter.value
-    } as PaintingsAPI.PaintingsFilter;
 
-    responseItems = await PaintingsAPI.loadPaintings(filters);
-  }
+  // Apply filters
+  let filters = {
+    lastItem: paintings.value.slice(-1)[0], // Used for pagination
+    authorName: artistName.value,
+    title: nameFilter.value,
+    size: sizeFilter.value,
+    onlyPossibleMultiCanvas: multiCanvasCheckFilter.value,
+    ids: paintingIdFilter,
+  } as PaintingsAPI.PaintingsFilter;
+
+  let responseItems = await PaintingsAPI.loadPaintings(filters);
 
   paintings.value.push(...responseItems);
   noMoreResults.value = responseItems.length === 0;
@@ -161,18 +153,19 @@ async function loadNextPage() {
   <!-- Filter controls -->
   <div class="flex flex-col md:flex-row flex-wrap space-y-2 items-start justify-between">
     <div class="flex flex-row flex-wrap flex-1 gap-2">
-      <SearchWithResults v-if="!props.authorName" :items="artists" :placeholder="'Artist'" :icon="'fa-solid fa-user'"
-        @selection="(item) => (artistName = item?.text ?? '')" @clear="() => (artistName = '')"></SearchWithResults>
+      <SearchWithResults
+        v-if="!props.authorName"
+        :items="artists"
+        :placeholder="'Artist'"
+        :icon="'fa-solid fa-user'"
+        @selection="(item) => (artistName = item?.text ?? '')"
+        @clear="() => (artistName = '')"></SearchWithResults>
 
-      <DropdownFilter :placeholder="'Size'" :options="sizeOptions" :single-selection="true" v-model="sizeFilter">
-      </DropdownFilter>
+      <DropdownFilter :placeholder="'Size'" :options="sizeOptions" :single-selection="true" v-model="sizeFilter"> </DropdownFilter>
 
-      <Checkbox v-if="Config.FEATURE_MULTICANVAS_EDITOR" :label="'Possible Multi-Canvas'"
-        v-model="multiCanvasCheckFilter">
-      </Checkbox>
+      <Checkbox v-if="Config.FEATURE_MULTICANVAS_EDITOR" :label="'Possible Multi-Canvas'" v-model="multiCanvasCheckFilter"> </Checkbox>
 
-      <Checkbox :label="'Favourites'" v-model="showFavourites">
-      </Checkbox>
+      <Checkbox :label="'Favourites'" v-model="showFavourites"> </Checkbox>
     </div>
 
     <SearchBox :placeholder="'Painting Name'" v-model="nameFilter"></SearchBox>
@@ -180,9 +173,7 @@ async function loadNextPage() {
 
   <!-- Stats -->
   <div>
-    <p v-if="serverStore.loaded && !props.authorName" class="hint-text">
-      {{ formatNumber(serverStore.numPaintings, 0) }} total paintings
-    </p>
+    <p v-if="serverStore.loaded && !props.authorName" class="hint-text">{{ formatNumber(serverStore.numPaintings, 0) }} total paintings</p>
   </div>
 
   <!-- Paintings list -->

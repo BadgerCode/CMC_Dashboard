@@ -2,8 +2,6 @@ import { reactive } from "vue";
 
 export interface FavouritePainting {
   id: string;
-  title: string;
-  author: string;
   favouritedAt: string;
 }
 
