@@ -7,7 +7,7 @@ import * as PaintingsAPI from "@/api/paintings/api";
 import SearchWithResults from "@/components/SearchWithResults.vue";
 import { Config } from "@/config";
 import type { DropdownOption } from "@/components/DropdownFilter.vue";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import SearchBox from "@/components/SearchBox.vue";
 import { debounce } from "lodash";
 import DropdownFilter from "@/components/DropdownFilter.vue";
@@ -29,6 +29,7 @@ interface Props {
 }
 const props = defineProps<Props>();
 const router = useRouter();
+const route = useRoute();
 
 // page properties
 const loading = ref(true);
@@ -69,11 +70,9 @@ watch(multiCanvasCheckFilter, async (_, __) => {
   loadGallery();
 });
 
-// Show favourites
-const showFavourites = ref(false);
-watch(showFavourites, async (_, __) => {
-  loadGallery();
-});
+// Favourites
+const favouritesLoaded = ref(0);
+const showFavourites = ref((route.query["favourites"]?.toString()?.toLocaleLowerCase() ?? "") == "true");
 
 // Startup
 onMounted(async () => {
@@ -99,22 +98,12 @@ const loadGallery = debounce(async () => {
   loading.value = true;
   paintings.value.splice(0);
   noMoreResults.value = false;
+  favouritesLoaded.value = 0;
   await loadNextPage();
 }, 350);
 
 async function loadNextPage() {
   if (noMoreResults.value) return;
-
-  // Filter to favourites
-  let paintingIdFilter: string[] = [];
-  if (showFavourites.value) {
-    let skipCount = paintings.value.length;
-
-    for (let i = favouritesStore.paintings.length - skipCount - 1; i >= 0; i--) {
-      const painting = favouritesStore.paintings[i]!;
-      paintingIdFilter.push(painting.id);
-    }
-  }
 
   // Apply filters
   let filters = {
@@ -123,8 +112,36 @@ async function loadNextPage() {
     title: nameFilter.value,
     size: sizeFilter.value,
     onlyPossibleMultiCanvas: multiCanvasCheckFilter.value,
-    ids: paintingIdFilter,
   } as PaintingsAPI.PaintingsFilter;
+
+  // Filter to favourites
+  let paintingIdFilter: string[] = [];
+  if (showFavourites.value) {
+    // Work out the next page of IDs
+    let startIndex = favouritesStore.paintings.length - favouritesLoaded.value - 1;
+    let endIndex = Math.max(0, startIndex - 20);
+
+    for (let i = startIndex; i > endIndex; i--) {
+      const painting = favouritesStore.paintings[i]!;
+      paintingIdFilter.push(painting.id);
+
+      // Track our position in favourites
+      favouritesLoaded.value++;
+    }
+
+    filters = {
+      lastItem: paintings.value.slice(-1)[0], // Used for pagination
+      ids: paintingIdFilter,
+      // Other filters not currently supported
+    };
+
+    // No more favourites to load
+    if (paintingIdFilter.length === 0) {
+      noMoreResults.value = true;
+      loading.value = false;
+      return;
+    }
+  }
 
   let responseItems = await PaintingsAPI.loadPaintings(filters);
 
@@ -135,23 +152,27 @@ async function loadNextPage() {
 </script>
 
 <template>
-  <div class="flex flex-col sm:flex-row justify-between mb-2 gap-2">
-    <div>
-      <RouterLink v-if="props.authorName" :to="{ name: 'gallery' }" class="hyperlink">Back to all paintings</RouterLink>
+  <div class="flex flex-col mb-2 gap-2">
+    <div v-if="props.authorName || showFavourites">
+      <RouterLink :to="{ name: 'gallery' }" class="hyperlink">Back to all paintings</RouterLink>
+    </div>
+    <div v-else class="text-right">
+      <RouterLink :to="{ name: 'gallery', query: { favourites: 'true' } }" class="hyperlink">My Favourites</RouterLink>
     </div>
   </div>
 
   <!-- Heading -->
-  <div class="mb-8">
-    <h1 class="text-3xl font-bold" v-if="!props.authorName">Recently Created</h1>
-    <h1 class="text-3xl font-bold" v-else>{{ props.authorName }}'s Artwork</h1>
+  <div class="mb-4">
+    <h1 class="text-3xl font-bold" v-if="props.authorName">{{ props.authorName }}'s Artwork</h1>
+    <h1 class="text-3xl font-bold" v-if="showFavourites">My Favourites</h1>
+    <h1 class="text-3xl font-bold" v-else>Recently Created</h1>
 
-    <p class="text-gray-300" v-if="!props.authorName">Paintings created by the players of the server</p>
-    <p class="hint-text mt-2">Note: Only paintings sold through shops or auctions since Oct 25th will be shown.</p>
+    <p class="text-gray-300" v-if="!props.authorName && !showFavourites">Paintings created by the players of the server</p>
+    <p class="hint-text mt-2" v-if="!showFavourites">Note: Only paintings sold through shops or auctions since Oct 25th will be shown.</p>
   </div>
 
   <!-- Filter controls -->
-  <div class="flex flex-col md:flex-row flex-wrap space-y-2 items-start justify-between">
+  <div class="flex flex-col md:flex-row flex-wrap space-y-2 items-start justify-between" v-if="!showFavourites">
     <div class="flex flex-row flex-wrap flex-1 gap-2">
       <SearchWithResults
         v-if="!props.authorName"
@@ -163,17 +184,16 @@ async function loadNextPage() {
 
       <DropdownFilter :placeholder="'Size'" :options="sizeOptions" :single-selection="true" v-model="sizeFilter"> </DropdownFilter>
 
-      <Checkbox v-if="Config.FEATURE_MULTICANVAS_EDITOR" :label="'Possible Multi-Canvas'" v-model="multiCanvasCheckFilter"> </Checkbox>
-
-      <Checkbox :label="'Favourites'" v-model="showFavourites"> </Checkbox>
+      <Checkbox v-if="Config.FEATURE_MULTICANVAS_EDITOR" :label="'Possible Multi-Canvas'" v-model="multiCanvasCheckFilter"></Checkbox>
     </div>
 
     <SearchBox :placeholder="'Painting Name'" v-model="nameFilter"></SearchBox>
   </div>
 
   <!-- Stats -->
-  <div>
-    <p v-if="serverStore.loaded && !props.authorName" class="hint-text">{{ formatNumber(serverStore.numPaintings, 0) }} total paintings</p>
+  <div class="hint-text">
+    <p v-if="showFavourites">{{ favouritesStore.paintings.length }} paintings</p>
+    <p v-else-if="serverStore.loaded && !props.authorName">{{ formatNumber(serverStore.numPaintings, 0) }} total paintings</p>
   </div>
 
   <!-- Paintings list -->
@@ -184,7 +204,10 @@ async function loadNextPage() {
 
     <div class="mt-8 text-center" v-if="!loading">
       <button type="button" class="button" v-on:click="loadNextPage" v-if="!noMoreResults">More</button>
-      <div v-else>No more results</div>
+      <div v-else>
+        <p v-if="showFavourites && paintings.length == 0">You have no favourites! Go ❤ some paintings first</p>
+        <p v-else>No more results</p>
+      </div>
     </div>
   </div>
 </template>
