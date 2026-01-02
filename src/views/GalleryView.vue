@@ -116,12 +116,12 @@ async function loadNextPage() {
   } as PaintingsAPI.PaintingsFilter;
 
   // Filter to favourites
+  let paintingIdFilter: string[] = [];
   if (showFavourites.value) {
     // Work out the next page of IDs
     let startIndex = favouritesStore.paintings.length - favouritesLoaded.value - 1;
     let endIndex = Math.max(0, startIndex - pageSize + 1);
 
-    let paintingIdFilter: string[] = [];
     for (let i = startIndex; i >= endIndex; i--) {
       const painting = favouritesStore.paintings[i]!;
       paintingIdFilter.push(painting.id);
@@ -144,6 +144,11 @@ async function loadNextPage() {
   }
 
   let responseItems = await PaintingsAPI.loadPaintings(filters);
+
+  // Order favourite paintings by favourite date
+  if (showFavourites.value) {
+    responseItems.sort((a, b) => paintingIdFilter.indexOf(a.id) - paintingIdFilter.indexOf(b.id));
+  }
 
   paintings.value.push(...responseItems);
   noMoreResults.value = responseItems.length === 0;
