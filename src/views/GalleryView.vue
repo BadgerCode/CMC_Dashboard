@@ -32,6 +32,7 @@ const router = useRouter();
 const route = useRoute();
 
 // page properties
+const pageSize = 20;
 const loading = ref(true);
 const paintings = ref([] as Painting[]);
 const noMoreResults = ref(false);
@@ -115,13 +116,13 @@ async function loadNextPage() {
   } as PaintingsAPI.PaintingsFilter;
 
   // Filter to favourites
-  let paintingIdFilter: string[] = [];
   if (showFavourites.value) {
     // Work out the next page of IDs
     let startIndex = favouritesStore.paintings.length - favouritesLoaded.value - 1;
-    let endIndex = Math.max(0, startIndex - 20);
+    let endIndex = Math.max(0, startIndex - pageSize + 1);
 
-    for (let i = startIndex; i > endIndex; i--) {
+    let paintingIdFilter: string[] = [];
+    for (let i = startIndex; i >= endIndex; i--) {
       const painting = favouritesStore.paintings[i]!;
       paintingIdFilter.push(painting.id);
 
@@ -130,7 +131,6 @@ async function loadNextPage() {
     }
 
     filters = {
-      lastItem: paintings.value.slice(-1)[0], // Used for pagination
       ids: paintingIdFilter,
       // Other filters not currently supported
     };
@@ -169,7 +169,9 @@ async function loadNextPage() {
       <p class="hint-text mt-2" v-if="!showFavourites">Note: Only paintings sold through shops or auctions since Oct 25th will be shown.</p>
     </div>
     <div>
-      <RouterLink v-if="!showFavourites" :to="{ name: 'gallery', query: { favourites: 'true' } }" class="hyperlink">My Favourites</RouterLink>
+      <RouterLink v-if="!showFavourites" :to="{ name: 'gallery', query: { favourites: 'true' } }" class="hyperlink"
+        >My Favourites</RouterLink
+      >
     </div>
   </div>
 
