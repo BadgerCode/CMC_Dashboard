@@ -156,19 +156,21 @@ async function loadNextPage() {
     <div v-if="props.authorName || showFavourites">
       <RouterLink :to="{ name: 'gallery' }" class="hyperlink">Back to all paintings</RouterLink>
     </div>
-    <div v-else class="text-right">
-      <RouterLink :to="{ name: 'gallery', query: { favourites: 'true' } }" class="hyperlink">My Favourites</RouterLink>
-    </div>
   </div>
 
   <!-- Heading -->
-  <div class="mb-4">
-    <h1 class="text-3xl font-bold" v-if="props.authorName">{{ props.authorName }}'s Artwork</h1>
-    <h1 class="text-3xl font-bold" v-if="showFavourites">My Favourites</h1>
-    <h1 class="text-3xl font-bold" v-else>Recently Created</h1>
+  <div class="flex flex-col md:flex-row flex-wrap space-y-2 items-start justify-between mb-4">
+    <div>
+      <h1 class="text-3xl font-bold" v-if="props.authorName">{{ props.authorName }}'s Artwork</h1>
+      <h1 class="text-3xl font-bold" v-if="showFavourites">My Favourites</h1>
+      <h1 class="text-3xl font-bold" v-else>Recently Created</h1>
 
-    <p class="text-gray-300" v-if="!props.authorName && !showFavourites">Paintings created by the players of the server</p>
-    <p class="hint-text mt-2" v-if="!showFavourites">Note: Only paintings sold through shops or auctions since Oct 25th will be shown.</p>
+      <p class="text-gray-300" v-if="!props.authorName && !showFavourites">Paintings created by the players of the server</p>
+      <p class="hint-text mt-2" v-if="!showFavourites">Note: Only paintings sold through shops or auctions since Oct 25th will be shown.</p>
+    </div>
+    <div>
+      <RouterLink v-if="!showFavourites" :to="{ name: 'gallery', query: { favourites: 'true' } }" class="hyperlink">My Favourites</RouterLink>
+    </div>
   </div>
 
   <!-- Filter controls -->

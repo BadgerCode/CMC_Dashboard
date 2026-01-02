@@ -106,7 +106,7 @@ async function splitMultiPartPainting(painting: Painting) {
           </div>
 
           <div class="text-s">
-            <FavouritePainting :painting-id="painting.id" :title="painting.title" :author="painting.authorName" v-if="Config.FEATURE_FAVOURITE_PAINTINGS">
+            <FavouritePainting :painting-id="painting.id" :title="painting.title" :author="painting.authorName">
             </FavouritePainting>
           </div>
         </div>

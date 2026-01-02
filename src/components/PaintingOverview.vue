@@ -61,8 +61,7 @@ onMounted(async () => {
 
           <!-- Buttons- favouriting -->
           <div class="text-s">
-            <FavouritePainting :painting-id="paintingData.id" :title="paintingData.title"
-              :author="paintingData.authorName" v-if="Config.FEATURE_FAVOURITE_PAINTINGS">
+            <FavouritePainting :painting-id="paintingData.id" :title="paintingData.title" :author="paintingData.authorName">
             </FavouritePainting>
           </div>
         </div>
@@ -80,8 +79,7 @@ onMounted(async () => {
         <div v-else-if="paintingData.collectionId" class="px-2 py-2 border-t border-gray-600 text-sm">
           <div>This painting is is part of a multi-canvas image.</div>
           <div>
-            <RouterLink :to="{ name: 'painting', params: { id: paintingData.collectionId } }" class="hyperlink">See here
-            </RouterLink>
+            <RouterLink :to="{ name: 'painting', params: { id: paintingData.collectionId } }" class="hyperlink">See here </RouterLink>
           </div>
         </div>
       </div>
