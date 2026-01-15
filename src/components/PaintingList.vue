@@ -56,8 +56,8 @@ async function splitMultiPartPainting(painting: Painting) {
 
 <template>
   <div>
-    <div class="flex flex-row flex-wrap w-full gap-6 justify-center">
-      <div v-for="painting in paintings" class="flex justify-center items-center flex-col gap-1 mb-4">
+    <div class="flex flex-row flex-wrap w-full gap-6 justify-center items-end">
+      <div v-for="painting in paintings" class="flex justify-center items-center flex-col gap-1 mb-4 w-[256px]">
         <!-- Title -->
         <div class="w-full text-center pl-1">
           <div>
