@@ -42,9 +42,9 @@ const itemInfo = computed(() => {
 });
 
 // Villager trade
-const villagerTrade = computed(() => {
+const villagerTrades = computed(() => {
   let itemType = props.itemType.replace(/_/g, " ").toLocaleLowerCase();
-  return itemsStore.villagerTrades.find(t => t.itemType?.toLocaleLowerCase() == itemType);
+  return itemsStore.villagerTrades.filter((t) => t.itemType?.toLocaleLowerCase() == itemType);
 });
 
 // Specific item type data
@@ -128,7 +128,7 @@ async function loadSales() {
   filteredSales.value = await SalesAPI.loadSales(salesFilters);
 
   loadingSales.value = false;
-};
+}
 
 async function loadEnchantments(): Promise<DropdownOption[]> {
   // TODO: Cache
@@ -144,10 +144,10 @@ async function loadEnchantments(): Promise<DropdownOption[]> {
   return uniqueItems
     .map(
       (i: string) =>
-      ({
-        text: formatEnchantment(i),
-        value: i,
-      } as DropdownOption)
+        ({
+          text: formatEnchantment(i),
+          value: i,
+        } as DropdownOption)
     )
     .sort((a, b) => a.text.localeCompare(b.text));
 }
@@ -174,10 +174,10 @@ async function loadPotions(): Promise<DropdownOption[]> {
   return uniqueItems
     .map(
       (i: string) =>
-      ({
-        text: formatPotionEffect(i),
-        value: i,
-      } as DropdownOption)
+        ({
+          text: formatPotionEffect(i),
+          value: i,
+        } as DropdownOption)
     )
     .sort((a, b) => a.text.localeCompare(b.text));
 }
@@ -233,48 +233,64 @@ let filtersText = computed(() => {
 
   return filters.join(",");
 });
+
+function getWikiLink() {
+  let formattedType = props.itemType.toLocaleLowerCase();
+  let frags = formattedType.split("_");
+  for (let i = 0; i < frags.length; i++) {
+    frags[i] = frags[i]!.charAt(0).toUpperCase() + frags[i]!.slice(1);
+  }
+
+  return `https://minecraft.wiki/w/${frags.join("_")}`;
+}
 </script>
 
 <template>
   <div class="flex flex-col gap-8">
     <div class="mb-2 flex flex-col gap-4">
       <div class="flex flex-row items-center justify-center">
-        <ItemTypeSearch @selection="
-          (itemType) => {
-            if (itemType) $router.push({ name: 'itemSales', params: { itemType: itemType } });
-          }
-        ">
+        <ItemTypeSearch
+          @selection="
+            (itemType) => {
+              if (itemType) $router.push({ name: 'itemSales', params: { itemType: itemType } });
+            }
+          ">
         </ItemTypeSearch>
       </div>
     </div>
 
-    <div class="flex flex-row justify-between items-end">
-      <div>
+    <!-- Item info -->
+    <div class="flex flex-col gap-4">
+      <div class="flex flex-col">
         <!-- Item type and description -->
         <h1 class="text-3xl font-bold capitalize">{{ formatItemType(itemType)?.toLocaleLowerCase() }}</h1>
         <p class="text-gray-300" v-if="itemInfo?.description">{{ itemInfo.description }}</p>
 
         <!-- Specific item type info -->
-        <p class="text-gray-300" v-if="numUndiscoveredMusicDiscs > 0">{{ numUndiscoveredMusicDiscs }} custom discs have
-          not been sold yet (possibly undiscovered).</p>
+        <p class="text-gray-300" v-if="numUndiscoveredMusicDiscs > 0">
+          {{ numUndiscoveredMusicDiscs }} custom discs have not been sold yet (possibly undiscovered).
+        </p>
 
         <!-- More info -->
         <p class="text-xs" v-if="itemInfo?.moreInfoLink">
           <a :href="itemInfo.moreInfoLink" class="hyperlink" target="_blank">More info</a>
         </p>
+        <p class="text-xs" v-else>
+          <a :href="getWikiLink()" class="hyperlink" target="_blank">Minecraft Wiki</a>
+        </p>
       </div>
-    </div>
 
-    <div v-if="villagerTrade != null">
-      <h2 class="text-2xl font-bold">Villager Trade</h2>
-      <p class="text-gray-300">
-        <span>{{ villagerTrade.price }} {{ villagerTrade.currency }}&nbsp;</span>
-        <span>for {{ villagerTrade.quantity }} {{ villagerTrade.itemType }}&nbsp;</span>
-        <span>({{ villagerTrade.villager }} villager)</span>
-      </p>
-      <p>
-        <RouterLink :to="{ name: 'villagerTrades' }" class="hyperlink">See all trades</RouterLink>
-      </p>
+      <!-- Villager trades -->
+      <div class="flex flex-col" v-if="villagerTrades.length > 0">
+        <h2 class="text-xl font-bold capitalize">Villager Trade</h2>
+        <p class="text-gray-300" v-for="villagerTrade in villagerTrades">
+          {{ villagerTrade.villager }}: {{ villagerTrade.price }} {{ villagerTrade.currency }} for {{ villagerTrade.quantity }}
+          {{ villagerTrade.itemType }} {{ villagerTrade.extraInfo ? `(${villagerTrade.extraInfo})` : "" }}
+        </p>
+        <p class="text-gray-300 text-xs">
+          <RouterLink :to="{ name: 'villagerTrades' }" class="hyperlink">All trades</RouterLink>
+        </p>
+      </div>
     </div>
 
     <!-- Latest sales -->
@@ -286,17 +302,31 @@ let filtersText = computed(() => {
         </div>
 
         <div class="flex flex-row flex-wrap gap-1 items-end">
-          <DropdownFilter v-if="enchantments.length > 0" :placeholder="'Enchantments'"
-            :icon="'fa-solid fa-wand-sparkles'" :options="enchantments" :single-selection="true"
+          <DropdownFilter
+            v-if="enchantments.length > 0"
+            :placeholder="'Enchantments'"
+            :icon="'fa-solid fa-wand-sparkles'"
+            :options="enchantments"
+            :single-selection="true"
             v-model="enchantmentFilter">
           </DropdownFilter>
 
-          <DropdownFilter v-if="potionEffects.length > 0" :placeholder="'Potion Effect'" :icon="'fa-solid fa-flask'"
-            :options="potionEffects" :single-selection="true" v-model="potionEffectFilter">
+          <DropdownFilter
+            v-if="potionEffects.length > 0"
+            :placeholder="'Potion Effect'"
+            :icon="'fa-solid fa-flask'"
+            :options="potionEffects"
+            :single-selection="true"
+            v-model="potionEffectFilter">
           </DropdownFilter>
 
-          <DropdownFilter v-if="customDiscs.length > 0" :placeholder="'Custom Discs'" :icon="'fa-solid fa-record-vinyl'"
-            :options="customDiscs" :single-selection="true" v-model="customDiscFilter">
+          <DropdownFilter
+            v-if="customDiscs.length > 0"
+            :placeholder="'Custom Discs'"
+            :icon="'fa-solid fa-record-vinyl'"
+            :options="customDiscs"
+            :single-selection="true"
+            v-model="customDiscFilter">
           </DropdownFilter>
 
           <SearchBox :placeholder="'Item Name'" v-model="nameFilter"></SearchBox>
@@ -321,24 +351,39 @@ let filtersText = computed(() => {
         </div>
 
         <div class="flex flex-row flex-wrap gap-1 items-end">
-          <DropdownFilter v-if="enchantments.length > 0" :placeholder="'Enchantments'"
-            :icon="'fa-solid fa-wand-sparkles'" :options="enchantments" :single-selection="true"
+          <DropdownFilter
+            v-if="enchantments.length > 0"
+            :placeholder="'Enchantments'"
+            :icon="'fa-solid fa-wand-sparkles'"
+            :options="enchantments"
+            :single-selection="true"
             v-model="enchantmentFilter">
           </DropdownFilter>
 
-          <DropdownFilter v-if="potionEffects.length > 0" :placeholder="'Potion Effect'" :icon="'fa-solid fa-flask'"
-            :options="potionEffects" :single-selection="true" v-model="potionEffectFilter">
+          <DropdownFilter
+            v-if="potionEffects.length > 0"
+            :placeholder="'Potion Effect'"
+            :icon="'fa-solid fa-flask'"
+            :options="potionEffects"
+            :single-selection="true"
+            v-model="potionEffectFilter">
           </DropdownFilter>
 
-          <DropdownFilter v-if="customDiscs.length > 0" :placeholder="'Custom Discs'" :icon="'fa-solid fa-record-vinyl'"
-            :options="customDiscs" :single-selection="true" v-model="customDiscFilter">
+          <DropdownFilter
+            v-if="customDiscs.length > 0"
+            :placeholder="'Custom Discs'"
+            :icon="'fa-solid fa-record-vinyl'"
+            :options="customDiscs"
+            :single-selection="true"
+            v-model="customDiscFilter">
           </DropdownFilter>
 
           <SearchBox :placeholder="'Item Name'" v-model="nameFilter"></SearchBox>
         </div>
       </div>
 
-      <div v-if="itemInfo?.shopCaveats"
+      <div
+        v-if="itemInfo?.shopCaveats"
         class="p-4 mb-4 text-sm text-yellow-800 rounded-lg bg-yellow-50 dark:bg-gray-800 dark:text-yellow-300"
         role="alert">
         {{ itemInfo.shopCaveats }}

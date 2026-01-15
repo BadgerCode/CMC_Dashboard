@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import SearchBox from '@/components/SearchBox.vue';
-import { itemsStore } from '@/store/items-state';
-import { formatDate } from '@/utilities/date-format';
-import { computed, ref } from 'vue';
+import SearchBox from "@/components/SearchBox.vue";
+import { itemsStore } from "@/store/items-state";
+import { formatDate } from "@/utilities/date-format";
+import { computed, ref } from "vue";
 
 const itemTypeFilter = ref("");
 
 const trades = computed(() =>
   itemsStore.villagerTrades
-    .filter(i => i.itemType.toLocaleLowerCase().includes(itemTypeFilter.value))
+    .filter((i) => i.itemType.toLocaleLowerCase().includes(itemTypeFilter.value))
     .sort((a, b) => a.itemType.localeCompare(b.itemType))
 );
 </script>
@@ -20,8 +20,7 @@ const trades = computed(() =>
         <h1 class="text-3xl font-bold">Villager Trades</h1>
         <p class="text-gray-300">Items that can be bought from the updated villagers.</p>
         <p>
-          <a href="https://docs.callmecarson.live/books/smp-online/page/rebalanced-villager-trading" target="_blank"
-            class="hyperlink">
+          <a href="https://docs.callmecarson.live/books/smp-online/page/rebalanced-villager-trading" target="_blank" class="hyperlink">
             More info
           </a>
         </p>
@@ -57,6 +56,8 @@ const trades = computed(() =>
               class="hyperlink">
               {{ trade.itemType }}
             </RouterLink>
+
+            {{ trade.extraInfo ? `(${trade.extraInfo})` : "" }}
           </td>
           <td class="table-item">{{ trade.quantity }}</td>
           <td class="table-item">{{ trade.price }} {{ trade.currency }}</td>

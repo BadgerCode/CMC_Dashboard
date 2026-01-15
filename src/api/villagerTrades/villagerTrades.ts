@@ -5,6 +5,7 @@ export interface VillagerTradesResponse {
 
 export interface VillagerTrade {
   itemType: string;
+  extraInfo: string;
   quantity: number;
   price: number;
   currency: string;
