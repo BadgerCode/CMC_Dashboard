@@ -19,7 +19,7 @@ const trades = computed(() =>
       <div class="pb-4">
         <h1 class="text-3xl font-bold">Villager Trades</h1>
         <p class="text-gray-300">Items that can be bought from the updated villagers.</p>
-        <p>
+        <p class="text-xs">
           <a href="https://docs.callmecarson.live/books/smp-online/page/rebalanced-villager-trading" target="_blank" class="hyperlink">
             More info
           </a>
