@@ -33,7 +33,7 @@ const route = useRoute();
 
 // page properties
 const pageSize = 20;
-const loading = ref(true);
+const loading = ref(false);
 const paintings = ref([] as Painting[]);
 const noMoreResults = ref(false);
 
@@ -95,8 +95,12 @@ async function loadArtists() {
   artists.value = response.items.map((i: ArtistSummary) => ({ text: i.name, value: `${i.name}-${i.id}` } as DropdownOption));
 }
 
+let cancellationSource = new AbortController();
 const loadGallery = debounce(async () => {
-  loading.value = true;
+  // Cancel any in flight requests
+  cancellationSource.abort();
+  cancellationSource = new AbortController();
+
   paintings.value.splice(0);
   noMoreResults.value = false;
   favouritesLoaded.value = 0;
@@ -105,6 +109,9 @@ const loadGallery = debounce(async () => {
 
 async function loadNextPage() {
   if (noMoreResults.value) return;
+  if (loading.value) return;
+
+  loading.value = true;
 
   // Apply filters
   let filters = {
@@ -143,15 +150,20 @@ async function loadNextPage() {
     }
   }
 
-  let responseItems = await PaintingsAPI.loadPaintings(filters);
+  try {
+    let responseItems = await PaintingsAPI.loadPaintings(filters, cancellationSource.signal);
 
-  // Order favourite paintings by favourite date
-  if (showFavourites.value) {
-    responseItems.sort((a, b) => paintingIdFilter.indexOf(a.id) - paintingIdFilter.indexOf(b.id));
+    // Order favourite paintings by favourite date
+    if (showFavourites.value) {
+      responseItems.sort((a, b) => paintingIdFilter.indexOf(a.id) - paintingIdFilter.indexOf(b.id));
+    }
+
+    paintings.value.push(...responseItems);
+    noMoreResults.value = responseItems.length === 0;
+  } catch (error: any) {
+    if (error.name != "AbortError") throw error;
   }
 
-  paintings.value.push(...responseItems);
-  noMoreResults.value = responseItems.length === 0;
   loading.value = false;
 }
 </script>
@@ -207,9 +219,9 @@ async function loadNextPage() {
 
   <!-- Paintings list -->
   <div class="mt-6">
-    <Loading v-if="loading" :fill-space="true"></Loading>
-
     <PaintingList :paintings="paintings" @reload="loadGallery()"></PaintingList>
+
+    <Loading v-if="loading" :fill-space="true"></Loading>
 
     <div class="mt-8 text-center" v-if="!loading">
       <button type="button" class="button" v-on:click="loadNextPage" v-if="!noMoreResults">More</button>

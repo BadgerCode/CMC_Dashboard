@@ -12,7 +12,7 @@ export interface PaintingsFilter {
   ids?: string[];
 }
 
-export async function loadPaintings(filters: PaintingsFilter): Promise<Painting[]> {
+export async function loadPaintings(filters: PaintingsFilter, abortSignal?: AbortSignal): Promise<Painting[]> {
   const params = new URLSearchParams();
 
   // Add last item for pagination
@@ -34,7 +34,7 @@ export async function loadPaintings(filters: PaintingsFilter): Promise<Painting[
 
   // Send request
   let url = `${Config.APIURL}/api/paintings?${params.toString()}`;
-  let httpResponse = await fetch(url, { method: "get" });
+  let httpResponse = await fetch(url, { method: "get", signal: abortSignal });
 
   if (httpResponse.status !== 200) throw new Error("Failed to retrieve paintings");
 
