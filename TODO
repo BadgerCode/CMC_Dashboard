@@ -1,0 +1,35 @@
+# Embed map
+
+# Step 1: PoC
+- Proxy map data in live site
+    - Set up API-M
+    - Add API-M to static web app
+        - https://learn.microsoft.com/en-us/azure/static-web-apps/apis-api-management
+    - Add rewrite to static web app for map data to go to API-M
+        - https://learn.microsoft.com/en-us/azure/static-web-apps/configuration#example-configuration-file
+        - /map/tiles -> api/servermap/tiles
+        - /map/sse -> api/servermap/sse
+        - /map/images -> api/servermap/images
+    - Add wildcard proxy endpoint to API-M
+        - api/servermap/* -> https://callmecarson.live/subserver/map/*
+- Embed map in a page
+    - Use iframe
+
+# Step 2: Map view
+- Add my custom waypoints script to the map
+    - https://gist.github.com/BadgerCode/1d21d5b6b681fe1e109efc8b80cb003f
+    - Add script to files & include in index.html
+- Add a maps page to the website which embeds the map
+
+# Step 3: Shop location
+- Allow communication between page and embedded map
+    - Channel messaging API
+    - https://javascriptbit.com/transfer-data-between-parent-window-iframe-channel-messaging-api/
+- Allow the page to show custom markers on the map
+    - With an info popup
+- Add a popup for shops, which shows an embedded map
+    - Set the location to the shop's location and use a good zoom level
+    - Add a custom marker for the shop, with a popup (title)
+
+
+
