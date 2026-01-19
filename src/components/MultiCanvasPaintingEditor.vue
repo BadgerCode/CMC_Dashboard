@@ -142,7 +142,7 @@ function arrangePaintings() {
       let first = sortOrder.value == "nameAsc" ? a.title : b.title;
       let second = sortOrder.value == "nameAsc" ? b.title : a.title;
 
-      return first.localeCompare(second);
+      return first.localeCompare(second, undefined, {numeric: true, sensitivity: 'base'});
     });
   }
 
