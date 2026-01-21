@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { formatItemType } from "@/utilities/item-type-format";
 import type { ShopData, ShopItem } from "@/api/shops/shopdata";
-import { computed, onMounted, onUpdated, ref } from "vue";
+import { computed, onMounted, onUpdated, ref, watch } from "vue";
 import { normalisePrice, simpleNormalisedPrice } from "@/utilities/normalise-price";
 import ItemAttributeDisplay from "./ItemAttributeDisplay.vue";
 import { initFlowbite } from "flowbite";
@@ -16,7 +16,12 @@ interface Props {
 const props = defineProps<Props>();
 const maxShops = 100;
 
-const paginatedShops = computed(() => applySort(props.shops).slice(0, Math.min(maxShops, props.shops.length)));
+const pageNumber = ref(1);
+const paginatedShops = computed(() => applySort(props.shops).slice(0, Math.min(maxShops * pageNumber.value, props.shops.length)));
+
+watch(props.shops, async (_, __) => {
+  pageNumber.value = 1;
+});
 
 onMounted(() => {
   initFlowbite(); // Include on any component where you need flowbite JS functionality
@@ -85,7 +90,8 @@ function groupedChildItems(items: ShopItem[]): ShopItem[] {
     // Player paintings
     if (item.parsedSNBT.paintingID != null) key = item.parsedSNBT.paintingID!;
     // Blank canvas or default painting
-    else if (item.type == "PAINTING") key = item.name; // TODO: return painting size from API and custom format `Blank Canvas (LARGE)`
+    else if (item.type == "PAINTING")
+      key = item.name; // TODO: return painting size from API and custom format `Blank Canvas (LARGE)`
     // Potions
     else if (item.parsedSNBT.potionEffect != null) key = `${item.type}-${item.parsedSNBT.potionEffect}`;
     // Music discs
@@ -287,5 +293,9 @@ function groupedChildItems(items: ShopItem[]): ShopItem[] {
     </tbody>
   </table>
 
-  <div v-if="paginatedShops.length == 0" class="text-center p-2">No shops found</div>
+  <div class="mt-8 text-center p-2">
+    <div v-if="paginatedShops.length == 0">No shops found</div>
+    <button type="button" class="button" v-on:click="pageNumber++" v-else-if="paginatedShops.length < props.shops.length">More</button>
+    <div v-else>No more results</div>
+  </div>
 </template>

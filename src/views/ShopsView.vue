@@ -221,7 +221,5 @@ function matchesFilters(item: ShopItem, itemType: string) {
     <ShopsList :shops="filteredShops"></ShopsList>
   </div>
 
-  <div v-if="filteredShops.length > maxShops" class="mt-8 text-center text-gray-400">Only showing up to {{ maxShops }} shops</div>
-
   <Loading v-if="loading" :fill-space="true"></Loading>
 </template>
