@@ -4,7 +4,8 @@
   "private": true,
   "type": "module",
   "engines": {
-    "node": "^>=25.0.0"
+    "node": "^22.22.0 || >=25.0.0",
+    "comment": "Ensure the node version specified is supported by the build agent"
   },
   "scripts": {
     "start": "npm run dev",
