@@ -3,6 +3,7 @@ import './assets/main.css'
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
+import './proxy'
 
 import "./font-awesome"
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
