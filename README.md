@@ -6,6 +6,7 @@ A dashboard to show various bits of data from the CMC MC server.
 
 # Useful links
 * [Vue Docs](https://vuejs.org/guide/introduction.html)
+  * [Vite Configuration Reference](https://vite.dev/config/)
 * [Tailwind Docs](https://tailwindcss.com/docs/styling-with-utility-classes)
 * [Tailwind templates](https://tailwindcss.com/plus/ui-blocks/application-ui/application-shells/stacked)
 * [Flowbite components](https://flowbite.com/docs/components/buttons/)
@@ -13,13 +14,34 @@ A dashboard to show various bits of data from the CMC MC server.
 
 <br><br><br>
 
-# Vue Stuff
+# Local Setup
 
-This template should help get you started developing with Vue 3 in Vite.
+## IDE & tools
+* [VS Code](https://code.visualstudio.com/)
+  * Extension [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+* Node 25 or later
 
-## Recommended IDE Setup
+<br>
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+## Config
+Create the file `.env.local` in the root folder with the following contents
+```
+VITE_API_URL="https://api.smponlinedashboard.com"
+```
+
+<br>
+
+## Running
+In the terminal
+```sh
+# Install current packages
+npm ci
+
+# Run the project
+npm start
+```
+
+<br>
 
 ## Recommended Browser Setup
 
@@ -30,28 +52,8 @@ This template should help get you started developing with Vue 3 in Vite.
   - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
   - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
 
+<br>
+
 ## Type Support for `.vue` Imports in TS
 
 TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
-
-## Project Setup
-
-```sh
-npm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
-npm run dev
-```
-
-### Type-Check, Compile and Minify for Production
-
-```sh
-npm run build
-```
