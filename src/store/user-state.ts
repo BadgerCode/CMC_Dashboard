@@ -33,10 +33,13 @@ export const userStore = reactive({
       console.log("Loaded user profile", this.user);
     } catch (error) {
       // Invalid JWT
-      this.jwt = null;
-      localStorage.removeItem("userToken");
+      this.logout();
     }
   },
 
-  // TODO: Logout
+  logout() {
+    this.jwt = null;
+    this.user = null;
+    localStorage.removeItem("userToken");
+  },
 });
