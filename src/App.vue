@@ -7,6 +7,7 @@ import { serverStore, type ServerOverview } from "./store/server-state";
 import * as CustomDiscsAPI from "@/api/customDiscs/api";
 import * as VillagerTradesAPI from "@/api/villagerTrades/api";
 import { favouritesStore } from "./store/favourites-state";
+import { userStore } from "./store/user-state";
 
 const route = useRoute();
 
@@ -18,6 +19,7 @@ onMounted(async () => {
   initFlowbite(); // Include on any component where you need flowbite JS functionality
 
   // Load user data
+  userStore.load();
   favouritesStore.load();
 
   // Get player counts
