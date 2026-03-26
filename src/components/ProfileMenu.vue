@@ -40,20 +40,11 @@ onMounted(() => {
         </div>
         <ul class="p-2 text-sm text-body font-medium" :aria-labelledby="`${id}-button`">
           <li>
-            <a
-              :href="Config.DISCORD_LOGIN_URL"
-              class="inline-flex items-center w-full p-2 hover:bg-neutral-tertiary-medium hover:text-heading rounded cursor-pointer"
-              v-if="userStore.user == null">
-              Login</a
-            >
-          </li>
-          <li>
-            <!-- TODO: Profile page -->
-            <a
-              href="#"
+            <RouterLink
+              :to="{ name: 'profile' }"
               class="inline-flex items-center w-full p-2 hover:bg-neutral-tertiary-medium hover:text-heading rounded cursor-pointer">
-              Profile</a
-            >
+              Profile
+            </RouterLink>
           </li>
           <li>
             <a
