@@ -83,6 +83,7 @@ async function saveUser() {
         <h1 class="text-3xl font-bold">{{ userInfo.displayName }}</h1>
 
         <div class="text-gray-300">Signed in via Discord ({{ userInfo.discordUsername }})</div>
+        <div class="hint-text">To reload your discord profile details, sign out and sign back in again.</div>
       </div>
 
       <!-- Additional fields -->
