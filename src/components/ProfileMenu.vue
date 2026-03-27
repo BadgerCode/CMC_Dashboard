@@ -12,7 +12,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div>
+  <div class="flex items-center">
     <!-- Sign in -->
     <div v-if="userStore.user == null" class="text-sm border border-gray-500 md:py-2 md:px-3 rounded">
       <a :href="Config.DISCORD_LOGIN_URL" class="navbarLink">Sign in</a>
