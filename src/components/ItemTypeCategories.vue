@@ -96,11 +96,11 @@ if (appStore.selectedItemCategory == null)
 const categoryItems = computed(() => {
   if (appStore.selectedItemCategory == "Recent") {
     return userStore.recentlyViewedItems
-      .reverse()
       .map(i => ({
         type: i,
         info: getItemInfo(i)
-      })) as Item[];
+      } as Item))
+      .reverse();
   }
 
   let category = categories.find(c => c.name == appStore.selectedItemCategory);
