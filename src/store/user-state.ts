@@ -9,6 +9,7 @@ export interface User {
 export const userStore = reactive({
   user: null as User | null,
   jwt: null as string | null,
+  recentlyViewedItems: [] as string[],
 
   // Data management
   login(jwt: string, user: User) {
@@ -18,6 +19,17 @@ export const userStore = reactive({
   },
 
   load() {
+    // Load recently viewed items
+    let rawRecentItems = localStorage.getItem("recentlyViewedItems");
+    if (rawRecentItems != null) {
+      try {
+        this.recentlyViewedItems = JSON.parse(rawRecentItems);
+      } catch (error) {
+        localStorage.removeItem("recentlyViewedItems");
+      }
+    }
+
+    // Load JWT
     this.jwt = localStorage.getItem("userToken");
     if (this.jwt == null) return;
 
@@ -43,4 +55,18 @@ export const userStore = reactive({
     this.user = null;
     localStorage.removeItem("userToken");
   },
+
+  addRecentlyViewedItem(itemType: string) {
+    let existingIndex = this.recentlyViewedItems.findIndex(i => i == itemType);
+    if (existingIndex !== -1) {
+      this.recentlyViewedItems.splice(existingIndex, 1);
+    }
+
+    this.recentlyViewedItems.push(itemType);
+
+    let itemsToRemove = Math.max(0, this.recentlyViewedItems.length - 16);
+    this.recentlyViewedItems = this.recentlyViewedItems.slice(itemsToRemove);
+
+    localStorage.setItem("recentlyViewedItems", JSON.stringify(this.recentlyViewedItems));
+  }
 });

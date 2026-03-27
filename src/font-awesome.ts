@@ -41,12 +41,16 @@ import {
   faPalette,
   faTrowel,
   faPhotoFilm,
+  faCubes,
+  faHammer,
+  faClockRotateLeft,
   // Don't forget to add it below too!
 } from "@fortawesome/free-solid-svg-icons";
 
 // Regular icons
 import {
   faHeart as farHeart,
+  faGem as farGem,
   // Don't forget to add it below too!
 } from "@fortawesome/free-regular-svg-icons";
 
@@ -91,4 +95,8 @@ library.add(
   faPalette,
   faTrowel,
   faPhotoFilm,
+  farGem,
+  faCubes,
+  faHammer,
+  faClockRotateLeft,
 );
