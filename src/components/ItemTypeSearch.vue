@@ -99,8 +99,8 @@ function makeSelection(item: string | null) {
           class="max-h-48 p-3 overflow-y-auto text-sm text-gray-200 bg-gray-700 rounded-lg shadow-sm border border-gray-800"
           aria-labelledby="itemTypeSearchButton">
           <li v-for="itemType in filteredItemTypes" class="hyperlink" @click="makeSelection(itemType)">
-            <div tabindex="0" class="flex items-center px-4 py-2 ps-2 rounded-sm hover:bg-gray-600 text-gray-300 text-sm font-medium capitalize">
-              {{ formatItemType(itemType).toLocaleLowerCase() }}
+            <div tabindex="0" class="flex items-center px-4 py-2 ps-2 rounded-sm hover:bg-gray-600 text-gray-300 text-sm font-medium">
+              {{ formatItemType(itemType) }}
             </div>
           </li>
         </ul>

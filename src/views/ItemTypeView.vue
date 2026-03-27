@@ -22,7 +22,6 @@ import { getItemInfo } from "@/models/item-info";
 import { itemsStore } from "@/store/items-state";
 import { debounce } from "lodash";
 import { setPageTitle } from "@/router/pageTitle";
-import { capitalizeFirstLetter } from "@/utilities/text-format";
 import { userStore } from "@/store/user-state";
 
 interface Props {
@@ -84,7 +83,7 @@ onMounted(async () => {
 
   userStore.addRecentlyViewedItem(props.itemType);
 
-  setPageTitle(capitalizeFirstLetter(formatItemType(props.itemType).toLocaleLowerCase()));
+  setPageTitle(formatItemType(props.itemType));
 
   // Load sales with any filters
   await loadSales();
@@ -270,7 +269,7 @@ function getWikiLink() {
         <!-- Item Info -->
         <div class="flex flex-col">
           <!-- Item type -->
-          <h1 class="text-3xl font-bold capitalize">{{ formatItemType(itemType)?.toLocaleLowerCase() }}</h1>
+          <h1 class="text-3xl font-bold">{{ formatItemType(itemType) }}</h1>
 
 
 
@@ -353,8 +352,8 @@ function getWikiLink() {
       <div class="flex flex-column sm:flex-row flex-wrap space-y-1 items-end justify-between pb-2">
         <div class="flex flex-col gap-1">
           <h2 class="text-2xl font-bold">Shops</h2>
-          <div class="text-gray-300 capitalize">
-            <div>Selling {{ formatItemType(itemType)?.toLocaleLowerCase() }}</div>
+          <div class="text-gray-300">
+            <div>Selling {{ formatItemType(itemType) }}</div>
             <div class="text-gray-400 text-sm capitalize">{{ filtersText }}</div>
           </div>
         </div>

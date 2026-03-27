@@ -147,7 +147,7 @@ function selectCategory(name: string) {
       <!-- Item types -->
       <div class="flex flex-row flex-wrap gap-1 content-start justify-center max-h-48 h-auto overflow-x-scroll">
         <RouterLink v-for="item in categoryItems" :to="{ name: 'itemSales', params: { itemType: item.type } }"
-          class="item-button" :title="formatItemType(item.type).toLocaleLowerCase()">
+          class="item-button" :title="formatItemType(item.type)">
 
           <!-- Item icon/picture -->
           <div v-if="item.info?.icon" class="text-xl">
@@ -158,8 +158,8 @@ function selectCategory(name: string) {
           </div>
 
           <!-- Item name -->
-          <div class="text-xs capitalize overflow-hidden text-ellipsis">
-            {{ formatItemType(item.type).toLocaleLowerCase() }}
+          <div class="text-xs overflow-hidden text-ellipsis">
+            {{ formatItemType(item.type) }}
           </div>
         </RouterLink>
       </div>

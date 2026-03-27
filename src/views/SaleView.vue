@@ -136,8 +136,8 @@ let filteredAttributes = computed(() => {
             <table class="w-full text-left rtl:text-right text-gray-400 text-xs md:text-base mt-2">
               <tbody>
                 <tr v-for="attribute in filteredAttributes" class="border-t border-gray-700">
-                  <td class="table-item wrap-anywhere capitalize">
-                    {{ formatItemType(attribute.key)?.toLocaleLowerCase() }}
+                  <td class="table-item wrap-anywhere">
+                    {{ formatItemType(attribute.key) }}
                   </td>
 
                   <td class="table-item wrap-anywhere">
@@ -211,8 +211,8 @@ let filteredAttributes = computed(() => {
               <td class="table-item wrap-anywhere">
                 <div
                   v-for="attribute in subItem.itemAttributes.sort((a, b) => a.key.localeCompare(b.key) || a.value.localeCompare(b.value))">
-                  <span class="capitalize" v-if="attribute.key != 'PAINTING_ID'"
-                    >{{ formatItemType(attribute.key)?.toLocaleLowerCase() }}:
+                  <span v-if="attribute.key != 'PAINTING_ID'">
+                    {{ formatItemType(attribute.key) }}:
                   </span>
 
                   <span v-if="attribute.key == 'POTION_EFFECT'" class="capitalize">

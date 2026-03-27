@@ -67,7 +67,7 @@ function childItemsSummary(items: ShopItem[]): string {
   }
 
   summary += Object.keys(counts)
-    .map((itemType) => `${counts[itemType]} ${formatItemType(itemType).toLocaleLowerCase()}`)
+    .map((itemType) => `${counts[itemType]} ${formatItemType(itemType)}`)
     .join("\n");
 
   return summary;
@@ -160,7 +160,7 @@ function groupedChildItems(items: ShopItem[]): ShopItem[] {
           <!-- Item type -->
           <div class="text-xs md:text-sm">
             <RouterLink :to="{ name: 'itemSales', params: { itemType: shop.item.type } }" class="hyperlink">
-              {{ formatItemType(shop.item.type) }}
+              {{ formatItemType(shop.item.type).toLocaleUpperCase() }}
             </RouterLink>
           </div>
 
@@ -194,7 +194,7 @@ function groupedChildItems(items: ShopItem[]): ShopItem[] {
                   <div v-if="child.parsedSNBT.enchantments.length > 0">
                     <div>
                       <span>{{ child.name }}&nbsp;</span>
-                      <span class="capitalize">({{ formatItemType(child.type).toLowerCase() }})</span>
+                      <span>({{ formatItemType(child.type) }})</span>
                     </div>
                     <div class="capitalize">
                       {{ child.parsedSNBT.enchantments.map((e) => formatEnchantment(e)).join(", ") }}
@@ -204,7 +204,7 @@ function groupedChildItems(items: ShopItem[]): ShopItem[] {
                   <!-- Potions -->
                   <div v-else-if="child.parsedSNBT.potionEffect != null" class="capitalize">
                     {{ child.quantity }}x {{ formatPotionEffect(child.parsedSNBT.potionEffect) }}
-                    {{ formatItemType(child.type).toLowerCase() }}
+                    {{ formatItemType(child.type) }}
                   </div>
 
                   <!-- Custom music discs -->
@@ -239,12 +239,12 @@ function groupedChildItems(items: ShopItem[]): ShopItem[] {
 
                   <!-- Bundles -->
                   <div v-else-if="(child.childItems?.length ?? 0) > 0">
-                    <div>{{ child.name }} (({{ formatItemType(child.type).toLowerCase() }}))</div>
+                    <div>{{ child.name }} (({{ formatItemType(child.type) }}))</div>
                     <div>{{ child.childItems?.length }} items</div>
                   </div>
 
                   <!-- All other item types -->
-                  <div v-else class="capitalize">{{ child.quantity }}x {{ formatItemType(child.type).toLowerCase() }}</div>
+                  <div v-else>{{ child.quantity }}x {{ formatItemType(child.type) }}</div>
                 </div>
               </div>
             </div>
