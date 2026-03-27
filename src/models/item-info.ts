@@ -4,8 +4,8 @@ export interface ItemInfo {
   description?: string;
   moreInfoLink?: string;
   hideWikiLink?: boolean;
-  isSpecialItem?: boolean;
-  icon?: string;
+  isSpecialItem?: boolean; // TODO: get rid of
+  icon?: string; // TODO: get rid of
   shopCaveats?: string;
 }
 

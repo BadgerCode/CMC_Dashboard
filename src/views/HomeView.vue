@@ -7,6 +7,7 @@ import ItemTypeSearch from "@/components/ItemTypeSearch.vue";
 import { getSpecialItems } from "@/models/item-info";
 import { serverStore } from "@/store/server-state";
 import { formatNumber } from "@/utilities/number-format";
+import ItemTypeCategories from "@/components/ItemTypeCategories.vue";
 
 const loading = ref(true);
 const recentSales = ref([] as SaleSummary[]);
@@ -29,9 +30,14 @@ async function loadSales() {
   noMoreResults.value = newSales.length === 0;
   loading.value = false;
 }
+
+
 </script>
 
 <template>
+  <!-- Item type selector -->
+  <ItemTypeCategories></ItemTypeCategories>
+
   <div class="mb-8 flex flex-col gap-4">
     <div class="flex flex-col gap-1">
       <h1 class="text-3xl font-bold">Item Lookup</h1>

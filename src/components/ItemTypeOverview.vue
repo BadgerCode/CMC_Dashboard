@@ -241,7 +241,9 @@ function getWikiLink() {
     frags[i] = frags[i]!.charAt(0).toUpperCase() + frags[i]!.slice(1);
   }
 
-  return `https://minecraft.wiki/w/${frags.join("_")}`;
+  let itemName = frags.join("_").replace("Of", "of");
+
+  return `https://minecraft.wiki/w/${itemName}`;
 }
 </script>
 
