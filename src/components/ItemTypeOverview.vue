@@ -23,6 +23,7 @@ import { itemsStore } from "@/store/items-state";
 import { debounce } from "lodash";
 import { setPageTitle } from "@/router/pageTitle";
 import { capitalizeFirstLetter } from "@/utilities/text-format";
+import { userStore } from "@/store/user-state";
 
 interface Props {
   itemType: string;
@@ -79,6 +80,8 @@ watch(customDiscFilter, async (_, __) => {
 
 onMounted(async () => {
   initFlowbite(); // Include on any component where you need flowbite JS functionality
+
+  userStore.addRecentlyViewedItem(props.itemType);
 
   setPageTitle(capitalizeFirstLetter(formatItemType(props.itemType).toLocaleLowerCase()));
 

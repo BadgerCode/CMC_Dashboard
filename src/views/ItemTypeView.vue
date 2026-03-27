@@ -13,5 +13,6 @@ onMounted(async () => {
 </script>
 
 <template>
+  <!-- TODO: Bring ItemTypeOverview content into here -->
   <ItemTypeOverview :item-type="itemType"></ItemTypeOverview>
 </template>

@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import ItemTypeSearch from './ItemTypeSearch.vue';
 import { formatItemType } from '@/utilities/item-type-format';
+import { userStore } from '@/store/user-state';
 
 interface Category {
   name: string;
@@ -91,7 +92,14 @@ const categories = [
 const selectedCategory = ref(categories[0]!.name as string);
 const categoryItems = ref(categories[0]!.items as Item[]);
 
-const recentlyViewedItems = ref([]);
+const recentlyViewedItems = computed(() => {
+  return userStore.recentlyViewedItems
+    .reverse()
+    .map(i => ({
+      type: i,
+    })) as Item[];
+});
+
 
 function selectCategory(name: string) {
   if (name == "Recent") {
