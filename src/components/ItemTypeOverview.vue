@@ -275,7 +275,7 @@ function getWikiLink() {
         <p class="text-xs" v-if="itemInfo?.moreInfoLink">
           <a :href="itemInfo.moreInfoLink" class="hyperlink" target="_blank">More info</a>
         </p>
-        <p class="text-xs" v-else>
+        <p class="text-xs" v-else-if="!itemInfo?.hideWikiLink">
           <a :href="getWikiLink()" class="hyperlink" target="_blank">Minecraft Wiki</a>
         </p>
       </div>

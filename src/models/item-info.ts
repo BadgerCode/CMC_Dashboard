@@ -3,6 +3,7 @@ export interface ItemInfo {
   displayName: string;
   description?: string;
   moreInfoLink?: string;
+  hideWikiLink?: boolean;
   isSpecialItem?: boolean;
   icon?: string;
   shopCaveats?: string;
@@ -62,6 +63,7 @@ itemInfo["LUA_FISH_MUSIC_BOOK"] = {
   icon: "fa-solid fa-file-audio",
   isSpecialItem: true,
   description: "Written books that can be used on the Lua_Fish record player to play music.",
+  hideWikiLink: true,
 };
 itemInfo["PAINTING"] = {
   itemType: "PAINTING",
