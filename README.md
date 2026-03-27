@@ -27,6 +27,7 @@ A dashboard to show various bits of data from the CMC MC server.
 Create the file `.env.local` in the root folder with the following contents
 ```
 VITE_API_URL="https://api.smponlinedashboard.com"
+VITE_DISCORD_LOGIN_URL="https://discord.com/oauth2/authorize?client_id=1485066053850632384&response_type=token&redirect_uri=http%3A%2F%2Flocalhost%3A5173%2Flogin%2Fdiscord&scope=identify"
 ```
 
 <br>

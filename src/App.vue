@@ -7,6 +7,8 @@ import { serverStore, type ServerOverview } from "./store/server-state";
 import * as CustomDiscsAPI from "@/api/customDiscs/api";
 import * as VillagerTradesAPI from "@/api/villagerTrades/api";
 import { favouritesStore } from "./store/favourites-state";
+import { userStore } from "./store/user-state";
+import ProfileMenu from "./components/ProfileMenu.vue";
 
 const route = useRoute();
 
@@ -18,6 +20,7 @@ onMounted(async () => {
   initFlowbite(); // Include on any component where you need flowbite JS functionality
 
   // Load user data
+  userStore.load();
   favouritesStore.load();
 
   // Get player counts
@@ -70,18 +73,22 @@ async function loadServerStats(): Promise<ServerOverview | null> {
             </div>
           </RouterLink>
 
-          <!-- Hamburger menu -->
-          <div>
-            <button data-collapse-toggle="navbar-default" type="button"
-              class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
-              aria-controls="navbar-default" aria-expanded="false">
+          <!-- Right side mobile buttons -->
+          <div class="flex flex-row gap-5 md:hidden">
+            <!-- Hamburger menu  for links -->
+            <button
+              data-collapse-toggle="navbar-default"
+              type="button"
+              class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
+              aria-controls="navbar-default"
+              aria-expanded="false">
               <span class="sr-only">Open main menu</span>
-              <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
-                viewBox="0 0 17 14">
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M1 1h15M1 7h15M1 13h15" />
+              <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h15M1 7h15M1 13h15" />
               </svg>
             </button>
+
+            <ProfileMenu></ProfileMenu>
           </div>
 
           <!-- Links -->
@@ -105,6 +112,9 @@ async function loadServerStats(): Promise<ServerOverview | null> {
               </li>
             </ul>
           </div>
+
+          <!-- Profile menu button (desktop) -->
+          <ProfileMenu class="hidden md:block"></ProfileMenu>
         </div>
       </nav>
 
@@ -119,8 +129,7 @@ async function loadServerStats(): Promise<ServerOverview | null> {
           <div v-if="serverStore.loaded" class="text-gray-200 flex flex-col text-right">
             <div>Server {{ serverStore.status }}</div>
             <div>
-              <RouterLink :to="{ name: 'playercounts' }" class="hyperlink">{{ serverStore.numPlayers }} players
-              </RouterLink>
+              <RouterLink :to="{ name: 'playercounts' }" class="hyperlink">{{ serverStore.numPlayers }} players </RouterLink>
             </div>
           </div>
         </div>
