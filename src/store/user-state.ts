@@ -13,6 +13,7 @@ export const userStore = reactive({
   // Data management
   login(jwt: string, user: User) {
     localStorage.setItem("userToken", jwt);
+    this.jwt = jwt;
     this.user = user;
   },
 
