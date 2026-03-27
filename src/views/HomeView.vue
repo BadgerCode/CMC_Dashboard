@@ -3,8 +3,6 @@ import type { SaleSummary } from "@/api/sales/saleSummary";
 import { onMounted, ref } from "vue";
 import * as SalesAPI from "@/api/sales/api";
 import RecentSales from "@/components/RecentSales.vue";
-import ItemTypeSearch from "@/components/ItemTypeSearch.vue";
-import { getSpecialItems } from "@/models/item-info";
 import { serverStore } from "@/store/server-state";
 import { formatNumber } from "@/utilities/number-format";
 import ItemTypeCategories from "@/components/ItemTypeCategories.vue";
@@ -35,41 +33,14 @@ async function loadSales() {
 </script>
 
 <template>
-  <!-- Item type selector -->
-  <ItemTypeCategories></ItemTypeCategories>
-
   <div class="mb-8 flex flex-col gap-4">
     <div class="flex flex-col gap-1">
       <h1 class="text-3xl font-bold">Item Lookup</h1>
       <div class="text-gray-300">See sales and shops for an item</div>
     </div>
 
-    <div class="flex flex-row items-center justify-center">
-      <ItemTypeSearch @selection="
-        (itemType) => {
-          if (itemType) $router.push({ name: 'itemSales', params: { itemType: itemType } });
-        }
-      ">
-      </ItemTypeSearch>
-    </div>
-  </div>
-
-  <div class="mb-8">
-    <div class="mb-3 flex flex-row justify-between items-end">
-      <div>
-        <h1 class="text-3xl font-bold">Special Items</h1>
-      </div>
-    </div>
-
-    <div class="flex flex-row flex-wrap gap-2 md:gap-3 mb-6">
-      <RouterLink v-for="item in getSpecialItems()" :to="{ name: 'itemSales', params: { itemType: item.itemType } }">
-        <div
-          class="p-1 w-20 h-20 gap-1 md:p-3 md:w-27 md:h-27 md:gap-2 bg-gray-800 flex flex-col items-center text-center justify-center text-gray-300 border-1 border-gray-700 rounded-lg">
-          <div class="text-xl md:text-3xl"><font-awesome-icon :icon="item.icon" /></div>
-          <div class="text-xs md:text-sm">{{ item.displayName }}</div>
-        </div>
-      </RouterLink>
-    </div>
+    <!-- Item type selector -->
+    <ItemTypeCategories></ItemTypeCategories>
   </div>
 
   <div class="mb-8">

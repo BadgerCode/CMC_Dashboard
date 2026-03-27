@@ -3,6 +3,12 @@ import { ref } from 'vue';
 import ItemTypeSearch from './ItemTypeSearch.vue';
 import { formatItemType } from '@/utilities/item-type-format';
 
+interface Category {
+  name: string;
+  icon: string;
+  items: Item[];
+}
+
 interface Item {
   type: string;
   icon?: string | null;
@@ -50,19 +56,19 @@ const categories = [
     name: "Building Resources",
     icon: "fa-solid fa-cubes",
     items: [
-      { type: "OAK_LOG" },
-      { type: "SPRUCE_LOG" },
-      { type: "PALE_OAK_LOG" },
-      { type: "BONE_BLOCK" },
-      { type: "DARK_OAK_LOG" },
-      { type: "BIRCH_LOG" },
-      { type: "CHERRY_LOG" },
-      { type: "JUNGLE_LOG" },
-      { type: "MANGROVE_LOG" },
-      { type: "ACACIA_LOG" },
-      { type: "STONE" },
-      { type: "DIRT" },
-      { type: "COBBLED_DEEPSLATE" }
+      { type: "OAK_LOG", picture: "https://minecraft.wiki/images/Oak_Log_%28UD%29_JE8_BE3.png" },
+      { type: "SPRUCE_LOG", picture: "https://minecraft.wiki/images/Spruce_Log_(UD)_JE8_BE4.png" },
+      { type: "PALE_OAK_LOG", picture: "https://minecraft.wiki/images/Pale_Oak_Log_(UD)_JE1_BE1.png" },
+      { type: "DARK_OAK_LOG", picture: "https://minecraft.wiki/images/Dark_Oak_Log_(UD)_JE9_BE4.png" },
+      { type: "BIRCH_LOG", picture: "https://minecraft.wiki/images/Birch_Log_(UD)_JE8_BE4.png" },
+      { type: "CHERRY_LOG", picture: "https://minecraft.wiki/images/Cherry_Log_(UD)_JE1_BE1.png" },
+      { type: "JUNGLE_LOG", picture: "https://minecraft.wiki/images/Jungle_Log_(UD)_JE9_BE4.png" },
+      { type: "MANGROVE_LOG", picture: "https://minecraft.wiki/images/Mangrove_Log_(UD)_JE1_BE1.png" },
+      { type: "ACACIA_LOG", picture: "https://minecraft.wiki/images/Acacia_Log_(UD)_JE8_BE3.png" },
+      { type: "BONE_BLOCK", picture: "https://minecraft.wiki/images/Bone_Block_%28UD%29_JE2_BE2.png?21f6b" },
+      { type: "STONE", picture: "https://minecraft.wiki/images/Stone_JE5_BE3.png?5780c" },
+      { type: "DIRT", picture: "https://minecraft.wiki/images/Dirt_JE2_BE2.png?438ac" },
+      { type: "COBBLED_DEEPSLATE", picture: "https://minecraft.wiki/images/Cobbled_Deepslate.png?86523" }
     ]
   },
   {
@@ -80,7 +86,7 @@ const categories = [
       { type: "PLAYER_HEAD", icon: "fa-solid fa-cube" }
     ]
   }
-];
+] as Category[];
 
 const selectedCategory = ref(categories[0]!.name as string);
 const categoryItems = ref(categories[0]!.items as Item[]);
@@ -104,7 +110,7 @@ function selectCategory(name: string) {
 </script>
 
 <template>
-  <div class="mb-8 flex flex-col">
+  <div class="flex flex-col">
     <!-- Categories -->
     <div class="flex flex-row gap-1 mb-1">
       <div v-for="category in categories" class="item-button category"
