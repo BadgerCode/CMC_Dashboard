@@ -83,7 +83,7 @@ const categories = [
       { type: "CUSTOM_MUSIC_DISC", icon: "fa-solid fa-record-vinyl" },
       { type: "LUA_FISH_MUSIC_BOOK", icon: "fa-solid fa-file-audio" },
       { type: "FILLED_MAP", icon: "fa-solid fa-map" },
-      { type: "PLAYER_HEAD", icon: "fa-solid fa-cube" }
+      { type: "PLAYER_HEAD", picture: "https://minecraft.wiki/images/Player_Head_%28S%29_JE2.png?6f81f" }
     ]
   }
 ] as Category[];
@@ -140,7 +140,7 @@ function selectCategory(name: string) {
       </div>
 
       <!-- Item types -->
-      <div class="flex flex-row flex-wrap gap-1 content-start justify-center h-48 overflow-x-scroll">
+      <div class="flex flex-row flex-wrap gap-1 content-start justify-center max-h-48 h-auto overflow-x-scroll">
         <!-- TODO: Router link -->
         <RouterLink v-for="item in categoryItems" :to="{ name: 'itemSales', params: { itemType: item.type } }"
           class="item-button" :title="formatItemType(item.type).toLocaleLowerCase()">
