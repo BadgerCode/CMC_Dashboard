@@ -1,4 +1,3 @@
-import { formatItemType } from "./item-type-format";
 import { formatNumber } from "./number-format";
 
 export interface NormalisedPrice {

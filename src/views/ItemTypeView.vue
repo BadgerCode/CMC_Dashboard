@@ -1,7 +1,11 @@
 <script setup lang="ts">
+import { computed, onMounted, onUpdated, ref, watch } from "vue";
+import { useRoute } from "vue-router";
+import { initFlowbite } from "flowbite";
+import { debounce } from "lodash";
+import { Config } from "@/config";
 import { updateShops } from "@/api/shops/api";
 import type { ShopData, ShopItem } from "@/api/shops/shopdata";
-import { computed, onMounted, onUpdated, ref, watch } from "vue";
 import ShopsList from "@/components/ShopsList.vue";
 import type { SaleSummary } from "@/api/sales/saleSummary";
 import RecentSales from "@/components/RecentSales.vue";
@@ -11,28 +15,25 @@ import Loading from "@/components/Loading.vue";
 import DropdownFilter, { type DropdownOption } from "@/components/DropdownFilter.vue";
 import * as SalesAPI from "@/api/sales/api";
 import * as CustomDiscsAPI from "@/api/customDiscs/api";
-import { initFlowbite } from "flowbite";
 import { formatEnchantment } from "@/utilities/enchantment-format";
-import { Config } from "@/config";
 import { formatCustomDisc } from "@/utilities/custom-disc-format";
 import { formatPotionEffect, isPotion } from "@/utilities/potion-format";
-import { useRoute, useRouter } from "vue-router";
 import ItemTypeSearch from "@/components/ItemTypeSearch.vue";
 import { getItemInfo } from "@/models/item-info";
 import { itemsStore } from "@/store/items-state";
-import { debounce } from "lodash";
 import { setPageTitle } from "@/router/pageTitle";
 import { userStore } from "@/store/user-state";
+import { normalisePrice, simpleNormalisedPrice } from "@/utilities/normalise-price";
 
 interface Props {
   itemType: string;
 }
 const props = defineProps<Props>();
 const route = useRoute();
-const router = useRouter();
 
 const loadingSales = ref(true);
 const filteredSales = ref([] as SaleSummary[]);
+const averagePrice = ref(normalisePrice(1, 1));
 const loadingShops = ref(true);
 const shops = ref([] as ShopData[]);
 const filteredShops = ref([] as ShopData[]);
@@ -94,7 +95,7 @@ onMounted(async () => {
   // Load shop data
   let shopData = await updateShops();
   shops.value = shopData.shops.filter(
-    (s) => s.type == "SELLING" && (s.item.type == props.itemType || (s.item.childItems ?? []).some((i) => i.type == props.itemType))
+    (s) => s.type == "SELLING" && (s.item.type == props.itemType || (s.item.childItems ?? []).some((i) => i.type == props.itemType)),
   );
 
   // Load enchantments
@@ -104,7 +105,7 @@ onMounted(async () => {
   if (isPotion(props.itemType)) potionEffects.value.push(...(await loadPotions()));
 
   // Render the item overview
-  applyFilters();
+  applyShopFilters();
   loadingShops.value = false;
 });
 
@@ -114,7 +115,7 @@ onUpdated(() => {
 
 const reloadSalesAndShops = debounce(async () => {
   await loadSales();
-  applyFilters();
+  applyShopFilters();
 }, 200);
 
 async function loadSales() {
@@ -130,6 +131,11 @@ async function loadSales() {
 
   filteredSales.value = await SalesAPI.loadSales(salesFilters);
 
+  // Calculate average price
+  let totalSold = filteredSales.value.reduce((partial, a) => partial + a.quantity, 0);
+  let totalPaid = filteredSales.value.reduce((partial, a) => partial + a.totalPrice, 0);
+  averagePrice.value = normalisePrice(totalPaid / totalSold, 1);
+
   loadingSales.value = false;
 }
 
@@ -139,7 +145,7 @@ async function loadEnchantments(): Promise<DropdownOption[]> {
   // Combine shop and sale data and get a unique ordered list
   allItems.push(...shops.value.flatMap((s) => s.item.parsedSNBT.enchantments));
   allItems.push(
-    ...shops.value.filter((s) => s.item.childItems != null).flatMap((s) => s.item.childItems!.flatMap((i) => i.parsedSNBT.enchantments))
+    ...shops.value.filter((s) => s.item.childItems != null).flatMap((s) => s.item.childItems!.flatMap((i) => i.parsedSNBT.enchantments)),
   );
   let uniqueItems = [...new Set(allItems)];
 
@@ -147,10 +153,10 @@ async function loadEnchantments(): Promise<DropdownOption[]> {
   return uniqueItems
     .map(
       (i: string) =>
-      ({
-        text: formatEnchantment(i),
-        value: i,
-      } as DropdownOption)
+        ({
+          text: formatEnchantment(i),
+          value: i,
+        }) as DropdownOption,
     )
     .sort((a, b) => a.text.localeCompare(b.text));
 }
@@ -158,7 +164,7 @@ async function loadEnchantments(): Promise<DropdownOption[]> {
 async function loadDiscs(): Promise<DropdownOption[]> {
   let response = await CustomDiscsAPI.retrieveCustomDiscs();
   numUndiscoveredMusicDiscs.value = response.unsoldDiscs;
-  return response.discs.map((d) => ({ text: d.displayName, value: d.name } as DropdownOption)).sort((a, b) => a.text.localeCompare(b.text));
+  return response.discs.map((d) => ({ text: d.displayName, value: d.name }) as DropdownOption).sort((a, b) => a.text.localeCompare(b.text));
 }
 
 async function loadPotions(): Promise<DropdownOption[]> {
@@ -170,17 +176,17 @@ async function loadPotions(): Promise<DropdownOption[]> {
     ...shops.value
       .filter((s) => s.item.childItems != null)
       .flatMap((s) => s.item.childItems!.map((i) => i.parsedSNBT.potionEffect))
-      .filter((s) => s != null)
+      .filter((s) => s != null),
   );
   let uniqueItems = [...new Set(allItems)];
 
   return uniqueItems
     .map(
       (i: string) =>
-      ({
-        text: formatPotionEffect(i),
-        value: i,
-      } as DropdownOption)
+        ({
+          text: formatPotionEffect(i),
+          value: i,
+        }) as DropdownOption,
     )
     .sort((a, b) => a.text.localeCompare(b.text));
 }
@@ -194,7 +200,7 @@ async function loadItems(url: string): Promise<string[]> {
   return response.items;
 }
 
-function applyFilters() {
+function applyShopFilters() {
   filteredShops.value = shops.value.filter((s) => {
     return matchesFilters(s.item) || (s.item.childItems ?? []).some((i) => matchesFilters(i));
   });
@@ -254,11 +260,12 @@ function getWikiLink() {
   <div class="flex flex-col gap-8">
     <div class="mb-2 flex flex-col gap-4">
       <div class="flex flex-row items-center justify-center">
-        <ItemTypeSearch @selection="
-          (itemType) => {
-            if (itemType) $router.push({ name: 'itemSales', params: { itemType: itemType } });
-          }
-        ">
+        <ItemTypeSearch
+          @selection="
+            (itemType) => {
+              if (itemType) $router.push({ name: 'itemSales', params: { itemType: itemType } });
+            }
+          ">
         </ItemTypeSearch>
       </div>
     </div>
@@ -270,8 +277,6 @@ function getWikiLink() {
         <div class="flex flex-col">
           <!-- Item type -->
           <h1 class="text-3xl font-bold">{{ formatItemType(itemType) }}</h1>
-
-
 
           <!-- Description -->
           <p class="text-gray-300" v-if="itemInfo?.description">{{ itemInfo.description }}</p>
@@ -305,8 +310,7 @@ function getWikiLink() {
       <div class="flex flex-col" v-if="villagerTrades.length > 0">
         <h2 class="text-xl font-bold capitalize">Villager Trade</h2>
         <p class="text-gray-300" v-for="villagerTrade in villagerTrades">
-          {{ villagerTrade.villager }}: {{ villagerTrade.price }} {{ villagerTrade.currency }} for {{
-            villagerTrade.quantity }}
+          {{ villagerTrade.villager }}: {{ villagerTrade.price }} {{ villagerTrade.currency }} for {{ villagerTrade.quantity }}
           {{ villagerTrade.itemType }} {{ villagerTrade.extraInfo ? `(${villagerTrade.extraInfo})` : "" }}
         </p>
         <p class="text-gray-300 text-xs">
@@ -321,20 +325,35 @@ function getWikiLink() {
         <div>
           <h2 class="text-2xl font-bold">Latest Sales</h2>
           <div class="text-gray-400 text-sm capitalize">{{ filtersText }}</div>
+          <div class="hint-text">Average price: {{ simpleNormalisedPrice(averagePrice) }}</div>
         </div>
 
         <div class="flex flex-row flex-wrap gap-1 items-end">
-          <DropdownFilter v-if="enchantments.length > 0" :placeholder="'Enchantments'"
-            :icon="'fa-solid fa-wand-sparkles'" :options="enchantments" :single-selection="true"
+          <DropdownFilter
+            v-if="enchantments.length > 0"
+            :placeholder="'Enchantments'"
+            :icon="'fa-solid fa-wand-sparkles'"
+            :options="enchantments"
+            :single-selection="true"
             v-model="enchantmentFilter">
           </DropdownFilter>
 
-          <DropdownFilter v-if="potionEffects.length > 0" :placeholder="'Potion Effect'" :icon="'fa-solid fa-flask'"
-            :options="potionEffects" :single-selection="true" v-model="potionEffectFilter">
+          <DropdownFilter
+            v-if="potionEffects.length > 0"
+            :placeholder="'Potion Effect'"
+            :icon="'fa-solid fa-flask'"
+            :options="potionEffects"
+            :single-selection="true"
+            v-model="potionEffectFilter">
           </DropdownFilter>
 
-          <DropdownFilter v-if="customDiscs.length > 0" :placeholder="'Custom Discs'" :icon="'fa-solid fa-record-vinyl'"
-            :options="customDiscs" :single-selection="true" v-model="customDiscFilter">
+          <DropdownFilter
+            v-if="customDiscs.length > 0"
+            :placeholder="'Custom Discs'"
+            :icon="'fa-solid fa-record-vinyl'"
+            :options="customDiscs"
+            :single-selection="true"
+            v-model="customDiscFilter">
           </DropdownFilter>
 
           <SearchBox :placeholder="'Item Name'" v-model="nameFilter"></SearchBox>
@@ -359,24 +378,39 @@ function getWikiLink() {
         </div>
 
         <div class="flex flex-row flex-wrap gap-1 items-end">
-          <DropdownFilter v-if="enchantments.length > 0" :placeholder="'Enchantments'"
-            :icon="'fa-solid fa-wand-sparkles'" :options="enchantments" :single-selection="true"
+          <DropdownFilter
+            v-if="enchantments.length > 0"
+            :placeholder="'Enchantments'"
+            :icon="'fa-solid fa-wand-sparkles'"
+            :options="enchantments"
+            :single-selection="true"
             v-model="enchantmentFilter">
           </DropdownFilter>
 
-          <DropdownFilter v-if="potionEffects.length > 0" :placeholder="'Potion Effect'" :icon="'fa-solid fa-flask'"
-            :options="potionEffects" :single-selection="true" v-model="potionEffectFilter">
+          <DropdownFilter
+            v-if="potionEffects.length > 0"
+            :placeholder="'Potion Effect'"
+            :icon="'fa-solid fa-flask'"
+            :options="potionEffects"
+            :single-selection="true"
+            v-model="potionEffectFilter">
           </DropdownFilter>
 
-          <DropdownFilter v-if="customDiscs.length > 0" :placeholder="'Custom Discs'" :icon="'fa-solid fa-record-vinyl'"
-            :options="customDiscs" :single-selection="true" v-model="customDiscFilter">
+          <DropdownFilter
+            v-if="customDiscs.length > 0"
+            :placeholder="'Custom Discs'"
+            :icon="'fa-solid fa-record-vinyl'"
+            :options="customDiscs"
+            :single-selection="true"
+            v-model="customDiscFilter">
           </DropdownFilter>
 
           <SearchBox :placeholder="'Item Name'" v-model="nameFilter"></SearchBox>
         </div>
       </div>
 
-      <div v-if="itemInfo?.shopCaveats"
+      <div
+        v-if="itemInfo?.shopCaveats"
         class="p-4 mb-4 text-sm text-yellow-800 rounded-lg bg-yellow-50 dark:bg-gray-800 dark:text-yellow-300"
         role="alert">
         {{ itemInfo.shopCaveats }}
