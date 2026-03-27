@@ -37,6 +37,10 @@ import {
   faRotateLeft,
   faLinkSlash,
   faHeart,
+  faCamera,
+  faPalette,
+  faTrowel,
+  faPhotoFilm,
   // Don't forget to add it below too!
 } from "@fortawesome/free-solid-svg-icons";
 
@@ -44,7 +48,7 @@ import {
 import {
   faHeart as farHeart,
   // Don't forget to add it below too!
-} from '@fortawesome/free-regular-svg-icons'
+} from "@fortawesome/free-regular-svg-icons";
 
 // Add icons
 library.add(
@@ -83,4 +87,8 @@ library.add(
   faLinkSlash,
   faHeart,
   farHeart,
+  faCamera,
+  faPalette,
+  faTrowel,
+  faPhotoFilm,
 );

@@ -63,19 +63,20 @@ itemInfo["LUA_FISH_MUSIC_BOOK"] = {
   isSpecialItem: true,
   description: "Written books that can be used on the Lua_Fish record player to play music.",
 };
-itemInfo["PLAYER_HEAD"] = {
-  itemType: "PLAYER_HEAD",
-  displayName: "Player Heads",
-  icon: "fa-solid fa-cube",
-  isSpecialItem: true,
-  description: "Can be used as decoration. Some have additional functionality through Figura.",
-};
 itemInfo["PAINTING"] = {
   itemType: "PAINTING",
   displayName: "Player Paintings",
   icon: "fa-solid fa-image",
   isSpecialItem: true,
   description: "Paintings created by the players of the server",
+  moreInfoLink: "https://docs.callmecarson.live/books/smp-online/page/joy-of-painting",
+};
+itemInfo["PALETTE"] = {
+  itemType: "PALETTE",
+  displayName: "Palette",
+  icon: "fa-solid fa-palette",
+  isSpecialItem: true,
+  description: "Used with a blank canvas to create a painting.",
   moreInfoLink: "https://docs.callmecarson.live/books/smp-online/page/joy-of-painting",
 };
 itemInfo["FILLED_MAP"] = {
@@ -101,6 +102,37 @@ itemInfo["WARP_PLATE"] = {
   isSpecialItem: true,
   description: "Allows teleporting between two locations by linking two warp plates together.",
   moreInfoLink: "https://docs.callmecarson.live/books/smp-online/page/warp-plates"
+};
+itemInfo["CAMERA"] = {
+  itemType: "CAMERA",
+  displayName: "Camera",
+  icon: "fa-solid fa-camera",
+  isSpecialItem: true,
+  description: "Can be used with gunpowder to take in-game pictures!",
+  moreInfoLink: "https://docs.callmecarson.live/books/smp-online/page/camerapture"
+};
+itemInfo["CAMERA_PICTURE"] = {
+  itemType: "CAMERA_PICTURE",
+  displayName: "Camera Picture",
+  icon: "fa-solid fa-photo-film",
+  isSpecialItem: true,
+  description: "Pictures taken using the in-game camera",
+  moreInfoLink: "https://docs.callmecarson.live/books/smp-online/page/camerapture"
+};
+itemInfo["PLAYER_HEAD"] = {
+  itemType: "PLAYER_HEAD",
+  displayName: "Player Heads",
+  icon: "fa-solid fa-cube",
+  isSpecialItem: true,
+  description: "Can be used as decoration. Some have additional functionality through Figura.",
+};
+itemInfo["BEDROCK_DRILL"] = {
+  itemType: "BEDROCK_DRILL",
+  displayName: "Bedrock Drill",
+  icon: "fa-solid fa-trowel",
+  isSpecialItem: true,
+  description: "Destroys blocks of bedrock.",
+  moreInfoLink: "https://docs.callmecarson.live/books/smp-online/page/fung-tech-bedrock-drill"
 };
 
 const specialItems = Object.keys(itemInfo)
