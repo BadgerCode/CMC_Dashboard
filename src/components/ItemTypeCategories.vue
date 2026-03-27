@@ -155,7 +155,7 @@ function selectCategory(name: string) {
             <font-awesome-icon :icon="item.info.icon" />
           </div>
           <div v-else-if="item.info?.picture">
-            <img :src="item.info.picture" class="w-6 h-6" />
+            <img :src="item.info.picture" class="size-6" />
           </div>
 
           <!-- Item name -->
