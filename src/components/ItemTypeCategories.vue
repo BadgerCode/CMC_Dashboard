@@ -146,7 +146,6 @@ function selectCategory(name: string) {
 
       <!-- Item types -->
       <div class="flex flex-row flex-wrap gap-1 content-start justify-center max-h-48 h-auto overflow-x-scroll">
-        <!-- TODO: Router link -->
         <RouterLink v-for="item in categoryItems" :to="{ name: 'itemSales', params: { itemType: item.type } }"
           class="item-button" :title="formatItemType(item.type).toLocaleLowerCase()">
 
