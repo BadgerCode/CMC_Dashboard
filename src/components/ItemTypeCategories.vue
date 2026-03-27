@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed } from 'vue';
 import ItemTypeSearch from './ItemTypeSearch.vue';
 import { formatItemType } from '@/utilities/item-type-format';
 import { userStore } from '@/store/user-state';
 import { appStore } from '@/store/app-state';
+import { getItemInfo, type ItemInfo } from '@/models/item-info';
 
 interface Category {
   name: string;
@@ -13,8 +14,7 @@ interface Category {
 
 interface Item {
   type: string;
-  icon?: string | null;
-  picture?: string | null;
+  info: ItemInfo | null;
 }
 
 const categories = [
@@ -22,70 +22,70 @@ const categories = [
     name: "Valuable Resources",
     icon: "fa-regular fa-gem",
     items: [
-      { type: "IRON_INGOT", picture: "https://minecraft.wiki/images/Iron_Ingot_JE3_BE2.png?849cb" },
-      { type: "IRON_BLOCK", picture: "https://minecraft.wiki/images/Block_of_Iron_JE4_BE3.png?18948" },
-      { type: "GOLD_INGOT", picture: "https://minecraft.wiki/images/Gold_Ingot_JE4_BE2.png?80cd6" },
-      { type: "GOLD_BLOCK", picture: "https://minecraft.wiki/images/Block_of_Gold_JE6_BE3.png?09478" },
-      { type: "NETHERITE_INGOT", picture: "https://minecraft.wiki/images/Netherite_Ingot_JE1_BE2.png?79364" },
-      { type: "EMERALD", picture: "https://minecraft.wiki/images/Emerald_JE3_BE3.png?4c5f3" },
-      { type: "EMERALD_BLOCK", picture: "https://minecraft.wiki/images/Block_of_Emerald_JE4_BE3.png?d5a3c" },
-      { type: "RAW_COPPER_BLOCK", picture: "https://minecraft.wiki/images/Block_of_Raw_Copper_JE2_BE2.png?a4e9a" },
-      { type: "GUNPOWDER", picture: "https://minecraft.wiki/images/Gunpowder_JE2_BE2.png?c4145" },
-      { type: "HEAVY_CORE", picture: "https://minecraft.wiki/images/Heavy_Core_JE1_BE1.png?57df9" },
-      { type: "SHULKER_SHELL", picture: "https://minecraft.wiki/images/Shulker_Shell_JE2_BE2.png?f3027" },
-      { type: "TRIAL_KEY", picture: "https://minecraft.wiki/images/Trial_Key_JE2_BE2.png?a203a" },
-      { type: "OMINOUS_TRIAL_KEY", picture: "https://minecraft.wiki/images/Ominous_Trial_Key_JE1_BE1.png?56dd6" },
-      { type: "NETHER_STAR", picture: "https://minecraft.wiki/images/Nether_Star.gif?fb01f" },
+      { type: "IRON_INGOT", info: getItemInfo("IRON_INGOT") },
+      { type: "IRON_BLOCK", info: getItemInfo("IRON_BLOCK") },
+      { type: "GOLD_INGOT", info: getItemInfo("GOLD_INGOT") },
+      { type: "GOLD_BLOCK", info: getItemInfo("GOLD_BLOCK") },
+      { type: "NETHERITE_INGOT", info: getItemInfo("NETHERITE_INGOT") },
+      { type: "EMERALD", info: getItemInfo("EMERALD") },
+      { type: "EMERALD_BLOCK", info: getItemInfo("EMERALD_BLOCK") },
+      { type: "RAW_COPPER_BLOCK", info: getItemInfo("RAW_COPPER_BLOCK") },
+      { type: "GUNPOWDER", info: getItemInfo("GUNPOWDER") },
+      { type: "HEAVY_CORE", info: getItemInfo("HEAVY_CORE") },
+      { type: "SHULKER_SHELL", info: getItemInfo("SHULKER_SHELL") },
+      { type: "TRIAL_KEY", info: getItemInfo("TRIAL_KEY") },
+      { type: "OMINOUS_TRIAL_KEY", info: getItemInfo("OMINOUS_TRIAL_KEY") },
+      { type: "NETHER_STAR", info: getItemInfo("NETHER_STAR") },
     ]
   },
   {
     name: "Equipment",
     icon: "fa-solid fa-hammer",
     items: [
-      { type: "BEACON", picture: "https://minecraft.wiki/images/Beacon_JE6_BE2.png?684bf" },
-      { type: "WAYSTONE", icon: "fa-solid fa-chess-rook" },
-      { type: "WARP_PAD", icon: "fa-solid fa-layer-group" },
-      { type: "ELYTRA", picture: "https://minecraft.wiki/images/Elytra_%28item%29_JE1_BE1.png?8f01d" },
-      { type: "TOTEM_OF_UNDYING", picture: "https://minecraft.wiki/images/Totem_of_Undying_JE2_BE2.png?d56eb" },
-      { type: "ENCHANTED_BOOK", picture: "https://minecraft.wiki/images/Enchanted_Book.gif?b21c4" },
-      { type: "POTION", picture: "https://minecraft.wiki/images/Water_Bottle_JE2_BE2.png?acae5" },
-      { type: "SPLASH_POTION", picture: "https://minecraft.wiki/images/Splash_Water_Bottle_JE2_BE2.png?7a92d" },
-      { type: "LINGERING_POTION", picture: "https://minecraft.wiki/images/Lingering_Water_Bottle_JE2_BE2.png?ed26b" },
-      { type: "BEDROCK_DRILL", icon: "fa-solid fa-trowel" }
+      { type: "BEACON", info: getItemInfo("BEACON") },
+      { type: "WAYSTONE", info: getItemInfo("WAYSTONE") },
+      { type: "WARP_PLATE", info: getItemInfo("WARP_PLATE") },
+      { type: "ELYTRA", info: getItemInfo("ELYTRA") },
+      { type: "TOTEM_OF_UNDYING", info: getItemInfo("TOTEM_OF_UNDYING") },
+      { type: "ENCHANTED_BOOK", info: getItemInfo("ENCHANTED_BOOK") },
+      { type: "POTION", info: getItemInfo("POTION") },
+      { type: "SPLASH_POTION", info: getItemInfo("SPLASH_POTION") },
+      { type: "LINGERING_POTION", info: getItemInfo("LINGERING_POTION") },
+      { type: "BEDROCK_DRILL", info: getItemInfo("BEDROCK_DRILL") },
     ]
   },
   {
     name: "Building Resources",
     icon: "fa-solid fa-cubes",
     items: [
-      { type: "OAK_LOG", picture: "https://minecraft.wiki/images/Oak_Log_%28UD%29_JE8_BE3.png" },
-      { type: "SPRUCE_LOG", picture: "https://minecraft.wiki/images/Spruce_Log_(UD)_JE8_BE4.png" },
-      { type: "PALE_OAK_LOG", picture: "https://minecraft.wiki/images/Pale_Oak_Log_(UD)_JE1_BE1.png" },
-      { type: "DARK_OAK_LOG", picture: "https://minecraft.wiki/images/Dark_Oak_Log_(UD)_JE9_BE4.png" },
-      { type: "BIRCH_LOG", picture: "https://minecraft.wiki/images/Birch_Log_(UD)_JE8_BE4.png" },
-      { type: "CHERRY_LOG", picture: "https://minecraft.wiki/images/Cherry_Log_(UD)_JE1_BE1.png" },
-      { type: "JUNGLE_LOG", picture: "https://minecraft.wiki/images/Jungle_Log_(UD)_JE9_BE4.png" },
-      { type: "MANGROVE_LOG", picture: "https://minecraft.wiki/images/Mangrove_Log_(UD)_JE1_BE1.png" },
-      { type: "ACACIA_LOG", picture: "https://minecraft.wiki/images/Acacia_Log_(UD)_JE8_BE3.png" },
-      { type: "BONE_BLOCK", picture: "https://minecraft.wiki/images/Bone_Block_%28UD%29_JE2_BE2.png?21f6b" },
-      { type: "STONE", picture: "https://minecraft.wiki/images/Stone_JE5_BE3.png?5780c" },
-      { type: "DIRT", picture: "https://minecraft.wiki/images/Dirt_JE2_BE2.png?438ac" },
-      { type: "COBBLED_DEEPSLATE", picture: "https://minecraft.wiki/images/Cobbled_Deepslate.png?86523" }
+      { type: "OAK_LOG", info: getItemInfo("OAK_LOG") },
+      { type: "SPRUCE_LOG", info: getItemInfo("SPRUCE_LOG") },
+      { type: "PALE_OAK_LOG", info: getItemInfo("PALE_OAK_LOG") },
+      { type: "DARK_OAK_LOG", info: getItemInfo("DARK_OAK_LOG") },
+      { type: "BIRCH_LOG", info: getItemInfo("BIRCH_LOG") },
+      { type: "CHERRY_LOG", info: getItemInfo("CHERRY_LOG") },
+      { type: "JUNGLE_LOG", info: getItemInfo("JUNGLE_LOG") },
+      { type: "MANGROVE_LOG", info: getItemInfo("MANGROVE_LOG") },
+      { type: "ACACIA_LOG", info: getItemInfo("ACACIA_LOG") },
+      { type: "BONE_BLOCK", info: getItemInfo("BONE_BLOCK") },
+      { type: "STONE", info: getItemInfo("STONE") },
+      { type: "DIRT", info: getItemInfo("DIRT") },
+      { type: "COBBLED_DEEPSLATE", info: getItemInfo("COBBLED_DEEPSLATE") },
     ]
   },
   {
     name: "Art",
     icon: "fa-solid fa-palette",
     items: [
-      { type: "PAINTING", icon: "fa-solid fa-image" },
-      { type: "PALETTE", icon: "fa-solid fa-palette" },
-      { type: "CAMERA_PICTURE", icon: "fa-solid fa-photo-film" },
-      { type: "CAMERA", icon: "fa-solid fa-camera" },
-      { type: "WRITTEN_BOOK", picture: "https://minecraft.wiki/images/Written_Book_JE2_BE2.gif?c6510" },
-      { type: "CUSTOM_MUSIC_DISC", icon: "fa-solid fa-record-vinyl" },
-      { type: "LUA_FISH_MUSIC_BOOK", icon: "fa-solid fa-file-audio" },
-      { type: "FILLED_MAP", icon: "fa-solid fa-map" },
-      { type: "PLAYER_HEAD", picture: "https://minecraft.wiki/images/Player_Head_%28S%29_JE2.png?6f81f" }
+      { type: "PAINTING", info: getItemInfo("PAINTING") },
+      { type: "PALETTE", info: getItemInfo("PALETTE") },
+      { type: "CAMERA_PICTURE", info: getItemInfo("CAMERA_PICTURE") },
+      { type: "CAMERA", info: getItemInfo("CAMERA") },
+      { type: "WRITTEN_BOOK", info: getItemInfo("WRITTEN_BOOK") },
+      { type: "CUSTOM_MUSIC_DISC", info: getItemInfo("CUSTOM_MUSIC_DISC") },
+      { type: "LUA_FISH_MUSIC_BOOK", info: getItemInfo("LUA_FISH_MUSIC_BOOK") },
+      { type: "FILLED_MAP", info: getItemInfo("FILLED_MAP") },
+      { type: "PLAYER_HEAD", info: getItemInfo("PLAYER_HEAD") },
     ]
   }
 ] as Category[];
@@ -99,6 +99,7 @@ const categoryItems = computed(() => {
       .reverse()
       .map(i => ({
         type: i,
+        info: getItemInfo(i)
       })) as Item[];
   }
 
@@ -150,11 +151,11 @@ function selectCategory(name: string) {
           class="item-button" :title="formatItemType(item.type).toLocaleLowerCase()">
 
           <!-- Item icon/picture -->
-          <div v-if="item.icon" class="text-xl">
-            <font-awesome-icon :icon="item.icon" />
+          <div v-if="item.info?.icon" class="text-xl">
+            <font-awesome-icon :icon="item.info.icon" />
           </div>
-          <div v-else-if="item.picture">
-            <img :src="item.picture" class="w-6 h-6" />
+          <div v-else-if="item.info?.picture">
+            <img :src="item.info.picture" class="w-6 h-6" />
           </div>
 
           <!-- Item name -->
