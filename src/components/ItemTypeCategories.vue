@@ -3,6 +3,7 @@ import { computed, ref } from 'vue';
 import ItemTypeSearch from './ItemTypeSearch.vue';
 import { formatItemType } from '@/utilities/item-type-format';
 import { userStore } from '@/store/user-state';
+import { appStore } from '@/store/app-state';
 
 interface Category {
   name: string;
@@ -89,30 +90,25 @@ const categories = [
   }
 ] as Category[];
 
-const selectedCategory = ref(categories[0]!.name as string);
-const categoryItems = ref(categories[0]!.items as Item[]);
+if (appStore.selectedItemCategory == null)
+  appStore.selectedItemCategory = categories[0]!.name;
 
-const recentlyViewedItems = computed(() => {
-  return userStore.recentlyViewedItems
-    .reverse()
-    .map(i => ({
-      type: i,
-    })) as Item[];
+const categoryItems = computed(() => {
+  if (appStore.selectedItemCategory == "Recent") {
+    return userStore.recentlyViewedItems
+      .reverse()
+      .map(i => ({
+        type: i,
+      })) as Item[];
+  }
+
+  let category = categories.find(c => c.name == appStore.selectedItemCategory);
+  return category?.items ?? [];
 });
 
 
 function selectCategory(name: string) {
-  if (name == "Recent") {
-    selectedCategory.value = name;
-    categoryItems.value = recentlyViewedItems.value;
-    return;
-  }
-
-  let category = categories.find(c => c.name == name);
-  if (category == null) return;
-
-  selectedCategory.value = category.name;
-  categoryItems.value = category.items;
+  appStore.selectedItemCategory = name;
 }
 
 </script>
@@ -122,14 +118,14 @@ function selectCategory(name: string) {
     <!-- Categories -->
     <div class="flex flex-row gap-1 mb-1">
       <div v-for="category in categories" class="item-button category"
-        :class="{ 'active': selectedCategory == category.name }" @click="selectCategory(category.name)">
+        :class="{ 'active': appStore.selectedItemCategory == category.name }" @click="selectCategory(category.name)">
         <div class="text-2xl"><font-awesome-icon :icon="category.icon" /></div>
       </div>
 
       <div class="flex-grow"></div>
 
       <!-- Recent items -->
-      <div class="item-button category" :class="{ 'active': selectedCategory == 'Recent' }"
+      <div class="item-button category" :class="{ 'active': appStore.selectedItemCategory == 'Recent' }"
         @click="selectCategory('Recent')">
         <div class="text-2xl"><font-awesome-icon icon="fa-solid fa-clock-rotate-left" /></div>
       </div>
