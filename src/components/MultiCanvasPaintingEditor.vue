@@ -49,13 +49,13 @@ const selectedPaintingId = ref("");
 
 // Automatic ordering
 const widthBlocks = ref(8);
-const startAtBottom = ref(false);
+const startAtBottom = ref(true);
 const sortOptions = [
+  { text: "A-Z", value: "nameAsc" },
+  { text: "Z-A", value: "nameDesc" },
   { text: "Order of selection", value: "selection" },
   { text: "'Painting Name 1'", value: "simpleNumber" },
   { text: "'Painting Name 1/x'", value: "fractions" },
-  { text: "A-Z", value: "nameAsc" },
-  { text: "Z-A", value: "nameDesc" },
   { text: "Oldest first", value: "createdAtAsc" },
   { text: "Newest first", value: "createdAtDesc" },
 ] as DropdownOption[];
@@ -84,8 +84,8 @@ async function startEditor() {
 
   // default automatic sorting options
   sortOrder.value = sortOptions[0]!.value;
-  widthBlocks.value = 8;
-  startAtBottom.value = false;
+  widthBlocks.value = 4;
+  startAtBottom.value = true;
 
   // Automatically arrange the paintings
   arrangePaintings();
@@ -99,7 +99,7 @@ async function startEditor() {
   // Populate names dropdown
   let previousNames = previousSales.value.map((s) => s.customName?.trim()).filter((s) => s);
   previousNames.push(props.canvases[0]!.title.trim()); // Add first painting name as default option
-  titleOptions.value = [...new Set(previousNames)].map((s) => ({ text: s, value: s } as DropdownOption));
+  titleOptions.value = [...new Set(previousNames)].map((s) => ({ text: s, value: s }) as DropdownOption);
   title.value = titleOptions.value[0]!.value;
 
   // Done loading
@@ -142,7 +142,7 @@ function arrangePaintings() {
       let first = sortOrder.value == "nameAsc" ? a.title : b.title;
       let second = sortOrder.value == "nameAsc" ? b.title : a.title;
 
-      return first.localeCompare(second, undefined, {numeric: true, sensitivity: 'base'});
+      return first.localeCompare(second, undefined, { numeric: true, sensitivity: "base" });
     });
   }
 
@@ -361,7 +361,6 @@ function swapPaintings(firstPaintingId: string, secondPaintingId: string) {
           <div v-else class="flex flex-col space-y-4 md:space-y-6 py-4 md:py-6 flex-1 overflow-y-auto">
             <!-- Top controls -->
             <div class="flex flex-row">
-
               <!-- Title -->
               <div class="max-w-sm mx-auto">
                 <label class="block mb-2.5 text-sm font-medium text-heading">Title</label>
@@ -459,11 +458,27 @@ function swapPaintings(firstPaintingId: string, secondPaintingId: string) {
                       <!-- Number of columns -->
                       <div class="flex flex-col gap-2">
                         <label class="block mb-2.5 text-sm font-medium text-heading"> Total width (blocks) </label>
-                        <input
-                          type="number"
-                          class="textbox w-full"
-                          placeholder="E.g. 2 large paintings is 4 blocks"
-                          v-model="widthBlocks" />
+                        <div class="flex flex-row gap-1">
+                          <button
+                            @click="
+                              widthBlocks = Math.max(0, widthBlocks - 1);
+                              arrangePaintings();
+                            "
+                            type="button"
+                            class="button-secondary">
+                            -
+                          </button>
+                          <input type="number" class="textbox w-full" placeholder="Blocks" v-model="widthBlocks" />
+                          <button
+                            @click="
+                              widthBlocks++;
+                              arrangePaintings();
+                            "
+                            type="button"
+                            class="button-secondary">
+                            +
+                          </button>
+                        </div>
                       </div>
 
                       <!-- Sorting -->
