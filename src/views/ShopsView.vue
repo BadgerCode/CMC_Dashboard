@@ -199,7 +199,7 @@ function matchesFilters(item: ShopItem, itemType: string) {
       </SearchWithResults>
     </div>
 
-    <div>
+    <div class="max-w-full">
       <ItemTypeSearch
         :item-types="shopData?.itemTypes ?? []"
         @selection="
