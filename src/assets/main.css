@@ -5,7 +5,7 @@
 
 /* Text */
 .hint-text {
-  @apply text-gray-500 text-sm;
+  @apply text-gray-500 text-xs md:text-sm;
 }
 
 /* Links */

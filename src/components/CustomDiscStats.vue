@@ -23,15 +23,18 @@ const loading = ref(true);
 
 // Table data
 const allDiscs = computed(() =>
-  itemsStore.customDiscStats.map((d) => ({ 
-    stats: d,
-    discInfo: itemsStore.customDiscLookup[d.discName] ?? {
-      name: d.discName,
-      displayName: d.discName.replace("smponline_discs:", ""),
-      source: "Unknown",
-      version: "Unknown",
-    }
-  }) as DiscOverview),
+  itemsStore.customDiscStats.map(
+    (d) =>
+      ({
+        stats: d,
+        discInfo: itemsStore.customDiscLookup[d.discName] ?? {
+          name: d.discName,
+          displayName: d.discName.replace("smponline_discs:", ""),
+          source: "Unknown",
+          version: "Unknown",
+        },
+      }) as DiscOverview,
+  ),
 );
 const filteredDiscs = ref([] as DiscOverview[]);
 
@@ -167,7 +170,7 @@ function applyFilters() {
               <span>Sales</span>
               <font-awesome-icon icon="fa-solid fa-sort" class="text-xs ml-1 cursor-pointer" @click="sort('numSales', false)" />
             </th>
-            <th class="table-item hidden md:table-cell">
+            <th class="table-item">
               <span>Price</span>
               <font-awesome-icon icon="fa-solid fa-sort" class="text-xs ml-1 cursor-pointer" @click="sort('averagePrice', false)" />
             </th>
@@ -175,7 +178,7 @@ function applyFilters() {
         </thead>
         <tbody>
           <tr v-for="disc in paginatedDiscs" class="stripped-row">
-            <td class="table-item">
+            <td class="table-item wrap-anywhere">
               <div>
                 <a class="hyperlink" @click="$emit('selection', disc.stats.discName)">{{ disc.discInfo.displayName }}</a>
               </div>
@@ -184,8 +187,22 @@ function applyFilters() {
             <td class="table-item">{{ disc.stats.numSales }}</td>
             <td class="table-item" v-if="disc.stats.numSales == 1">{{ disc.stats.maxPrice }} 💎</td>
             <td class="table-item" v-else>
-              <div>{{ disc.stats.minPrice }} - {{ disc.stats.maxPrice }} 💎</div>
-              <div class="hint-text">Average {{ formatNumber(disc.stats.averagePrice, 2) }} 💎</div>
+              <!-- Mobile -->
+              <div class="flex flex-col md:hidden pb-1 text-nowrap">
+                <div>Min</div>
+                <div class="pb-1">{{ formatNumber(disc.stats.minPrice, 2) }} 💎</div>
+
+                <div>Max</div>
+                <div>{{ formatNumber(disc.stats.maxPrice, 2) }} 💎</div>
+              </div>
+
+              <!-- Desktop -->
+              <div class="hidden md:block">{{ formatNumber(disc.stats.minPrice, 2) }} - {{ formatNumber(disc.stats.maxPrice, 2) }} 💎</div>
+
+              <div class="hint-text flex flex-col md:flex-row md:gap-1 text-nowrap">
+                <span>Average </span>
+                <span>{{ formatNumber(disc.stats.averagePrice, 2) }} 💎</span>
+              </div>
             </td>
           </tr>
         </tbody>
