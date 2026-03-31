@@ -16,12 +16,16 @@ interface DiscOverview {
 }
 
 const loading = ref(true);
-const filteredDiscs = ref([] as DiscOverview[]);
+
+// Table data
 const allDiscs = computed(() =>
   itemsStore.customDiscStats.map((d) => ({ stats: d, discInfo: itemsStore.customDiscLookup[d.discName] }) as DiscOverview),
 );
-// TODO: Pagination?
-const paginatedDiscs = computed(() => applySort(filteredDiscs.value));
+const filteredDiscs = ref([] as DiscOverview[]);
+
+// Pagination
+const pageNumber = ref(1);
+const paginatedDiscs = computed(() => applySort(filteredDiscs.value).slice(0, Math.min(50 * pageNumber.value, filteredDiscs.value.length)));
 
 // Setup
 onMounted(async () => {
@@ -103,6 +107,7 @@ function applySort(items: DiscOverview[]) {
 }
 
 function applyFilters() {
+  pageNumber.value = 1;
   filteredDiscs.value = allDiscs.value.filter((d) => {
     // Source (artist/game)
     if (sourceFilter.value.length && !sourceFilter.value.includes(d.discInfo.source)) return false;
@@ -111,7 +116,12 @@ function applyFilters() {
     if (versionFilter.value.length && !versionFilter.value.includes(d.discInfo.version)) return false;
 
     // Name
-    if (nameFilter.value.length && !d.discInfo.displayName.includes(nameFilter.value) && !d.discInfo.name.includes(nameFilter.value))
+    let nameFilterLower = nameFilter.value.toLocaleLowerCase();
+    if (
+      nameFilter.value.length &&
+      !d.discInfo.displayName.toLocaleLowerCase().includes(nameFilterLower) &&
+      !d.discInfo.name.includes(nameFilterLower)
+    )
       return false;
 
     return true;
@@ -159,13 +169,21 @@ function applyFilters() {
             <td class="table-item" v-if="disc.stats.numSales == 1">{{ disc.stats.maxPrice }} 💎</td>
             <td class="table-item" v-else>
               <div>{{ disc.stats.minPrice }} - {{ disc.stats.maxPrice }} 💎</div>
-              <div>Average: {{ formatNumber(disc.stats.averagePrice, 2) }} 💎</div>
+              <div class="hint-text">Average {{ formatNumber(disc.stats.averagePrice, 2) }} 💎</div>
             </td>
           </tr>
         </tbody>
       </table>
 
       <Loading v-if="loading" :fill-space="true"></Loading>
+
+      <div class="mt-2 text-center p-2">
+        <div v-if="paginatedDiscs.length == 0">No discs found</div>
+        <button type="button" class="button" v-on:click="pageNumber++" v-else-if="paginatedDiscs.length < filteredDiscs.length">
+          More
+        </button>
+        <div v-else>No more results</div>
+      </div>
     </div>
   </div>
 </template>
