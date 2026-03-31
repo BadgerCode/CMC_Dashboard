@@ -20,7 +20,7 @@ const filteredDiscs = ref([] as DiscOverview[]);
 const allDiscs = computed(() =>
   itemsStore.customDiscStats.map((d) => ({ stats: d, discInfo: itemsStore.customDiscLookup[d.discName] }) as DiscOverview),
 );
-// TODO: Pagination
+// TODO: Pagination?
 const paginatedDiscs = computed(() => applySort(filteredDiscs.value));
 
 // Setup
@@ -32,6 +32,7 @@ onMounted(async () => {
   loading.value = false;
 });
 
+//
 // Filter: Source
 const sourceOptions = computed(() =>
   [...new Set(itemsStore.customDiscs?.discs.map((d) => d.source))].sort().map(
@@ -48,6 +49,7 @@ watch(sourceFilter, async (_, __) => {
   applyFilters();
 });
 
+//
 // Filter: Version
 const versionOptions = computed(() =>
   [...new Set(itemsStore.customDiscs?.discs.map((d) => d.version))].sort().map(
@@ -64,6 +66,7 @@ watch(versionFilter, async (_, __) => {
   applyFilters();
 });
 
+//
 // Filter: Disc name
 const nameFilter = ref("");
 watch(nameFilter, async (_, __) => {
@@ -85,11 +88,14 @@ function applySort(items: DiscOverview[]) {
   items.sort((a, b) => {
     let first = sortAscending.value ? a : b;
     let second = sortAscending.value ? b : a;
-
     let sortResult = 0;
+
+    // Sales
     if (sortProperty.value == "numSales") sortResult = first.stats.numSales - second.stats.numSales;
+    // Average price
     else if (sortProperty.value == "averagePrice") sortResult = first.stats.averagePrice - second.stats.averagePrice;
 
+    // Otherwise name
     return sortResult || first.discInfo.displayName.localeCompare(second.discInfo.displayName);
   });
 
@@ -97,10 +103,14 @@ function applySort(items: DiscOverview[]) {
 }
 
 function applyFilters() {
-  console.log("Apply Filters");
   filteredDiscs.value = allDiscs.value.filter((d) => {
+    // Source (artist/game)
     if (sourceFilter.value.length && !sourceFilter.value.includes(d.discInfo.source)) return false;
+
+    // Version (5.0, 5.1)
     if (versionFilter.value.length && !versionFilter.value.includes(d.discInfo.version)) return false;
+
+    // Name
     if (nameFilter.value.length && !d.discInfo.displayName.includes(nameFilter.value) && !d.discInfo.name.includes(nameFilter.value))
       return false;
 
@@ -145,7 +155,6 @@ function applyFilters() {
               <div>{{ disc.discInfo.displayName }}</div>
               <div class="hint-text">{{ disc.stats.discName.replace("smponline_discs:", "") }}</div>
             </td>
-            <!-- TODO: Fancy name-->
             <td class="table-item">{{ disc.stats.numSales }}</td>
             <td class="table-item" v-if="disc.stats.numSales == 1">{{ disc.stats.maxPrice }} 💎</td>
             <td class="table-item" v-else>
