@@ -16,21 +16,16 @@ export async function retrieveCustomDiscs(): Promise<CustomDiscsOverview> {
   return itemsStore.customDiscs;
 }
 
-export async function retrieveCustomDiscStats(): Promise<{ [discName: string]: CustomDiscStats; }> {
+export async function retrieveCustomDiscStats(): Promise<CustomDiscStats[]> {
   // Don't reload if data is recent
   if (itemsStore.customDiscStats != null && new Date().getTime() - itemsStore.customDiscsStatsLastUpdated.getTime() < 30000)
     return itemsStore.customDiscStats;
 
   // Get custom disc stats
   let httpResponse = await fetch(`${Config.APIURL}/api/customDiscs/stats`, { method: "get" });
-  if (httpResponse.status !== 200) return {};
+  if (httpResponse.status !== 200) return [];
 
-  let discs = (await httpResponse.json()).result.discs as CustomDiscStats[];
-  itemsStore.customDiscStats = {};
-  for (const disc of discs) {
-    itemsStore.customDiscStats[disc.discName] = disc;
-  }
-
+  itemsStore.customDiscStats = (await httpResponse.json()).result.discs as CustomDiscStats[];
   itemsStore.customDiscsStatsLastUpdated = new Date();
   return itemsStore.customDiscStats;
 }

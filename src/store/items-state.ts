@@ -5,7 +5,7 @@ import { reactive } from "vue";
 export interface ItemsOverview {
   customDiscs: CustomDiscsOverview | null;
   customDiscsLastUpdated: Date;
-  customDiscStats: { [discName: string]: CustomDiscStats; };
+  customDiscStats: CustomDiscStats[];
   customDiscsStatsLastUpdated: Date;
   villagerTrades: VillagerTrade[];
   villagerTradesLastUpdated: Date;
@@ -14,7 +14,7 @@ export interface ItemsOverview {
 export const itemsStore = reactive({
   customDiscs: null,
   customDiscsLastUpdated: new Date(0),
-  customDiscStats: {},
+  customDiscStats: [],
   customDiscsStatsLastUpdated: new Date(0),
   villagerTrades: [],
   villagerTradesLastUpdated: new Date(0),
