@@ -10,6 +10,10 @@ import * as CustomDiscsAPI from "@/api/customDiscs/api";
 import { formatNumber } from "@/utilities/number-format";
 import Loading from "./Loading.vue";
 
+defineEmits<{
+  (e: "selection", discName: string): void;
+}>();
+
 interface DiscOverview {
   stats: CustomDiscStats;
   discInfo: CustomDisc;
@@ -19,7 +23,15 @@ const loading = ref(true);
 
 // Table data
 const allDiscs = computed(() =>
-  itemsStore.customDiscStats.map((d) => ({ stats: d, discInfo: itemsStore.customDiscLookup[d.discName] }) as DiscOverview),
+  itemsStore.customDiscStats.map((d) => ({ 
+    stats: d,
+    discInfo: itemsStore.customDiscLookup[d.discName] ?? {
+      name: d.discName,
+      displayName: d.discName.replace("smponline_discs:", ""),
+      source: "Unknown",
+      version: "Unknown",
+    }
+  }) as DiscOverview),
 );
 const filteredDiscs = ref([] as DiscOverview[]);
 
@@ -141,6 +153,8 @@ function applyFilters() {
       <SearchBox :placeholder="'Disc Name'" v-model="nameFilter"></SearchBox>
     </div>
 
+    <div class="hint-text mb-2">Select a disc to filter the sales and shops tables lower on the page.</div>
+
     <div class="max-h-[400px] overflow-y-auto">
       <table class="w-full text-left rtl:text-right text-gray-400 text-xs md:text-base">
         <thead class="table-head">
@@ -162,7 +176,9 @@ function applyFilters() {
         <tbody>
           <tr v-for="disc in paginatedDiscs" class="stripped-row">
             <td class="table-item">
-              <div>{{ disc.discInfo.displayName }}</div>
+              <div>
+                <a class="hyperlink" @click="$emit('selection', disc.stats.discName)">{{ disc.discInfo.displayName }}</a>
+              </div>
               <div class="hint-text">{{ disc.stats.discName.replace("smponline_discs:", "") }}</div>
             </td>
             <td class="table-item">{{ disc.stats.numSales }}</td>

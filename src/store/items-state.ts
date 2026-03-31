@@ -2,22 +2,23 @@ import type { CustomDisc, CustomDiscsOverview, CustomDiscStats } from "@/api/cus
 import type { VillagerTrade } from "@/api/villagerTrades/villagerTrades";
 import { reactive } from "vue";
 
-export interface ItemsOverview {
-  customDiscs: CustomDiscsOverview;
-  customDiscLookup: { [discName: string]: CustomDisc };
-  customDiscsLastUpdated: Date;
-  customDiscStats: CustomDiscStats[];
-  customDiscsStatsLastUpdated: Date;
-  villagerTrades: VillagerTrade[];
-  villagerTradesLastUpdated: Date;
-}
-
 export const itemsStore = reactive({
-  customDiscs: { discs: [], unsoldDiscs: 0 },
-  customDiscLookup: {},
+  customDiscs: { discs: [], unsoldDiscs: 0 } as CustomDiscsOverview,
+  customDiscLookup: {} as { [discName: string]: CustomDisc },
   customDiscsLastUpdated: new Date(0),
-  customDiscStats: [],
+  customDiscStats: [] as CustomDiscStats[],
   customDiscsStatsLastUpdated: new Date(0),
-  villagerTrades: [],
+  villagerTrades: [] as VillagerTrade[],
   villagerTradesLastUpdated: new Date(0),
-} as ItemsOverview);
+
+  retrieveDisc(discName: string): CustomDisc {
+    return (
+      itemsStore.customDiscLookup[discName] ?? {
+        name: discName,
+        displayName: discName.replace("smponline_discs:", ""),
+        source: "Unknown",
+        version: "Unknown",
+      }
+    );
+  },
+});
