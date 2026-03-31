@@ -12,6 +12,9 @@ export async function retrieveCustomDiscs(): Promise<CustomDiscsOverview> {
   if (httpResponse.status !== 200) return { discs: [], unsoldDiscs: 0 };
 
   itemsStore.customDiscs = (await httpResponse.json()).result as CustomDiscsOverview;
+  for (const disc of itemsStore.customDiscs.discs) {
+    itemsStore.customDiscLookup[disc.name] = disc;
+  }
   itemsStore.customDiscsLastUpdated = new Date();
   return itemsStore.customDiscs;
 }
