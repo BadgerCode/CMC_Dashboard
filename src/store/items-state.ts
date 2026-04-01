@@ -1,4 +1,3 @@
-import type { CustomDisc, CustomDiscsOverview, CustomDiscStats } from "@/api/customDiscs/customDiscs";
 import type { VillagerTrade } from "@/api/villagerTrades/villagerTrades";
 import { reactive } from "vue";
 
@@ -11,6 +10,7 @@ export interface CustomMusicDisc {
   minPrice: number;
   maxPrice: number;
   averagePrice: number;
+  latestSale?: string;
 };
 
 export const itemsStore = reactive({

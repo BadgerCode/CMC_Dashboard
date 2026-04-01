@@ -72,8 +72,8 @@ watch(nameFilter, async (_, __) => {
 });
 
 // Sorting
-let sortProperty = ref("");
-let sortAscending = ref(true);
+let sortProperty = ref("latestSale");
+let sortAscending = ref(false);
 function sort(property: string, ascendingByDefault: boolean) {
   if (sortProperty.value == property) sortAscending.value = !sortAscending.value;
   else {
@@ -93,6 +93,7 @@ function applySort(items: CustomMusicDisc[]) {
     if (sortProperty.value == "numSales") sortResult = first.numSales - second.numSales;
     // Average price
     else if (sortProperty.value == "averagePrice") sortResult = first.averagePrice - second.averagePrice;
+    else if (sortProperty.value == "latestSale") sortResult = (first.latestSale ?? "")?.localeCompare(second.latestSale ?? "");
 
     // Otherwise name
     return (sortResult || (first.displayName).localeCompare(second.displayName));
@@ -198,7 +199,7 @@ function applyFilters() {
 
               <!-- Price range (Desktop) -->
               <div class="hidden md:block">
-                {{ formatNumber(disc.minPrice, 2) }} - {{ formatNumber(disc.maxPrice, 2) }} 💎
+                {{ formatNumber(disc.minPrice, 2) }}-{{ formatNumber(disc.maxPrice, 2) }} 💎
               </div>
 
               <!-- Average (mobile/desktop) -->

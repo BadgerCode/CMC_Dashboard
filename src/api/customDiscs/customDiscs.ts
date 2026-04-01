@@ -16,4 +16,5 @@ export interface CustomDiscStats {
   minPrice: number;
   maxPrice: number;
   averagePrice: number;
+  latestSale: string;
 }

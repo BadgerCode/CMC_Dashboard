@@ -49,6 +49,7 @@ export async function retrieveCustomDiscStats(): Promise<void> {
     storeDisc.minPrice = discStats.minPrice;
     storeDisc.maxPrice = discStats.maxPrice;
     storeDisc.averagePrice = discStats.averagePrice;
+    storeDisc.latestSale = discStats.latestSale;
   }
 
   itemsStore.customDiscsStatsLastUpdated = new Date();
@@ -65,7 +66,7 @@ function getDiscFromStore(discName: string): CustomMusicDisc {
       numSales: 0,
       minPrice: 0,
       maxPrice: 0,
-      averagePrice: 0,
+      averagePrice: 0
     };
   }
 
