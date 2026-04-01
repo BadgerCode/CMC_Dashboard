@@ -74,7 +74,9 @@ watch(potionEffectFilter, async (_, __) => {
 });
 
 // Custom disc filter
-const customDiscs = ref([] as DropdownOption[]);
+const customDiscs = computed(() => Object.values(itemsStore.customMusicDiscs)
+  .map((d) => ({ text: d.displayName, value: d.name }) as DropdownOption)
+  .sort((a, b) => a.text.localeCompare(b.text)));
 const customDiscFilter = ref(route.query["discName"]?.toString() ?? "");
 watch(customDiscFilter, async (_, __) => {
   await reloadSalesAndShops();
@@ -89,9 +91,6 @@ onMounted(async () => {
 
   // Load sales with any filters
   await loadSales();
-
-  // Custom music discs (doesn't rely on shop data)
-  if (props.itemType == "CUSTOM_MUSIC_DISC") customDiscs.value.push(...(await loadDiscs()));
 
   // Load shop data
   let shopData = await updateShops();
@@ -160,12 +159,6 @@ async function loadEnchantments(): Promise<DropdownOption[]> {
         }) as DropdownOption,
     )
     .sort((a, b) => a.text.localeCompare(b.text));
-}
-
-async function loadDiscs(): Promise<DropdownOption[]> {
-  let response = await CustomDiscsAPI.retrieveCustomDiscs();
-  numUndiscoveredMusicDiscs.value = response.unsoldDiscs;
-  return response.discs.map((d) => ({ text: d.displayName, value: d.name }) as DropdownOption).sort((a, b) => a.text.localeCompare(b.text));
 }
 
 async function loadPotions(): Promise<DropdownOption[]> {
