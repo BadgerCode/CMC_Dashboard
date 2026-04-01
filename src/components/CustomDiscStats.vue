@@ -16,26 +16,25 @@ defineEmits<{
 
 interface DiscOverview {
   stats: CustomDiscStats;
-  discInfo: CustomDisc;
+  discInfo?: CustomDisc;
 }
 
 const loading = ref(true);
 
 // Table data
-const allDiscs = computed(() =>
-  itemsStore.customDiscStats.map(
+const allDiscs = computed(() => {
+  // For some reason, changes to itemsStore.customDiscLookup aren't triggering this to re-compute.
+  // But logging itemsStore.customDiscs does trigger a reload
+  console.log("Loaded discs", itemsStore.customDiscs.discs.length);
+
+  return itemsStore.customDiscStats.map(
     (d) =>
       ({
         stats: d,
-        discInfo: itemsStore.customDiscLookup[d.discName] ?? {
-          name: d.discName,
-          displayName: d.discName.replace("smponline_discs:", ""),
-          source: "Unknown",
-          version: "Unknown",
-        },
+        discInfo: itemsStore.customDiscLookup[d.discName],
       }) as DiscOverview,
-  ),
-);
+  );
+});
 const filteredDiscs = ref([] as DiscOverview[]);
 
 // Pagination
@@ -115,7 +114,10 @@ function applySort(items: DiscOverview[]) {
     else if (sortProperty.value == "averagePrice") sortResult = first.stats.averagePrice - second.stats.averagePrice;
 
     // Otherwise name
-    return sortResult || first.discInfo.displayName.localeCompare(second.discInfo.displayName);
+    return (
+      sortResult ||
+      (first.discInfo?.displayName ?? first.stats.discName).localeCompare(second.discInfo?.displayName ?? second.stats.discName)
+    );
   });
 
   return items;
@@ -125,17 +127,17 @@ function applyFilters() {
   pageNumber.value = 1;
   filteredDiscs.value = allDiscs.value.filter((d) => {
     // Source (artist/game)
-    if (sourceFilter.value.length && !sourceFilter.value.includes(d.discInfo.source)) return false;
+    if (sourceFilter.value.length && !sourceFilter.value.includes(d.discInfo?.source ?? "Unknown")) return false;
 
     // Version (5.0, 5.1)
-    if (versionFilter.value.length && !versionFilter.value.includes(d.discInfo.version)) return false;
+    if (versionFilter.value.length && !versionFilter.value.includes(d.discInfo?.version ?? "Unknown")) return false;
 
     // Name
     let nameFilterLower = nameFilter.value.toLocaleLowerCase();
     if (
       nameFilter.value.length &&
-      !d.discInfo.displayName.toLocaleLowerCase().includes(nameFilterLower) &&
-      !d.discInfo.name.includes(nameFilterLower)
+      !d.discInfo?.displayName?.toLocaleLowerCase().includes(nameFilterLower) &&
+      !d.stats.discName.includes(nameFilterLower)
     )
       return false;
 
@@ -180,7 +182,9 @@ function applyFilters() {
           <tr v-for="disc in paginatedDiscs" class="stripped-row">
             <td class="table-item wrap-anywhere">
               <div>
-                <a class="hyperlink" @click="$emit('selection', disc.stats.discName)">{{ disc.discInfo.displayName }}</a>
+                <a class="hyperlink" @click="$emit('selection', disc.stats.discName)">
+                  {{ disc.discInfo?.displayName ?? disc.stats.discName.replace("smponline_discs:", "").replace("_", " ") }}
+                </a>
               </div>
               <div class="hint-text">{{ disc.stats.discName.replace("smponline_discs:", "") }}</div>
             </td>
