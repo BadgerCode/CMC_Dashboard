@@ -4,8 +4,7 @@ import { computed, onMounted, ref, watch } from "vue";
 import type { DropdownOption } from "./DropdownFilter.vue";
 import DropdownFilter from "./DropdownFilter.vue";
 import SearchBox from "./SearchBox.vue";
-import type { CustomDisc, CustomDiscStats } from "@/api/customDiscs/customDiscs";
-import { itemsStore } from "@/store/items-state";
+import { itemsStore, type CustomMusicDisc } from "@/store/items-state";
 import * as CustomDiscsAPI from "@/api/customDiscs/api";
 import { formatNumber } from "@/utilities/number-format";
 import Loading from "./Loading.vue";
@@ -14,28 +13,9 @@ defineEmits<{
   (e: "selection", discName: string): void;
 }>();
 
-interface DiscOverview {
-  stats: CustomDiscStats;
-  discInfo?: CustomDisc;
-}
-
 const loading = ref(true);
 
-// Table data
-const allDiscs = computed(() => {
-  // For some reason, changes to itemsStore.customDiscLookup aren't triggering this to re-compute.
-  // But logging itemsStore.customDiscs does trigger a reload
-  console.log("Loaded discs", itemsStore.customDiscs.discs.length);
-
-  return itemsStore.customDiscStats.map(
-    (d) =>
-      ({
-        stats: d,
-        discInfo: itemsStore.customDiscLookup[d.discName],
-      }) as DiscOverview,
-  );
-});
-const filteredDiscs = ref([] as DiscOverview[]);
+const filteredDiscs = ref([] as CustomMusicDisc[]);
 
 // Pagination
 const pageNumber = ref(1);
@@ -53,7 +33,7 @@ onMounted(async () => {
 //
 // Filter: Source
 const sourceOptions = computed(() =>
-  [...new Set(itemsStore.customDiscs?.discs.map((d) => d.source))].sort().map(
+  [...itemsStore.customMusicDiscSources].sort().map(
     (v) =>
       ({
         text: v,
@@ -70,7 +50,7 @@ watch(sourceFilter, async (_, __) => {
 //
 // Filter: Version
 const versionOptions = computed(() =>
-  [...new Set(itemsStore.customDiscs?.discs.map((d) => d.version))].sort().map(
+  [...itemsStore.customMusicDiscVersions].sort().map(
     (v) =>
       ({
         text: v,
@@ -102,22 +82,20 @@ function sort(property: string, ascendingByDefault: boolean) {
   }
 }
 
-function applySort(items: DiscOverview[]) {
+function applySort(items: CustomMusicDisc[]) {
   items.sort((a, b) => {
+    // Negative = a,b. Positive = b,a. 0 = a,b
     let first = sortAscending.value ? a : b;
     let second = sortAscending.value ? b : a;
     let sortResult = 0;
 
     // Sales
-    if (sortProperty.value == "numSales") sortResult = first.stats.numSales - second.stats.numSales;
+    if (sortProperty.value == "numSales") sortResult = first.numSales - second.numSales;
     // Average price
-    else if (sortProperty.value == "averagePrice") sortResult = first.stats.averagePrice - second.stats.averagePrice;
+    else if (sortProperty.value == "averagePrice") sortResult = first.averagePrice - second.averagePrice;
 
     // Otherwise name
-    return (
-      sortResult ||
-      (first.discInfo?.displayName ?? first.stats.discName).localeCompare(second.discInfo?.displayName ?? second.stats.discName)
-    );
+    return (sortResult || (first.displayName).localeCompare(second.displayName));
   });
 
   return items;
@@ -125,19 +103,19 @@ function applySort(items: DiscOverview[]) {
 
 function applyFilters() {
   pageNumber.value = 1;
-  filteredDiscs.value = allDiscs.value.filter((d) => {
+  filteredDiscs.value = Object.values(itemsStore.customMusicDiscs).filter((d) => {
     // Source (artist/game)
-    if (sourceFilter.value.length && !sourceFilter.value.includes(d.discInfo?.source ?? "Unknown")) return false;
+    if (sourceFilter.value.length && !sourceFilter.value.includes(d.source)) return false;
 
     // Version (5.0, 5.1)
-    if (versionFilter.value.length && !versionFilter.value.includes(d.discInfo?.version ?? "Unknown")) return false;
+    if (versionFilter.value.length && !versionFilter.value.includes(d.version)) return false;
 
     // Name
     let nameFilterLower = nameFilter.value.toLocaleLowerCase();
     if (
       nameFilter.value.length &&
-      !d.discInfo?.displayName?.toLocaleLowerCase().includes(nameFilterLower) &&
-      !d.stats.discName.includes(nameFilterLower)
+      !d.displayName?.toLocaleLowerCase().includes(nameFilterLower) &&
+      !d.name.includes(nameFilterLower)
     )
       return false;
 
@@ -150,9 +128,11 @@ function applyFilters() {
   <div>
     <!-- Filters -->
     <div class="flex flex-row flex-wrap gap-1 items-end mb-2">
-      <DropdownFilter :placeholder="'Source'" :icon="'fa-solid fa-user'" :options="sourceOptions" v-model="sourceFilter"> </DropdownFilter>
+      <DropdownFilter :placeholder="'Source'" :icon="'fa-solid fa-user'" :options="sourceOptions"
+        v-model="sourceFilter"> </DropdownFilter>
 
-      <DropdownFilter :placeholder="'Version'" :icon="'fa-solid fa-flask'" :options="versionOptions" v-model="versionFilter">
+      <DropdownFilter :placeholder="'Version'" :icon="'fa-solid fa-flask'" :options="versionOptions"
+        v-model="versionFilter">
       </DropdownFilter>
 
       <SearchBox :placeholder="'Disc Name'" v-model="nameFilter"></SearchBox>
@@ -166,46 +146,65 @@ function applyFilters() {
           <tr>
             <th class="table-item">
               <span>Name</span>
-              <font-awesome-icon icon="fa-solid fa-sort" class="text-xs ml-1 cursor-pointer" @click="sort('displayName', true)" />
+              <font-awesome-icon icon="fa-solid fa-sort" class="text-xs ml-1 cursor-pointer"
+                @click="sort('displayName', true)" />
             </th>
             <th class="table-item">
               <span>Sales</span>
-              <font-awesome-icon icon="fa-solid fa-sort" class="text-xs ml-1 cursor-pointer" @click="sort('numSales', false)" />
+              <font-awesome-icon icon="fa-solid fa-sort" class="text-xs ml-1 cursor-pointer"
+                @click="sort('numSales', false)" />
             </th>
             <th class="table-item">
               <span>Price</span>
-              <font-awesome-icon icon="fa-solid fa-sort" class="text-xs ml-1 cursor-pointer" @click="sort('averagePrice', false)" />
+              <font-awesome-icon icon="fa-solid fa-sort" class="text-xs ml-1 cursor-pointer"
+                @click="sort('averagePrice', false)" />
             </th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="disc in paginatedDiscs" class="stripped-row">
+            <!-- Disc name -->
             <td class="table-item wrap-anywhere">
               <div>
-                <a class="hyperlink" @click="$emit('selection', disc.stats.discName)">
-                  {{ disc.discInfo?.displayName ?? disc.stats.discName.replace("smponline_discs:", "").replace("_", " ") }}
+                <a class="hyperlink" @click="$emit('selection', disc.name)">
+                  {{ disc.displayName }}
                 </a>
               </div>
-              <div class="hint-text">{{ disc.stats.discName.replace("smponline_discs:", "") }}</div>
+              <div class="hint-text">{{ disc.name.replace("smponline_discs:", "") }}</div>
             </td>
-            <td class="table-item">{{ disc.stats.numSales }}</td>
-            <td class="table-item" v-if="disc.stats.numSales == 1">{{ disc.stats.maxPrice }} 💎</td>
+
+            <!-- Num sales -->
+            <td class="table-item">{{ disc.numSales }}</td>
+
+            <!-- Price -->
+            <!-- No sales = empty -->
+            <td class="table-item" v-if="disc.numSales == 0"></td>
+
+            <!-- 1 sale = max price -->
+            <td class="table-item text-nowrap" v-else-if="disc.numSales == 1">
+              <div>{{ formatNumber(disc.maxPrice, 2) }} 💎</div>
+            </td>
+
+            <!-- Otherwise, show min/max/average -->
             <td class="table-item" v-else>
-              <!-- Mobile -->
+              <!-- Price range (Mobile) -->
               <div class="flex flex-col md:hidden pb-1 text-nowrap">
                 <div>Min</div>
-                <div class="pb-1">{{ formatNumber(disc.stats.minPrice, 2) }} 💎</div>
+                <div class="pb-1">{{ formatNumber(disc.minPrice, 2) }} 💎</div>
 
                 <div>Max</div>
-                <div>{{ formatNumber(disc.stats.maxPrice, 2) }} 💎</div>
+                <div>{{ formatNumber(disc.maxPrice, 2) }} 💎</div>
               </div>
 
-              <!-- Desktop -->
-              <div class="hidden md:block">{{ formatNumber(disc.stats.minPrice, 2) }} - {{ formatNumber(disc.stats.maxPrice, 2) }} 💎</div>
+              <!-- Price range (Desktop) -->
+              <div class="hidden md:block">
+                {{ formatNumber(disc.minPrice, 2) }} - {{ formatNumber(disc.maxPrice, 2) }} 💎
+              </div>
 
+              <!-- Average (mobile/desktop) -->
               <div class="hint-text flex flex-col md:flex-row md:gap-1 text-nowrap">
                 <span>Average </span>
-                <span>{{ formatNumber(disc.stats.averagePrice, 2) }} 💎</span>
+                <span>{{ formatNumber(disc.averagePrice, 2) }} 💎</span>
               </div>
             </td>
           </tr>
@@ -216,7 +215,8 @@ function applyFilters() {
 
       <div class="mt-2 text-center p-2">
         <div v-if="paginatedDiscs.length == 0">No discs found</div>
-        <button type="button" class="button" v-on:click="pageNumber++" v-else-if="paginatedDiscs.length < filteredDiscs.length">
+        <button type="button" class="button" v-on:click="pageNumber++"
+          v-else-if="paginatedDiscs.length < filteredDiscs.length">
           More
         </button>
         <div v-else>No more results</div>
