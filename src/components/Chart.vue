@@ -2,9 +2,15 @@
 import { Config } from "@/config";
 import { formatDate } from "@/utilities/date-format";
 import Chart from "chart.js/auto";
+import 'chartjs-adapter-date-fns';
 import { onMounted, ref } from "vue";
 import Loading from "./Loading.vue";
 
+// CONFIG
+const startDateOffset = 7 * 24 * 60 * 60 * 1000; // 7 days ago
+const chartPointInterval = 2 * 60 * 60 * 1000; // Every 2 hours
+
+// State
 const loading = ref(true);
 
 const data = ref([] as ChartEntry[]);
@@ -19,17 +25,16 @@ interface ChartEntry {
 
 onMounted(async () => {
   currentDate.value = new Date();
-  let startDate = new Date(currentDate.value.getTime() - 7 * 24 * 60 * 60 * 1000); // 7 days ago
+  let startDate = new Date(currentDate.value.getTime() - startDateOffset);
 
   let playerCounts = (await getPlayerCounts(startDate)).sort((a, b) => a.dateTime.localeCompare(b.dateTime));
 
   // Generate data points for each interval
-  let intervalMs = 1 * 60 * 60 * 1000; // Every 1 hour
-  let numDataPoints = (currentDate.value.getTime() - startDate.getTime()) / intervalMs;
+  let numDataPoints = (currentDate.value.getTime() - startDate.getTime()) / chartPointInterval;
 
   for (let i = 0; i < numDataPoints; i++) {
     data.value.push({
-      dateTime: new Date(startDate.getTime() + i * intervalMs),
+      dateTime: new Date(startDate.getTime() + i * chartPointInterval),
       index: i,
       playerCounts: [],
       currentTime: false,
@@ -45,7 +50,7 @@ onMounted(async () => {
   });
 
   for (const playerCount of playerCounts) {
-    let targetIndex = Math.round((new Date(playerCount.dateTime).getTime() - startDate.getTime()) / intervalMs);
+    let targetIndex = Math.round((new Date(playerCount.dateTime).getTime() - startDate.getTime()) / chartPointInterval);
 
     if (data.value[targetIndex] == undefined) {
       console.log("Failed to get valid index", playerCount, targetIndex, data.value.length);
@@ -83,7 +88,8 @@ function renderChart(canvas: Element | any) {
           label: "Players",
           spanGaps: true,
           borderWidth: 1,
-          pointRadius: 2,
+          pointRadius: 3,
+          pointBorderWidth: 0,
           pointStyle: "circle",
           data: data.value.map((row) => {
             // Empty results for times without player counts
@@ -116,15 +122,16 @@ function renderChart(canvas: Element | any) {
           grid: {
             color: (context) => "rgba(255, 255, 255, 0.2)",
           },
-          type: "linear",
-          // min: startDate.getTime(),
-          max: currentDate.value.getTime(),
-          ticks: {
-            stepSize: 6 * 60 * 60 * 1000,
-            callback: function (value, index, ticks) {
-              return formatDate(new Date(value));
+          type: "time",
+          time: {
+            unit: "day",
+            displayFormats: {
+              day: "MMM dd"
             },
           },
+          ticks: {
+            source: "data"
+          }
         },
         y: {
           suggestedMin: 0,
