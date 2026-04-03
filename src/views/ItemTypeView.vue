@@ -50,9 +50,6 @@ const villagerTrades = computed(() => {
   return itemsStore.villagerTrades.filter((t) => t.itemType?.toLocaleLowerCase() == itemType);
 });
 
-// Specific item type data
-const numUndiscoveredMusicDiscs = ref(0);
-
 // Name filter
 const nameFilter = ref("");
 watch(nameFilter, async (_, __) => {
@@ -276,8 +273,8 @@ function getWikiLink() {
           <p class="text-gray-300" v-if="itemInfo?.description">{{ itemInfo.description }}</p>
 
           <!-- Specific item type info -->
-          <p class="text-gray-300" v-if="numUndiscoveredMusicDiscs > 0">
-            {{ numUndiscoveredMusicDiscs }} custom discs have not been sold yet (possibly undiscovered).
+          <p class="text-gray-300" v-if="itemsStore.customMusicDiscsUnsold > 0">
+            {{ itemsStore.customMusicDiscsUnsold }} custom discs have not been sold yet (possibly undiscovered).
           </p>
 
           <!-- More info -->

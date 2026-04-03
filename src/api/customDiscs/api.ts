@@ -15,6 +15,8 @@ export async function retrieveCustomDiscs(): Promise<void> {
   }
   let response = (await httpResponse.json()).result as CustomDiscsOverview;
 
+  itemsStore.customMusicDiscsUnsold = response.unsoldDiscs;
+
   // Update custom music disc store
   for (const disc of response.discs) {
     let storeDisc = getDiscFromStore(disc.name);

@@ -11,12 +11,13 @@ export interface CustomMusicDisc {
   maxPrice: number;
   averagePrice: number;
   latestSale?: string;
-};
+}
 
 export const itemsStore = reactive({
   customMusicDiscs: {} as { [discName: string]: CustomMusicDisc },
   customMusicDiscSources: new Set<string>(),
   customMusicDiscVersions: new Set<string>(),
+  customMusicDiscsUnsold: 0,
   customDiscsLastUpdated: new Date(0),
   customDiscsStatsLastUpdated: new Date(0),
 
