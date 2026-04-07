@@ -2,12 +2,11 @@
 import { onMounted, onUpdated, ref, watch } from "vue";
 import { initFlowbite } from "flowbite";
 import Loading from "@/components/Loading.vue";
-import { formatDate, formatDateNoTime } from "@/utilities/date-format";
+import { formatDate } from "@/utilities/date-format";
 import * as WaystoneAPI from "@/api/waystones/api";
 import DropdownFilter, { type DropdownOption } from "@/components/DropdownFilter.vue";
 import SearchBox from "@/components/SearchBox.vue";
 import Checkbox from "@/components/Checkbox.vue";
-import { formatNumber } from "@/utilities/number-format";
 
 interface WaystoneRow {
   rank: number;
@@ -53,11 +52,14 @@ onMounted(async () => {
   initFlowbite(); // Include on any component where you need flowbite JS functionality
 
   // Load previous week's waystone ranks
-  let previousRanks = await loadWaystoneStats();
+  let previousRanks = await loadPreviousWeekStats();
 
   // Load waystones
   let serverWaystoneInfo = await WaystoneAPI.loadWaystones();
-  let waystones = serverWaystoneInfo.waystones.sort((a, b) => b.visitsThisWeek - a.visitsThisWeek || a.name.localeCompare(b.name));
+  // Order waystones to get their rank
+  let waystones = serverWaystoneInfo.waystones.sort(
+    (a, b) => b.visitsThisWeek - a.visitsThisWeek || b.visitsTotal - a.visitsTotal || a.name.localeCompare(b.name),
+  );
   lastUpdated.value = serverWaystoneInfo.lastUpdated;
 
   // Generate waystone rows
@@ -80,11 +82,12 @@ onMounted(async () => {
   }
 
   // Initialise filters
-  worldFilterOptions.value = serverWaystoneInfo.worlds.map((w) => ({ text: w, value: w } as DropdownOption));
+  worldFilterOptions.value = serverWaystoneInfo.worlds.map((w) => ({ text: formatWorldName(w), value: w }) as DropdownOption);
   worldFilter.value = serverWaystoneInfo.worlds;
 
   // Render
   applyFilters();
+  applySort();
 
   loading.value = false;
 });
@@ -97,13 +100,13 @@ onUpdated(() => {
 // Waystone stats
 const minStartDate = Date.UTC(2025, 10, 13, 0, 0, 0); // No records before this date
 
-async function loadWaystoneStats(): Promise<{ [id: string]: number }> {
+async function loadPreviousWeekStats(): Promise<{ [id: string]: number }> {
   let date = new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000); // 1 week ago
   if (date.getTime() < minStartDate) date = new Date(minStartDate);
 
   // List of stats
   let stats = (await WaystoneAPI.loadWaystoneStats(date)).stats.sort(
-    (a, b) => b.visitsThisWeek - a.visitsThisWeek || a.name.localeCompare(b.name)
+    (a, b) => b.visitsThisWeek - a.visitsThisWeek || b.visitsTotal - a.visitsTotal || a.name.localeCompare(b.name),
   );
 
   var previousRanks = {} as { [id: string]: number };
@@ -133,15 +136,15 @@ function applyFilters() {
       if (newFilter.value && w.previousRankChange != null) return false;
 
       return true;
-    })
+    }),
   );
 
   applySort();
 }
 
 // Sorting
-let sortProperty = "visitsThisWeek";
-let sortAscending = false;
+let sortProperty = "rank";
+let sortAscending = true;
 function sort(property: string, ascendingByDefault: boolean) {
   if (sortProperty == property) sortAscending = !sortAscending;
   else {
@@ -158,11 +161,21 @@ function applySort() {
     let second = sortAscending ? b : a;
 
     let sortResult = 0;
-    if (sortProperty == "visitsThisWeek") sortResult = first.visitsThisWeek - second.visitsThisWeek;
+    if (sortProperty == "rank") sortResult = first.rank - second.rank;
+    else if (sortProperty == "visitsThisWeek") sortResult = first.visitsThisWeek - second.visitsThisWeek;
     else if (sortProperty == "visitsTotal") sortResult = first.visitsTotal - second.visitsTotal;
 
     return sortResult || first.name.localeCompare(second.name);
   });
+}
+
+const prettyWorldNames = {
+  world: "Overworld",
+  world_nether: "The Nether",
+  world_the_end: "The End",
+} as { [worldName: string]: string };
+function formatWorldName(worldName: string) {
+  return prettyWorldNames[worldName] || worldName.replace(/_/g, " ").toLocaleLowerCase();
 }
 </script>
 
@@ -170,7 +183,7 @@ function applySort() {
   <div class="flex flex-row flex-wrap justify-between items-end mb-8">
     <div class="pb-4">
       <h1 class="text-3xl font-bold">Waystones</h1>
-      <p class="text-gray-300">Public waystone information.</p>
+      <p class="text-gray-300">Information and rankings for publicly visible waystones.</p>
     </div>
 
     <div class="pb-4">
@@ -205,6 +218,8 @@ function applySort() {
           <th class="table-item">
             <span>Rank</span>
 
+            <font-awesome-icon icon="fa-solid fa-sort" class="text-xs ml-1 cursor-pointer" @click="sort('rank', true)" />
+
             <!-- Tooltip -->
             <span class="ml-2">
               <button data-popover-target="popover-description" data-popover-placement="bottom-end" type="button" class="text-gray-400">
@@ -232,6 +247,18 @@ function applySort() {
             <font-awesome-icon icon="fa-solid fa-sort" class="text-xs ml-1 cursor-pointer" @click="sort('name', true)" />
           </th>
 
+          <!-- Visit this week -->
+          <th class="table-item">
+            <span>Visits This Week</span>
+            <font-awesome-icon icon="fa-solid fa-sort" class="text-xs ml-1 cursor-pointer" @click="sort('visitsThisWeek', false)" />
+          </th>
+
+          <!-- Total visits -->
+          <th class="table-item">
+            <span>Visits</span>
+            <font-awesome-icon icon="fa-solid fa-sort" class="text-xs ml-1 cursor-pointer" @click="sort('visitsTotal', false)" />
+          </th>
+
           <!-- Location -->
           <!-- Mobile -->
           <th class="table-item table-cell md:hidden">Location</th>
@@ -239,16 +266,6 @@ function applySort() {
           <!-- Desktop -->
           <th class="table-item hidden md:table-cell">Location</th>
           <th class="table-item hidden md:table-cell">World</th>
-
-          <!-- Visit stats -->
-          <th class="table-item">
-            <span>Visits This Week</span>
-            <font-awesome-icon icon="fa-solid fa-sort" class="text-xs ml-1 cursor-pointer" @click="sort('visitsThisWeek', false)" />
-          </th>
-          <th class="table-item">
-            <span>Visits</span>
-            <font-awesome-icon icon="fa-solid fa-sort" class="text-xs ml-1 cursor-pointer" @click="sort('visitsTotal', false)" />
-          </th>
         </tr>
       </thead>
 
@@ -266,6 +283,14 @@ function applySort() {
           <!-- Name -->
           <td class="table-item wrap-anywhere">{{ waystone.name }}</td>
 
+          <!-- Visits this week -->
+          <td class="table-item">
+            <span>{{ waystone.visitsThisWeek.toLocaleString() }}</span>
+          </td>
+
+          <!-- Total visits -->
+          <td class="table-item">{{ waystone.visitsTotal.toLocaleString() }}</td>
+
           <!-- Location -->
           <!-- Mobile -->
           <td class="table-item table-cell md:hidden">
@@ -275,13 +300,7 @@ function applySort() {
 
           <!-- Desktop -->
           <td class="table-item hidden md:table-cell">{{ waystone.x }}, {{ waystone.z }}</td>
-          <td class="table-item hidden md:table-cell">{{ waystone.world }}</td>
-
-          <!-- Stats -->
-          <td class="table-item">
-            <span>{{ waystone.visitsThisWeek.toLocaleString() }}</span>
-          </td>
-          <td class="table-item">{{ waystone.visitsTotal.toLocaleString() }}</td>
+          <td class="table-item hidden md:table-cell capitalize">{{ formatWorldName(waystone.world) }}</td>
         </tr>
       </tbody>
     </table>

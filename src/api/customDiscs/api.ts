@@ -61,7 +61,7 @@ function getDiscFromStore(discName: string): CustomMusicDisc {
   // Create an entry if it doesn't exist
   if (!itemsStore.customMusicDiscs[discName]) {
     itemsStore.customMusicDiscs[discName] = {
-      displayName: discName.replace("smponline_discs:", "").replace("_", " "),
+      displayName: discName.replace("smponline_discs:", "").replace(/_/g, " "),
       name: discName,
       source: "Unknown",
       version: "Unknown",

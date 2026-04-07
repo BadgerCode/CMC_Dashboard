@@ -49,6 +49,7 @@ export interface WaystoneStats {
   name: string;
   world: string;
   visitsThisWeek: number;
+  visitsTotal: number;
 }
 
 export interface WaystoneStatsResponse {
