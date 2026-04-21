@@ -42,6 +42,7 @@ const editingTitle = ref(false);
 const author = ref("");
 const editingAuthor = ref(false);
 const positions = ref({} as { [paintingId: string]: string });
+const sortedCanvases = computed(() => props.canvases.sort((a, b) => a.title.localeCompare(b.title)));
 
 // Editor
 const previousSales = ref([] as SaleSummary[]);
@@ -521,7 +522,7 @@ function swapPaintings(firstPaintingId: string, secondPaintingId: string) {
                     <div class="text-body">
                       <!-- Positions -->
                       <div class="max-h-[400px]">
-                        <div v-for="painting in canvases" class="mb-2">
+                        <div v-for="painting in sortedCanvases" class="mb-2">
                           <!-- Painting name -->
                           <label
                             :for="`painting-pos-${painting.id}`"
