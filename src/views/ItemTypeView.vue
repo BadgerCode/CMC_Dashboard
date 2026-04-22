@@ -14,7 +14,6 @@ import { formatItemType } from "@/utilities/item-type-format";
 import Loading from "@/components/Loading.vue";
 import DropdownFilter, { type DropdownOption } from "@/components/DropdownFilter.vue";
 import * as SalesAPI from "@/api/sales/api";
-import * as CustomDiscsAPI from "@/api/customDiscs/api";
 import { formatEnchantment } from "@/utilities/enchantment-format";
 import { formatCustomDisc } from "@/utilities/custom-disc-format";
 import { formatPotionEffect, isPotion } from "@/utilities/potion-format";
@@ -348,7 +347,7 @@ function getWikiLink() {
           </DropdownFilter>
 
           <DropdownFilter
-            v-if="customDiscs.length > 0"
+            v-if="itemType.toLocaleUpperCase() === 'CUSTOM_MUSIC_DISC'"
             :placeholder="'Custom Discs'"
             :icon="'fa-solid fa-record-vinyl'"
             :options="customDiscs"
