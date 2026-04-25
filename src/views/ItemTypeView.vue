@@ -399,7 +399,7 @@ function getWikiLink() {
           </DropdownFilter>
 
           <DropdownFilter
-            v-if="customDiscs.length > 0"
+            v-if="isCustomDisc"
             :placeholder="'Custom Discs'"
             :icon="'fa-solid fa-record-vinyl'"
             :options="customDiscs"
