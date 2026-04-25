@@ -85,6 +85,11 @@ itemInfo["BEDROCK_DRILL"] = {
   moreInfoLink: "https://docs.callmecarson.live/books/smp-online/page/fung-tech-bedrock-drill",
   icon: "fa-solid fa-trowel",
 };
+itemInfo["FUNG_TECH_WRENCH"] = {
+  description: "Allows various block attributes to be changed, like a debug stick.",
+  moreInfoLink: "https://docs.callmecarson.live/books/smp-online/page/fung-tech-wrench",
+  icon: "fa-solid fa-wrench",
+};
 
 
 // VANILLA ITEMS

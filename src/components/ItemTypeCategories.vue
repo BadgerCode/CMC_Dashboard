@@ -52,6 +52,7 @@ const categories = [
       { type: "SPLASH_POTION", info: getItemInfo("SPLASH_POTION") },
       { type: "LINGERING_POTION", info: getItemInfo("LINGERING_POTION") },
       { type: "BEDROCK_DRILL", info: getItemInfo("BEDROCK_DRILL") },
+      { type: "FUNG_TECH_WRENCH", info: getItemInfo("FUNG_TECH_WRENCH") },
     ]
   },
   {

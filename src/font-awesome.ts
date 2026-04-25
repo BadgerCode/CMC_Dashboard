@@ -44,6 +44,7 @@ import {
   faCubes,
   faHammer,
   faClockRotateLeft,
+  faWrench,
   // Don't forget to add it below too!
 } from "@fortawesome/free-solid-svg-icons";
 
@@ -99,4 +100,5 @@ library.add(
   faCubes,
   faHammer,
   faClockRotateLeft,
+  faWrench
 );
