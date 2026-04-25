@@ -42,6 +42,7 @@ const filteredShops = ref([] as ShopData[]);
 const itemInfo = computed(() => {
   return getItemInfo(props.itemType);
 });
+const isCustomDisc = computed(() => props.itemType.toLocaleUpperCase() === "CUSTOM_MUSIC_DISC");
 
 // Villager trade
 const villagerTrades = computed(() => {
@@ -70,9 +71,11 @@ watch(potionEffectFilter, async (_, __) => {
 });
 
 // Custom disc filter
-const customDiscs = computed(() => Object.values(itemsStore.customMusicDiscs)
-  .map((d) => ({ text: d.displayName, value: d.name }) as DropdownOption)
-  .sort((a, b) => a.text.localeCompare(b.text)));
+const customDiscs = computed(() =>
+  Object.values(itemsStore.customMusicDiscs)
+    .map((d) => ({ text: d.displayName, value: d.name }) as DropdownOption)
+    .sort((a, b) => a.text.localeCompare(b.text)),
+);
 const customDiscFilter = ref(route.query["discName"]?.toString() ?? "");
 watch(customDiscFilter, async (_, __) => {
   await reloadSalesAndShops();
@@ -272,7 +275,7 @@ function getWikiLink() {
           <p class="text-gray-300" v-if="itemInfo?.description">{{ itemInfo.description }}</p>
 
           <!-- Specific item type info -->
-          <p class="text-gray-300" v-if="itemsStore.customMusicDiscsUnsold > 0">
+          <p class="text-gray-300" v-if="isCustomDisc && itemsStore.customMusicDiscsUnsold > 0">
             {{ itemsStore.customMusicDiscsUnsold }} custom discs have not been sold yet (possibly undiscovered).
           </p>
 
@@ -310,7 +313,7 @@ function getWikiLink() {
     </div>
 
     <!-- Custom disc stats -->
-    <div v-if="props.itemType == 'CUSTOM_MUSIC_DISC'">
+    <div v-if="isCustomDisc">
       <div>
         <h2 class="text-2xl font-bold">Statistics</h2>
       </div>
@@ -347,7 +350,7 @@ function getWikiLink() {
           </DropdownFilter>
 
           <DropdownFilter
-            v-if="itemType.toLocaleUpperCase() === 'CUSTOM_MUSIC_DISC'"
+            v-if="isCustomDisc"
             :placeholder="'Custom Discs'"
             :icon="'fa-solid fa-record-vinyl'"
             :options="customDiscs"
