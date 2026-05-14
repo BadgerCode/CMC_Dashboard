@@ -9,6 +9,9 @@ import * as VillagerTradesAPI from "@/api/villagerTrades/api";
 import { favouritesStore } from "./store/favourites-state";
 import { userStore } from "./store/user-state";
 import ProfileMenu from "./components/ProfileMenu.vue";
+import { itemsStore } from "./store/items-state";
+import { retrieveAlchemyConversions } from "./api/alchemyConversions/api";
+import "@/utilities/alchemy-generator";
 
 const route = useRoute();
 
@@ -31,6 +34,10 @@ onMounted(async () => {
 
   // Load villager trades
   await VillagerTradesAPI.retrieveVillagerTrades();
+
+  // Alchemy conversions
+  await retrieveAlchemyConversions();
+  console.log(itemsStore.alchemyConversions);
 });
 
 onUpdated(() => {
