@@ -82,8 +82,10 @@
 }
 
 .accordion-header-button {
-  @apply flex items-center justify-between w-full px-4 py-2 font-medium rtl:text-right text-body border border-t-0 border-x-0 border-b-default hover:text-heading hover:bg-neutral-secondary-medium gap-3;
+  @apply flex items-center justify-between w-full px-4 py-2 font-medium rtl:text-right text-body border border-t-0 border-x-0 border-b-default hover:text-heading hover:bg-neutral-secondary-medium gap-3 bg-gray-800;
 }
+
+/* .accordion-header-button[aria-expanded='true'] */
 
 .accordion-body {
   @apply border border-s-0 border-e-0 border-t-0 border-b-default px-4 py-2 overflow-auto;
