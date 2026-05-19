@@ -5,6 +5,7 @@ export interface SalesFilters {
   itemType?: string | null;
   customName?: string | null;
   lastItem?: SaleSummary | null;
+  afterDate?: string | null;
   enchantment?: string;
   potionEffect?: string;
   customDisc?: string;
@@ -16,6 +17,10 @@ export async function loadSales(filters: SalesFilters): Promise<SaleSummary[]> {
   if (filters.lastItem) {
     params.append("before", filters.lastItem.occurredAt);
     params.append("lastID", filters.lastItem.id);
+  }
+
+  if (filters.afterDate) {
+    params.append("after", filters.afterDate);
   }
 
   if (filters.itemType) {

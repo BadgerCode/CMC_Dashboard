@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { SaleSummary } from "@/api/sales/saleSummary";
-import { onMounted, ref } from "vue";
+import { onMounted, onUnmounted, ref } from "vue";
 import * as SalesAPI from "@/api/sales/api";
 import RecentSales from "@/components/RecentSales.vue";
 import { serverStore } from "@/store/server-state";
@@ -11,12 +11,30 @@ const loading = ref(true);
 const recentSales = ref([] as SaleSummary[]);
 const noMoreResults = ref(false);
 
+let intervalID: number | null = null;
+
 onMounted(async () => {
   await loadSales();
+  intervalID = window.setInterval(loadNewSales, 30000);
+});
+
+onUnmounted(() => {
+  if (intervalID) {
+    clearInterval(intervalID);
+  }
 });
 
 async function loadNextPage() {
   await loadSales();
+}
+
+async function loadNewSales() {
+  if (recentSales.value.length === 0) return;
+
+  let newSales = await SalesAPI.loadSales({ afterDate: recentSales.value[0]?.occurredAt } as SalesAPI.SalesFilters);
+
+  // Prepend new sales to the list
+  recentSales.value.unshift(...newSales);
 }
 
 async function loadSales() {
@@ -28,8 +46,6 @@ async function loadSales() {
   noMoreResults.value = newSales.length === 0;
   loading.value = false;
 }
-
-
 </script>
 
 <template>
