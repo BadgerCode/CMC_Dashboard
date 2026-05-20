@@ -1,3 +1,4 @@
+import type { AlchmeyItem } from "@/api/alchemyConversions/alchemyConversions";
 import type { VillagerTrade } from "@/api/villagerTrades/villagerTrades";
 import { reactive } from "vue";
 
@@ -23,4 +24,7 @@ export const itemsStore = reactive({
 
   villagerTrades: [] as VillagerTrade[],
   villagerTradesLastUpdated: new Date(0),
+
+  alchemyConversions: {} as { [itemType: string]: AlchmeyItem },
+  alchemyConversionsLastUpdated: new Date(0),
 });

@@ -50,6 +50,11 @@ const villagerTrades = computed(() => {
   return itemsStore.villagerTrades.filter((t) => t.itemType?.toLocaleLowerCase() == itemType);
 });
 
+// Alchemy conversion
+const alchemyConversions = computed(() => {
+  return itemsStore.alchemyConversions[props.itemType.toLocaleUpperCase()];
+});
+
 // Name filter
 const nameFilter = ref("");
 watch(nameFilter, async (_, __) => {
@@ -309,6 +314,35 @@ function getWikiLink() {
         <p class="text-gray-300 text-xs">
           <RouterLink :to="{ name: 'villagerTrades' }" class="hyperlink">All trades</RouterLink>
         </p>
+      </div>
+
+      <!-- Alchemy conversions -->
+      <div class="flex flex-col" v-if="alchemyConversions">
+        <h2 class="text-xl font-bold capitalize">Alchemy Conversions</h2>
+
+        <div class="text-gray-300" v-for="conversion in alchemyConversions.createdBy">
+          <span>{{ conversion.sourceQuantity }}x </span>
+          <RouterLink :to="{ name: 'itemSales', params: { itemType: conversion.source } }" class="hyperlink">
+            {{ formatItemType(conversion.source) }}
+          </RouterLink>
+          <span> → </span>
+          <span>{{ conversion.targetQuantity }}x </span>
+          <span>{{ formatItemType(conversion.target) }}</span>
+        </div>
+
+        <p v-if="alchemyConversions.creates" class="text-gray-300">
+          <span>{{ alchemyConversions.creates.sourceQuantity }}x </span>
+          <span>{{ formatItemType(alchemyConversions.creates.source) }}</span>
+          <span> → </span>
+          <span>{{ alchemyConversions.creates.targetQuantity }}x </span>
+          <RouterLink :to="{ name: 'itemSales', params: { itemType: alchemyConversions.creates.target } }" class="hyperlink">
+            {{ formatItemType(alchemyConversions.creates.target) }}
+          </RouterLink>
+        </p>
+
+        <!-- <p class="text-gray-300 text-xs">
+          <RouterLink :to="{ name: 'villagerTrades' }" class="hyperlink">All trades</RouterLink>
+        </p> -->
       </div>
     </div>
 
