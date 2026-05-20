@@ -52,22 +52,13 @@ async function loadSales() {
   <div class="mb-8 flex flex-col gap-4">
     <div class="flex flex-col gap-1">
       <h1 class="text-3xl font-bold">Item Lookup</h1>
-      <div class="text-gray-300">See sales and shops for an item</div>
+      <div class="text-gray-300">
+        See sales, shops, <RouterLink :to="{ name: 'villagerTrades' }" class="hyperlink">villager trades</RouterLink> &amp; <RouterLink :to="{ name: 'alchemyConversions' }" class="hyperlink">alchemy conversions</RouterLink> for an item
+      </div>
     </div>
 
     <!-- Item type selector -->
     <ItemTypeCategories></ItemTypeCategories>
-  </div>
-
-  <div class="mb-8">
-    <div class="mb-3 flex flex-row justify-between items-end">
-      <h1 class="text-3xl font-bold">Villager Trades</h1>
-    </div>
-
-    <div>
-      <p class="text-gray-300">Villagers have been updated to sell more items.</p>
-      <RouterLink :to="{ name: 'villagerTrades' }" class="hyperlink">See all trades</RouterLink>
-    </div>
   </div>
 
   <div class="flex flex-row flex-wrap justify-between items-end">
