@@ -2,7 +2,7 @@
 import type { Painting } from "@/api/paintings/painting";
 import Loading from "@/components/Loading.vue";
 import PaintingList from "@/components/PaintingList.vue";
-import { onMounted, ref, watch } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import * as PaintingsAPI from "@/api/paintings/api";
 import SearchWithResults from "@/components/SearchWithResults.vue";
 import { Config } from "@/config";
@@ -16,6 +16,7 @@ import { serverStore } from "@/store/server-state";
 import { formatNumber } from "@/utilities/number-format";
 import { setPageTitle } from "@/router/pageTitle";
 import { favouritesStore } from "@/store/favourites-state";
+import { userStore } from "@/store/user-state";
 
 interface ArtistSummary {
   id: string;
@@ -71,6 +72,13 @@ watch(multiCanvasCheckFilter, async (_, __) => {
   loadGallery();
 });
 
+const enableMultiCanvasEditor = computed(
+  () =>
+    userStore.fullUserInfo != null &&
+    userStore.fullUserInfo.minecraftUsernameVerified &&
+    userStore.fullUserInfo.minecraftUsername == artistName.value,
+);
+
 // Favourites
 const favouritesLoaded = ref(0);
 const showFavourites = ref((route.query["favourites"]?.toString()?.toLocaleLowerCase() ?? "") == "true");
@@ -92,7 +100,7 @@ async function loadArtists() {
   if (httpResponse.status !== 200) throw new Error("Failed to retrieve artists");
 
   let response = await httpResponse.json();
-  artists.value = response.items.map((i: ArtistSummary) => ({ text: i.name, value: `${i.name}-${i.id}` } as DropdownOption));
+  artists.value = response.items.map((i: ArtistSummary) => ({ text: i.name, value: `${i.name}-${i.id}` }) as DropdownOption);
 }
 
 let cancellationSource = new AbortController();
@@ -205,7 +213,7 @@ async function loadNextPage() {
 
       <DropdownFilter :placeholder="'Size'" :options="sizeOptions" :single-selection="true" v-model="sizeFilter"> </DropdownFilter>
 
-      <Checkbox v-if="Config.FEATURE_MULTICANVAS_EDITOR" :label="'Possible Multi-Canvas'" v-model="multiCanvasCheckFilter"></Checkbox>
+      <Checkbox v-if="enableMultiCanvasEditor" :label="'Possible Multi-Canvas'" v-model="multiCanvasCheckFilter"></Checkbox>
     </div>
 
     <SearchBox :placeholder="'Painting Name'" v-model="nameFilter"></SearchBox>
@@ -219,7 +227,7 @@ async function loadNextPage() {
 
   <!-- Paintings list -->
   <div class="mt-6">
-    <PaintingList :paintings="paintings" @reload="loadGallery()"></PaintingList>
+    <PaintingList :paintings="paintings" @reload="loadGallery()" :enable-multi-canvas-editor="enableMultiCanvasEditor"></PaintingList>
 
     <Loading v-if="loading" :fill-space="true"></Loading>
 

@@ -10,6 +10,7 @@ import Checkbox from "./Checkbox.vue";
 import type { SaleSummary } from "@/api/sales/saleSummary";
 import * as PaintingsAPI from "@/api/paintings/api";
 import Loading from "./Loading.vue";
+import { userStore } from "@/store/user-state";
 
 // Saved paintings
 export interface SavedMultiCanvasPainting {
@@ -211,7 +212,7 @@ async function removeMultiCanvasFlag() {
   // Send request
   const requestHeaders: HeadersInit = new Headers();
   requestHeaders.set("Content-Type", "application/json");
-  requestHeaders.set("X-Functions-Key", Config.MULTICANVAS_EDITOR_KEY!);
+  requestHeaders.set("Authorization", `Bearer ${userStore.jwt}`);
 
   let httpResponse = await fetch(`${Config.APIURL}/api/multicanvasflag`, {
     method: "delete",
@@ -262,7 +263,7 @@ async function savePainting() {
   // Send request
   const requestHeaders: HeadersInit = new Headers();
   requestHeaders.set("Content-Type", "application/json");
-  requestHeaders.set("X-Functions-Key", Config.MULTICANVAS_EDITOR_KEY!);
+  requestHeaders.set("Authorization", `Bearer ${userStore.jwt}`);
 
   let httpResponse = await fetch(`${Config.APIURL}/api/multicanvaspaintings`, {
     method: "post",

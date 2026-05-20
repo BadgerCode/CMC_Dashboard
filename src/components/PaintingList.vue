@@ -6,9 +6,11 @@ import { Config } from "@/config";
 import MultiCanvasPaintingEditor, { type SavedMultiCanvasPainting } from "./MultiCanvasPaintingEditor.vue";
 import { initFlowbite } from "flowbite";
 import FavouritePainting from "./FavouritePainting.vue";
+import { userStore } from "@/store/user-state";
 
 interface Props {
   paintings: Painting[];
+  enableMultiCanvasEditor: boolean;
 }
 const props = defineProps<Props>();
 
@@ -37,7 +39,7 @@ async function splitMultiPartPainting(painting: Painting) {
 
   const requestHeaders: HeadersInit = new Headers();
   requestHeaders.set("Content-Type", "application/json");
-  requestHeaders.set("X-Functions-Key", Config.MULTICANVAS_EDITOR_KEY!);
+  requestHeaders.set("Authorization", `Bearer ${userStore.jwt}`);
 
   let httpResponse = await fetch(`${Config.APIURL}/api/multicanvaspaintings/${painting.id}`, {
     method: "delete",
@@ -68,7 +70,7 @@ async function splitMultiPartPainting(painting: Painting) {
         </div>
 
         <!-- Multi-canvas editor -->
-        <div v-if="Config.FEATURE_MULTICANVAS_EDITOR" class="relative h-[256px] w-[256px]">
+        <div v-if="enableMultiCanvasEditor" class="relative h-[256px] w-[256px]">
           <!-- Hidden selection checkbox -->
           <input type="checkbox" name="painting-select" :id="`painting-select-${painting.id}`" :value="painting"
             v-model="selectedPaintings" class="hidden peer" :disabled="painting.isMultiCanvas" />
@@ -114,7 +116,7 @@ async function splitMultiPartPainting(painting: Painting) {
     </div>
 
     <!-- Multi canvas editor -->
-    <MultiCanvasPaintingEditor v-if="Config.FEATURE_MULTICANVAS_EDITOR && selectedPaintings.length > 0"
+    <MultiCanvasPaintingEditor v-if="enableMultiCanvasEditor && selectedPaintings.length > 0"
       :canvases="selectedPaintings"
       @painting-created="(painting) => { savedMultiCanvasPaintings.push(painting); emit('reload'); selectedPaintings.splice(0); }"
       @select-all="selectedPaintings = paintings.slice()" @clear="selectedPaintings.splice(0)"

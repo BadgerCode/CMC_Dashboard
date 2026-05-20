@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { fetchUserInfo } from "@/api/user/api";
 import Loading from "@/components/Loading.vue";
 import { Config } from "@/config";
 import { userStore } from "@/store/user-state";
@@ -25,26 +26,13 @@ onMounted(async () => {
   initFlowbite(); // Include on any component where you need flowbite JS functionality
 
   loading.value = true;
-  if (userStore.user == null) {
-    // Anonymous profile not supported currently
+
+  userInfo.value = await fetchUserInfo();
+  // Anonyomous profile not supported currently
+  if(userInfo.value == null) {
     router.push({ name: "home" });
     return;
   }
-
-  // Load additional user data from API
-  let httpResponse = await fetch(`${Config.APIURL}/api/users/me`, {
-    method: "get",
-    headers: new Headers([["Authorization", `Bearer ${userStore.jwt}`]]),
-  });
-
-  if (httpResponse.status !== 200) {
-    userStore.logout();
-    router.push({ name: "home" });
-    return;
-  }
-
-  let response = await httpResponse.json();
-  userInfo.value = response.result;
 
   loading.value = false;
 });

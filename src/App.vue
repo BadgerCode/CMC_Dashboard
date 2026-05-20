@@ -22,7 +22,7 @@ onMounted(async () => {
   initFlowbite(); // Include on any component where you need flowbite JS functionality
 
   // Load user data
-  userStore.load();
+  await userStore.load();
   favouritesStore.load();
 
   // Get player counts

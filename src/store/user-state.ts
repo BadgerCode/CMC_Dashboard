@@ -1,3 +1,5 @@
+import { fetchUserInfo } from "@/api/user/api";
+import type { UserResponse } from "@/api/user/user";
 import { reactive } from "vue";
 
 export interface User {
@@ -8,17 +10,20 @@ export interface User {
 
 export const userStore = reactive({
   user: null as User | null,
+  fullUserInfo: null as UserResponse | null,
   jwt: null as string | null,
   recentlyViewedItems: [] as string[],
 
   // Data management
-  login(jwt: string, user: User) {
+  async login(jwt: string, user: User) {
     localStorage.setItem("userToken", jwt);
     this.jwt = jwt;
     this.user = user;
+
+    await fetchUserInfo();
   },
 
-  load() {
+  async load() {
     // Load recently viewed items
     let rawRecentItems = localStorage.getItem("recentlyViewedItems");
     if (rawRecentItems != null) {
@@ -43,6 +48,8 @@ export const userStore = reactive({
         avatarURL: userInfo.picture,
       };
 
+      await fetchUserInfo();
+
       console.log("Loaded user profile", this.user);
     } catch (error) {
       // Invalid JWT
@@ -57,7 +64,7 @@ export const userStore = reactive({
   },
 
   addRecentlyViewedItem(itemType: string) {
-    let existingIndex = this.recentlyViewedItems.findIndex(i => i == itemType);
+    let existingIndex = this.recentlyViewedItems.findIndex((i) => i == itemType);
     if (existingIndex !== -1) {
       this.recentlyViewedItems.splice(existingIndex, 1);
     }
@@ -68,5 +75,5 @@ export const userStore = reactive({
     this.recentlyViewedItems = this.recentlyViewedItems.slice(itemsToRemove);
 
     localStorage.setItem("recentlyViewedItems", JSON.stringify(this.recentlyViewedItems));
-  }
+  },
 });
