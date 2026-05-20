@@ -340,9 +340,9 @@ function getWikiLink() {
           </RouterLink>
         </p>
 
-        <!-- <p class="text-gray-300 text-xs">
-          <RouterLink :to="{ name: 'villagerTrades' }" class="hyperlink">All trades</RouterLink>
-        </p> -->
+        <p class="text-gray-300 text-xs">
+          <RouterLink :to="{ name: 'alchemyConversions' }" class="hyperlink">All conversions</RouterLink>
+        </p>
       </div>
     </div>
 

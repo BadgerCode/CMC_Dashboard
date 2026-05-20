@@ -11,6 +11,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import { setPageTitle } from "./pageTitle";
 import LoginView from "@/views/LoginView.vue";
 import ProfileView from "@/views/ProfileView.vue";
+import AlchemyConversionsView from "@/views/AlchemyConversionsView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -89,6 +90,14 @@ const router = createRouter({
       component: VillagerTradesView,
       meta: {
         title: "Villager Trades"
+      }
+    },
+    {
+      path: "/alchemy",
+      name: "alchemyConversions",
+      component: AlchemyConversionsView,
+      meta: {
+        title: "Alchemy Conversions"
       }
     },
     {
