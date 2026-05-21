@@ -18,14 +18,13 @@ export async function updateShops(): Promise<ShopOverview> {
     console.error(error);
   }
 
-  let url = `${Config.APIURL}/api/chestshops`;
+  let url = `${Config.APIURL}/api/v2/chestshops`;
   let httpResponse = await fetch(url, { method: "get" });
 
   if (httpResponse.status !== 200) throw new Error("Failed to retrieve chest shops");
 
-  let response = await httpResponse.json();
-  let responseItems = response.items as ShopData[];
-  for (const shop of responseItems) {
+  let response = (await httpResponse.json()) as ShopData[];
+  for (const shop of response) {
     shop.item.parsedSNBT ??= { enchantments: [] };
 
     // Work out nearest waystone
@@ -44,9 +43,9 @@ export async function updateShops(): Promise<ShopOverview> {
       .sort((a, b) => a.distance - b.distance);
   }
 
-  shopsStore.lastUpdated = new Date(response.lastUpdated);
+  shopsStore.lastUpdated = new Date();
   shopsStore.shops.splice(0);
-  shopsStore.shops.push(...responseItems);
+  shopsStore.shops.push(...response);
 
   // Get item types list
   shopsStore.itemTypes = [...new Set(shopsStore.shops.map((s) => s.item.type).sort())];
