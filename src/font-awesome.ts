@@ -46,6 +46,7 @@ import {
   faClockRotateLeft,
   faWrench,
   faSquare,
+  faHandshake,
   // Don't forget to add it below too!
 } from "@fortawesome/free-solid-svg-icons";
 
@@ -103,4 +104,5 @@ library.add(
   faClockRotateLeft,
   faWrench,
   faSquare,
+  faHandshake,
 );

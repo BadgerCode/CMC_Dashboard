@@ -12,6 +12,7 @@ import { setPageTitle } from "./pageTitle";
 import LoginView from "@/views/LoginView.vue";
 import ProfileView from "@/views/ProfileView.vue";
 import AlchemyConversionsView from "@/views/AlchemyConversionsView.vue";
+import PlayerRequestsView from "@/views/PlayerRequestsView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -115,6 +116,14 @@ const router = createRouter({
       component: ProfileView,
       meta: {
         title: "Profile"
+      }
+    },
+    {
+      path: "/playerRequests",
+      name: "playerRequests",
+      component: PlayerRequestsView,
+      meta: {
+        title: "Player Requests"
       }
     }
   ],
