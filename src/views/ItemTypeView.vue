@@ -33,7 +33,7 @@ const route = useRoute();
 
 const loadingSales = ref(true);
 const filteredSales = ref([] as SaleSummary[]);
-const averagePrice = ref(normalisePrice(1, 1));
+const averagePrice = ref(normalisePrice(0, 0));
 const loadingShops = ref(true);
 const shops = ref([] as ShopData[]);
 const filteredShops = ref([] as ShopData[]);
@@ -136,9 +136,11 @@ async function loadSales() {
   filteredSales.value = await SalesAPI.loadSales(salesFilters);
 
   // Calculate average price
-  let totalSold = filteredSales.value.reduce((partial, a) => partial + a.quantity, 0);
-  let totalPaid = filteredSales.value.reduce((partial, a) => partial + a.totalPrice, 0);
-  averagePrice.value = normalisePrice(totalPaid / totalSold, 1);
+  if (filteredSales.value.length > 0) {
+    let totalSold = filteredSales.value.reduce((partial, a) => partial + a.quantity, 0);
+    let totalPaid = filteredSales.value.reduce((partial, a) => partial + a.totalPrice, 0);
+    averagePrice.value = normalisePrice(totalPaid / totalSold, 1);
+  }
 
   loadingSales.value = false;
 }
