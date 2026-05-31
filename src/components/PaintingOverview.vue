@@ -43,9 +43,9 @@ onMounted(async () => {
         <h2 class="text-2xl font-bold">Painting - {{ paintingData.title }}</h2>
       </div>
 
-      <div class="w-[400px] my-3 font-normal text-gray-400 flex flex-col gap-1">
+      <div class="w-[400px] max-w-full my-3 font-normal text-gray-400 flex flex-col gap-1">
         <!-- The painting -->
-        <div class="w-[400px] h-[400px]">
+        <div class="w-[400px] max-w-full h-[400px]">
           <RenderPainting :painting-id="paintingData.id"></RenderPainting>
         </div>
 
