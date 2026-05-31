@@ -80,6 +80,10 @@ const categories = [
     items: [
       { type: "PAINTING", info: getItemInfo("PAINTING") },
       { type: "PALETTE", info: getItemInfo("PALETTE") },
+      { type: "CANVAS_SMALL", info: getItemInfo("CANVAS_SMALL") },
+      { type: "CANVAS_TALL", info: getItemInfo("CANVAS_TALL") },
+      { type: "CANVAS_WIDE", info: getItemInfo("CANVAS_WIDE") },
+      { type: "CANVAS_LARGE", info: getItemInfo("CANVAS_LARGE") },
       { type: "CAMERA_PICTURE", info: getItemInfo("CAMERA_PICTURE") },
       { type: "CAMERA", info: getItemInfo("CAMERA") },
       { type: "WRITTEN_BOOK", info: getItemInfo("WRITTEN_BOOK") },
@@ -146,7 +150,7 @@ function selectCategory(name: string) {
       </div>
 
       <!-- Item types -->
-      <div class="flex flex-row flex-wrap gap-1 content-start justify-center max-h-48 h-auto overflow-x-scroll">
+      <div class="flex flex-row flex-wrap gap-1 content-start justify-center h-auto overflow-x-scroll">
         <RouterLink v-for="item in categoryItems" :to="{ name: 'itemSales', params: { itemType: item.type } }"
           class="item-button" :title="formatItemType(item.type)">
 

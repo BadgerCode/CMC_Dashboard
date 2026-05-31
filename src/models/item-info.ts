@@ -51,6 +51,26 @@ itemInfo["PALETTE"] = {
   moreInfoLink: "https://docs.callmecarson.live/books/smp-online/page/joy-of-painting",
   icon: "fa-solid fa-palette",
 };
+itemInfo["CANVAS_SMALL"] = {
+  description: "A small canvas used for paintings. 16x16 pixels. 1x1 blocks.",
+  moreInfoLink: "https://docs.callmecarson.live/books/smp-online/page/joy-of-painting",
+  icon: "fa-solid fa-square",
+};
+itemInfo["CANVAS_TALL"] = {
+  description: "A tall canvas used for paintings. 16x32 pixels. 1x2 blocks.",
+  moreInfoLink: "https://docs.callmecarson.live/books/smp-online/page/joy-of-painting",
+  icon: "fa-solid fa-square",
+};
+itemInfo["CANVAS_WIDE"] = {
+  description: "A wide canvas used for paintings. 32x16 pixels. 2x1 blocks.",
+  moreInfoLink: "https://docs.callmecarson.live/books/smp-online/page/joy-of-painting",
+  icon: "fa-solid fa-square",
+};
+itemInfo["CANVAS_LARGE"] = {
+  description: "A large canvas used for paintings. 32x32 pixels. 2x2 blocks.",
+  moreInfoLink: "https://docs.callmecarson.live/books/smp-online/page/joy-of-painting",
+  icon: "fa-solid fa-square",
+};
 itemInfo["FILLED_MAP"] = {
   description: "Maps used to display artwork. Includes regular maps too",
   shopCaveats: "Shop listings will include regular maps as well as map artwork.",
