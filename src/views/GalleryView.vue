@@ -72,12 +72,16 @@ watch(multiCanvasCheckFilter, async (_, __) => {
   loadGallery();
 });
 
-const enableMultiCanvasEditor = computed(
-  () =>
-    userStore.fullUserInfo != null &&
-    userStore.fullUserInfo.minecraftUsernameVerified &&
-    userStore.fullUserInfo.minecraftUsername == artistName.value,
-);
+const enableMultiCanvasEditor = computed(() => {
+  // Not logged in
+  if (userStore.fullUserInfo == null) return false;
+
+  // User has claim to manage any painting
+  if (userStore.fullUserInfo.claims.includes("MergeAnyPainting")) return true;
+
+  // Users can merge their own paintings
+  return userStore.fullUserInfo.minecraftUsernameVerified && userStore.fullUserInfo.minecraftUsername == artistName.value;
+});
 
 // Favourites
 const favouritesLoaded = ref(0);

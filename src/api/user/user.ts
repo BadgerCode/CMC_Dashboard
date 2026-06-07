@@ -5,4 +5,5 @@ export interface UserResponse {
   discordUsername: string;
   minecraftUsername: string;
   minecraftUsernameVerified: boolean;
+  claims: string[];
 }
