@@ -24,7 +24,7 @@ let intervalID: number | null = null;
 onMounted(async () => {
   // Load shop data
   shopData.value = await updateShops();
-  filteredShops.value = shopData.value.shops.filter(s => s.owner.name == props.username);
+  filteredShops.value = shopData.value.shops.filter((s) => s.owner.name == props.username);
 
   await loadSales();
   intervalID = window.setInterval(loadNewSales, 30000);
@@ -64,10 +64,13 @@ async function loadSales() {
 </script>
 
 <template>
-  <div class="mb-8 flex flex-col gap-4">
-    <div class="flex flex-col gap-1">
-      <h1 class="text-3xl font-bold">{{ username }}'s Shops</h1>
-    </div>
+  <div class="flex flex-col mb-2 gap-2">
+    <RouterLink :to="{ name: 'shops' }" class="hyperlink">Back to all shops</RouterLink>
+  </div>
+
+  <div class="mb-8 flex flex-col">
+    <h1 class="text-3xl font-bold">{{ username }}'s Shops</h1>
+    <p class="hint-text mt-2">Sale history is shown at the bottom of the page.</p>
   </div>
 
   <ShopsList :shops="filteredShops" :loading="loading"></ShopsList>

@@ -290,7 +290,11 @@ function groupedChildItems(items: ShopItem[]): ShopItem[] {
         </td>
 
         <!-- Owner (desktop) -->
-        <td class="table-item hidden md:table-cell wrap-anywhere">{{ shop.owner.name }}</td>
+        <td class="table-item hidden md:table-cell wrap-anywhere">
+          <RouterLink :to="{ name: 'shopOwnerView', params: { username: shop.owner.name } }" class="hyperlink">
+            {{ shop.owner.name }}
+          </RouterLink>
+        </td>
       </tr>
     </tbody>
   </table>
