@@ -265,7 +265,11 @@ function groupedChildItems(items: ShopItem[]): ShopItem[] {
           <div>x{{ shop.remaining }}</div>
 
           <div class="mt-2">Sold by:</div>
-          <div>{{ shop.owner.name }}</div>
+          <div>
+            <RouterLink :to="{ name: 'shopOwnerView', params: { username: shop.owner.name } }" class="hyperlink">
+              {{ shop.owner.name }}
+            </RouterLink>
+          </div>
         </td>
 
         <!-- Desktop -->

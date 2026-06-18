@@ -69,15 +69,25 @@ async function loadSales() {
   </div>
 
   <div class="mb-8 flex flex-col">
-    <h1 class="text-3xl font-bold">{{ username }}'s Shops</h1>
-    <p class="hint-text mt-2">Sale history is shown at the bottom of the page.</p>
+    <h1 class="text-3xl font-bold">{{ username }}'s Shops & Sale History</h1>
+  </div>
+
+
+  <!-- Shops list -->
+
+  <div class="flex flex-row flex-wrap justify-between items-end">
+    <div class="pb-4">
+      <h2 class="text-2xl font-bold">Shops</h2>
+    </div>
   </div>
 
   <ShopsList :shops="filteredShops" :loading="loading"></ShopsList>
 
+
+  <!-- Sale history -->
   <div class="flex flex-row flex-wrap justify-between items-end">
     <div class="pb-4">
-      <h1 class="text-3xl font-bold">Latest Sales</h1>
+      <h2 class="text-2xl font-bold">Latest Sales</h2>
       <p class="hint-text mt-2">Note: Sales before 18th June 2026 will be missing if the shop no longer exists.</p>
     </div>
   </div>
