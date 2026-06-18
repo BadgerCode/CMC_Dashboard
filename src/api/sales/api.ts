@@ -9,6 +9,7 @@ export interface SalesFilters {
   enchantment?: string;
   potionEffect?: string;
   customDisc?: string;
+  shopOwner?: string;
 }
 
 export async function loadSales(filters: SalesFilters): Promise<SaleSummary[]> {
@@ -29,6 +30,10 @@ export async function loadSales(filters: SalesFilters): Promise<SaleSummary[]> {
 
   if (filters.customName) {
     params.append("customName", filters.customName);
+  }
+
+  if (filters.shopOwner) {
+    params.append("shopOwner", filters.shopOwner);
   }
 
   if (filters?.enchantment != null)

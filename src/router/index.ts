@@ -12,6 +12,7 @@ import { setPageTitle } from "./pageTitle";
 import LoginView from "@/views/LoginView.vue";
 import ProfileView from "@/views/ProfileView.vue";
 import AlchemyConversionsView from "@/views/AlchemyConversionsView.vue";
+import ShopOwnerView from "@/views/ShopOwnerView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -116,7 +117,16 @@ const router = createRouter({
       meta: {
         title: "Profile"
       }
-    }
+    },
+    {
+      path: "/shops/:username",
+      name: "shopOwnerView",
+      component: ShopOwnerView,
+      props: true,
+      meta: {
+        title: "Shop Information",
+      },
+    },
   ],
 });
 

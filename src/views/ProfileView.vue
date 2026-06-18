@@ -82,6 +82,21 @@ async function saveUser() {
         <div class="hint-text">To reload your discord profile details, sign out and sign back in again.</div>
       </div>
 
+      <!-- User pages -->
+      <div class="border-b border-gray-500 py-5" v-if="userInfo.minecraftUsername">
+        <h3 class="text-lg font-medium text-heading">Your Pages</h3>
+
+        <div class="flex flex-row gap-8 items-center">
+          <RouterLink :to="{ name: 'shopOwnerView', params: { username: userInfo.minecraftUsername } }" class="hyperlink">
+            Shops
+          </RouterLink>
+
+          <RouterLink :to="{ name: 'gallery', params: { authorName: userInfo.minecraftUsername } }" class="hyperlink">
+            Artwork
+          </RouterLink>
+        </div>
+      </div>
+
       <!-- Additional fields -->
       <div class="border-b border-gray-500 py-5">
         <!-- Minecraft username -->
