@@ -78,6 +78,7 @@ async function loadSales() {
   <div class="flex flex-row flex-wrap justify-between items-end">
     <div class="pb-4">
       <h1 class="text-3xl font-bold">Latest Sales</h1>
+      <p class="hint-text mt-2">Note: Sales before 18th June 2026 will be missing if the shop no longer exists.</p>
     </div>
   </div>
 
