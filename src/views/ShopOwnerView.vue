@@ -3,6 +3,10 @@ import type { SaleSummary } from "@/api/sales/saleSummary";
 import { onMounted, onUnmounted, ref } from "vue";
 import * as SalesAPI from "@/api/sales/api";
 import RecentSales from "@/components/RecentSales.vue";
+import ShopsList from "@/components/ShopsList.vue";
+import type { ShopData } from "@/api/shops/shopdata";
+import { updateShops } from "@/api/shops/api";
+import type { ShopOverview } from "@/store/shops-state";
 
 interface Props {
   username: string;
@@ -10,12 +14,18 @@ interface Props {
 const props = defineProps<Props>();
 
 const loading = ref(true);
+const shopData = ref(null as ShopOverview | null);
+const filteredShops = ref([] as ShopData[]);
 const recentSales = ref([] as SaleSummary[]);
 const noMoreResults = ref(false);
 
 let intervalID: number | null = null;
 
 onMounted(async () => {
+  // Load shop data
+  shopData.value = await updateShops();
+  filteredShops.value = shopData.value.shops.filter(s => s.owner.name == props.username);
+
   await loadSales();
   intervalID = window.setInterval(loadNewSales, 30000);
 });
@@ -60,7 +70,7 @@ async function loadSales() {
     </div>
   </div>
 
-  <!-- TODO: Show shops -->
+  <ShopsList :shops="filteredShops" :loading="loading"></ShopsList>
 
   <div class="flex flex-row flex-wrap justify-between items-end">
     <div class="pb-4">
@@ -74,7 +84,7 @@ async function loadSales() {
     <RecentSales :recent-sales="recentSales" :loading="loading"></RecentSales>
   </div>
 
-  <div class="mt-8 text-center" v-if="!loading">
+  <div class="mt-8 text-center" v-if="!loading && recentSales.length > 0">
     <button type="button" class="button" v-on:click="loadNextPage" v-if="!noMoreResults">More</button>
     <div v-else>No more results</div>
   </div>

@@ -8,10 +8,12 @@ import { initFlowbite } from "flowbite";
 import { formatPotionEffect } from "@/utilities/potion-format";
 import { formatEnchantment } from "@/utilities/enchantment-format";
 import { formatCustomDisc } from "@/utilities/custom-disc-format";
+import Loading from "./Loading.vue";
 
 interface Props {
   shops: ShopData[];
   hideBuySell?: boolean;
+  loading?: boolean;
 }
 const props = defineProps<Props>();
 const maxShops = 100;
@@ -293,9 +295,10 @@ function groupedChildItems(items: ShopItem[]): ShopItem[] {
     </tbody>
   </table>
 
-  <div class="mt-8 text-center p-2">
+  <div class="mt-8 text-center p-2" v-if="!loading">
     <div v-if="paginatedShops.length == 0">No shops found</div>
     <button type="button" class="button" v-on:click="pageNumber++" v-else-if="paginatedShops.length < props.shops.length">More</button>
-    <div v-else>No more results</div>
   </div>
+
+  <Loading v-if="loading" :fill-space="true"></Loading>
 </template>
