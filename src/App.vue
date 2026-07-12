@@ -9,14 +9,16 @@ import * as VillagerTradesAPI from "@/api/villagerTrades/api";
 import { favouritesStore } from "./store/favourites-state";
 import { userStore } from "./store/user-state";
 import ProfileMenu from "./components/ProfileMenu.vue";
-import { itemsStore } from "./store/items-state";
 import { retrieveAlchemyConversions } from "./api/alchemyConversions/api";
+import Loading from "./components/Loading.vue";
 
 const route = useRoute();
 
 const path = computed(() => {
   return route.fullPath.replace(route.hash, "");
 });
+
+const loading = ref(true);
 
 onMounted(async () => {
   initFlowbite(); // Include on any component where you need flowbite JS functionality
@@ -36,6 +38,8 @@ onMounted(async () => {
 
   // Alchemy conversions
   await retrieveAlchemyConversions();
+
+  loading.value = false;
 });
 
 onUpdated(() => {
@@ -51,6 +55,7 @@ async function loadServerStats(): Promise<ServerOverview | null> {
   let lastResponse = new Date(response.lastResponse);
 
   serverStore.numPlayers = response.numPlayers;
+  serverStore.players = response.players;
   serverStore.status = Date.now() - lastResponse.getTime() < 130000 ? "Online" : "Offline";
   serverStore.numSales = response.numSales;
   serverStore.numPaintings = response.numPaintings;
@@ -143,7 +148,8 @@ async function loadServerStats(): Promise<ServerOverview | null> {
       <!-- Page content -->
       <main class="flex-grow">
         <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 text-white pb-[100px]">
-          <router-view :key="path" />
+          <Loading v-if="loading" :fill-space="true"></Loading>
+          <router-view v-else :key="path" />
         </div>
       </main>
 

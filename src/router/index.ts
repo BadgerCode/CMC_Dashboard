@@ -82,7 +82,7 @@ const router = createRouter({
       name: "playercounts",
       component: PlayerCountView,
       meta: {
-        title: "Player Numbers"
+        title: "Players"
       }
     },
     {
