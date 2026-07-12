@@ -139,7 +139,10 @@ async function loadServerStats(): Promise<ServerOverview | null> {
           <div v-if="serverStore.loaded" class="text-gray-200 flex flex-col text-right">
             <div>Server {{ serverStore.status }}</div>
             <div>
-              <RouterLink :to="{ name: 'playercounts' }" class="hyperlink">{{ serverStore.numPlayers }} players </RouterLink>
+              <RouterLink :to="{ name: 'playercounts' }" class="hyperlink">
+                <span>{{ serverStore.numPlayers }} players</span>
+                <font-awesome-icon icon="fa-solid fa-magnifying-glass" class="w-5 h-5 ml-2 text-gray-400" />
+              </RouterLink>
             </div>
           </div>
         </div>
