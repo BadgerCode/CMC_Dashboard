@@ -11,6 +11,7 @@ import ItemAttributeDisplay from "./ItemAttributeDisplay.vue";
 interface Props {
   recentSales: SaleSummary[];
   loading?: boolean;
+  hideSeller?: boolean;
 }
 const props = defineProps<Props>();
 
@@ -115,7 +116,7 @@ const sales = computed(() => {
             <ItemAttributeDisplay :snbt="row.parsedSNBT" class="text-xs md:text-sm capitalize mt-2"></ItemAttributeDisplay>
 
             <!-- Seller name -->
-            <div v-if="row.sale.sellerUsername" class="hint-text mt-4">
+            <div v-if="row.sale.sellerUsername && !props.hideSeller" class="hint-text mt-4">
               Sold by <RouterLink :to="{ name: 'shopOwnerView', params: { username: row.sale.sellerUsername } }" class="hyperlink">
                 {{ row.sale.sellerUsername }}
               </RouterLink>

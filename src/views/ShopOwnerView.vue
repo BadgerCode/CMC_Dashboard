@@ -95,7 +95,7 @@ async function loadSales() {
   <!-- TODO: Filters -->
 
   <div class="relative overflow-x-auto">
-    <RecentSales :recent-sales="recentSales" :loading="loading"></RecentSales>
+    <RecentSales :recent-sales="recentSales" :loading="loading" :hide-seller="true"></RecentSales>
   </div>
 
   <div class="mt-8 text-center" v-if="!loading && recentSales.length > 0">
