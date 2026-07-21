@@ -113,6 +113,13 @@ const sales = computed(() => {
 
             <!-- Key attributes- enchantments, effects, etc. -->
             <ItemAttributeDisplay :snbt="row.parsedSNBT" class="text-xs md:text-sm capitalize mt-2"></ItemAttributeDisplay>
+
+            <!-- Seller name -->
+            <div v-if="row.sale.sellerUsername" class="hint-text mt-4">
+              Sold by <RouterLink :to="{ name: 'shopOwnerView', params: { username: row.sale.sellerUsername } }" class="hyperlink">
+                {{ row.sale.sellerUsername }}
+              </RouterLink>
+            </div>
           </td>
 
           <!-- Price columns -->

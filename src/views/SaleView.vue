@@ -22,6 +22,7 @@ interface SoldItem {
   isEnchanted: boolean;
   itemAttributes: ItemAttribute[];
   customName: string | null;
+  sellerUsername: string | null;
 }
 
 interface SaleData extends SoldItem {
@@ -69,7 +70,7 @@ onMounted(async () => {
 let filteredAttributes = computed(() => {
   // Exclude painting attributes, as we'll render them separately
   return (saleData.value?.itemAttributes.filter((a) => !a.key.startsWith("PAINTING_")) ?? []).sort(
-    (a, b) => a.key.localeCompare(b.key) || a.value.localeCompare(b.value)
+    (a, b) => a.key.localeCompare(b.key) || a.value.localeCompare(b.value),
   );
 });
 </script>
@@ -96,6 +97,11 @@ let filteredAttributes = computed(() => {
                 <font-awesome-icon icon="fa-solid fa-question" v-else title="Unknown" />
               </span>
               <span>{{ saleData.type }}</span>
+              <span v-if="saleData.sellerUsername" class="ml-2">
+                (<RouterLink :to="{ name: 'shopOwnerView', params: { username: saleData.sellerUsername } }" class="hyperlink">
+                  {{ saleData.sellerUsername }}
+                </RouterLink>)
+              </span>
             </div>
           </div>
         </div>
@@ -211,9 +217,7 @@ let filteredAttributes = computed(() => {
               <td class="table-item wrap-anywhere">
                 <div
                   v-for="attribute in subItem.itemAttributes.sort((a, b) => a.key.localeCompare(b.key) || a.value.localeCompare(b.value))">
-                  <span v-if="attribute.key != 'PAINTING_ID'">
-                    {{ formatItemType(attribute.key) }}:
-                  </span>
+                  <span v-if="attribute.key != 'PAINTING_ID'"> {{ formatItemType(attribute.key) }}: </span>
 
                   <span v-if="attribute.key == 'POTION_EFFECT'" class="capitalize">
                     <RouterLink

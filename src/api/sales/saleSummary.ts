@@ -9,6 +9,7 @@ export interface SaleSummary {
   customName: string | null;
   itemAttributes: SoldItemAttribute[];
   insideContainer: boolean;
+  sellerUsername: string | null;
 }
 
 export interface SoldItemAttribute {
