@@ -68,7 +68,6 @@ const sales = computed(() => {
           <th class="table-item">Time</th>
           <th></th>
           <th></th>
-          <th></th>
           <th class="table-item">Item</th>
 
           <!-- Price columns -->
@@ -95,11 +94,6 @@ const sales = computed(() => {
             <font-awesome-icon icon="fa-solid fa-shop" v-if="row.sale.type == 'Shop'" />
             <font-awesome-icon icon="fa-solid fa-gavel" v-else-if="row.sale.type == 'Auction'" />
             <font-awesome-icon icon="fa-solid fa-question" v-else title="Unknown" />
-          </td>
-
-          <!-- Is enchanted icon -->
-          <td class="table-item" title="Enchanted">
-            <font-awesome-icon icon="fa-solid fa-wand-sparkles" v-if="row.sale.isEnchanted" />
           </td>
 
           <!-- Is inside a shulker icon -->
