@@ -13,6 +13,7 @@ import LoginView from "@/views/LoginView.vue";
 import ProfileView from "@/views/ProfileView.vue";
 import AlchemyConversionsView from "@/views/AlchemyConversionsView.vue";
 import ShopOwnerView from "@/views/ShopOwnerView.vue";
+import MapView from "@/views/MapView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -125,6 +126,15 @@ const router = createRouter({
       props: true,
       meta: {
         title: "Shop Information",
+      },
+    },
+    {
+      path: "/map",
+      name: "map",
+      component: MapView,
+      props: true,
+      meta: {
+        title: "World Map",
       },
     },
   ],
