@@ -187,7 +187,7 @@ function formatWorldName(worldName: string) {
     </div>
 
     <div class="pb-4">
-      <a href="https://callmecarson.live/subserver/map/" target="_blank" class="hyperlink"> World map </a>
+      <RouterLink :to="{ name: 'map' }" class="hyperlink">World map</RouterLink>
     </div>
   </div>
 
