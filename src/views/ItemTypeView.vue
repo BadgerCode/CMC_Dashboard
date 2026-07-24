@@ -400,7 +400,7 @@ function getWikiLink() {
 
       <div class="max-h-[400px] overflow-y-auto">
         <Loading v-if="loadingSales" :loader-type="'text'"></Loading>
-        <RecentSales v-else :recent-sales="filteredSales"></RecentSales>
+        <RecentSales v-else :recent-sales="filteredSales" :hide-item-type-link="true"></RecentSales>
       </div>
     </div>
 

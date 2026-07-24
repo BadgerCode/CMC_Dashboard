@@ -12,6 +12,7 @@ interface Props {
   recentSales: SaleSummary[];
   loading?: boolean;
   hideSeller?: boolean;
+  hideItemTypeLink?: boolean;
 }
 const props = defineProps<Props>();
 
@@ -110,14 +111,22 @@ const sales = computed(() => {
             </div>
 
             <!-- Item type -->
-            <div>{{ formatItemType(row.sale.itemType) }}</div>
+            <div>
+              <span>{{ formatItemType(row.sale.itemType) }}</span>
+              <RouterLink :to="{ name: 'itemSales', params: { itemType: row.sale.itemType } }"
+                class="hyperlink text-xs ml-1" v-if="!props.hideItemTypeLink">
+                <font-awesome-icon icon="fa-solid fa-magnifying-glass" />
+              </RouterLink>
+            </div>
 
             <!-- Key attributes- enchantments, effects, etc. -->
-            <ItemAttributeDisplay :snbt="row.parsedSNBT" class="text-xs md:text-sm capitalize mt-2"></ItemAttributeDisplay>
+            <ItemAttributeDisplay :snbt="row.parsedSNBT" class="text-xs md:text-sm capitalize mt-2">
+            </ItemAttributeDisplay>
 
             <!-- Seller name -->
             <div v-if="row.sale.sellerUsername && !props.hideSeller" class="hint-text mt-4">
-              Sold by <RouterLink :to="{ name: 'shopOwnerView', params: { username: row.sale.sellerUsername } }" class="hyperlink">
+              Sold by <RouterLink :to="{ name: 'shopOwnerView', params: { username: row.sale.sellerUsername } }"
+                class="hyperlink">
                 {{ row.sale.sellerUsername }}
               </RouterLink>
             </div>
