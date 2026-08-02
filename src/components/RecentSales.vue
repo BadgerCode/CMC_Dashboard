@@ -125,7 +125,9 @@ const sales = computed(() => {
 
             <!-- Seller name -->
             <div v-if="row.sale.sellerUsername && !props.hideSeller" class="hint-text mt-4">
-              Sold by <RouterLink :to="{ name: 'shopOwnerView', params: { username: row.sale.sellerUsername } }"
+              <span v-if="row.sale.soldToShop">Bought by </span>
+              <span v-else>Sold by </span>
+              <RouterLink :to="{ name: 'shopOwnerView', params: { username: row.sale.sellerUsername } }"
                 class="hyperlink">
                 {{ row.sale.sellerUsername }}
               </RouterLink>

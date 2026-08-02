@@ -10,6 +10,7 @@ export interface SaleSummary {
   itemAttributes: SoldItemAttribute[];
   insideContainer: boolean;
   sellerUsername: string | null;
+  soldToShop: boolean;
 }
 
 export interface SoldItemAttribute {
