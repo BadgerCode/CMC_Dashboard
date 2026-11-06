@@ -5,14 +5,6 @@ import "chartjs-adapter-date-fns";
 import { onMounted, ref, shallowRef } from "vue";
 import Loading from "./Loading.vue";
 
-interface PlayerCount {
-  bucketStart: string;
-  bucketEndExclusive: string;
-  minPlayerCount?: number;
-  maxPlayerCount?: number;
-  avgPlayerCount?: number;
-}
-
 // State
 const loading = ref(true);
 const period = ref("6months"); // "24hours", "week", "month", "6months", "year"
@@ -32,9 +24,14 @@ async function setPeriod(newPeriod: string) {
 }
 
 // Chart rendering
-// EF returns DateTime values without an offset (e.g. "2026-11-06T14:15:00"),
-// which JS would treat as local time. Our buckets are UTC, so append 'Z'.
-const parseUtc = (s: string) => new Date(/Z|[+-]\d\d:\d\d$/.test(s) ? s : s + "Z");
+// Periods
+const periods = [
+  { value: "24hours", label: "24 hours" },
+  { value: "week", label: "Week" },
+  { value: "month", label: "Month" },
+  { value: "6months", label: "6 months" },
+  { value: "year", label: "Year" },
+];
 
 const labelFormats = {
   "24hours": { hour: "2-digit", minute: "2-digit" },
@@ -44,11 +41,19 @@ const labelFormats = {
   year: { day: "numeric", month: "short" },
 } as Record<string, Intl.DateTimeFormatOptions>;
 
+interface PlayerCount {
+  bucketStart: string;
+  bucketEndExclusive: string;
+  minPlayerCount?: number;
+  maxPlayerCount?: number;
+  avgPlayerCount?: number;
+}
+
 async function loadChart() {
   const res = await fetch(`${Config.APIURL}/api/v2/serverstats/playercounts?period=${period.value}`);
   const buckets: PlayerCount[] = (await res.json()).items;
 
-  const labels = buckets.map((b) => parseUtc(b.bucketStart).toLocaleString(undefined, labelFormats[period.value]));
+  const labels = buckets.map((b) => new Date(b.bucketStart).toLocaleString(undefined, labelFormats[period.value]));
 
   const data = {
     labels,
@@ -97,8 +102,15 @@ async function loadChart() {
         point: { radius: 0, hitRadius: 8 }, // hide dots, keep hover easy
       },
       scales: {
-        x: { ticks: { maxTicksLimit: 12, autoSkip: true } },
-        y: { beginAtZero: true, title: { display: true, text: "Players" } },
+        x: {
+          grid: { color: "rgba(255, 255, 255, 0.15)" },
+          ticks: { maxTicksLimit: 12, autoSkip: true },
+        },
+        y: {
+          grid: { color: "rgba(255, 255, 255, 0.15)" },
+          beginAtZero: true,
+          title: { display: true, text: "Players" },
+        },
       },
       plugins: {
         tooltip: {
@@ -120,18 +132,20 @@ async function loadChart() {
   <div>
     <canvas id="chartOutput"></canvas>
     <div class="flex flex-row gap-2 mt-2" id="periodButtons">
-      <button @click="setPeriod('24hours')" :class="{ 'active': period === '24hours' }" class="button-secondary">24 hours</button>
-      <button @click="setPeriod('week')" :class="{ 'active': period === 'week' }" class="button-secondary">Week</button>
-      <button @click="setPeriod('month')" :class="{ 'active': period === 'month' }" class="button-secondary">Month</button>
-      <button @click="setPeriod('6months')" :class="{ 'active': period === '6months' }" class="button-secondary">6 months</button>
-      <button @click="setPeriod('year')" :class="{ 'active': period === 'year' }" class="button-secondary">Year</button>
+      <button
+        v-for="p in periods"
+        :key="p.value"
+        @click="setPeriod(p.value)"
+        :class="{ active: period === p.value }"
+        class="button-secondary">
+        {{ p.label }}
+      </button>
       <Loading v-if="loading"></Loading>
     </div>
   </div>
 </template>
 
 <style scoped>
-
 /* .period-buttons {
   display: flex;
   flex-wrap: wrap;
