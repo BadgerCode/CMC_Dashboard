@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Chart from "@/components/Chart.vue";
+import Chart from "@/components/Charts/PlayerCounts.vue";
 import { serverStore } from "@/store/server-state";
 import { computed } from "vue";
 

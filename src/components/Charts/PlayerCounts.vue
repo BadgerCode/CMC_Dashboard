@@ -3,7 +3,7 @@ import { Config } from "@/config";
 import Chart, { type ChartData, type ChartOptions } from "chart.js/auto";
 import "chartjs-adapter-date-fns";
 import { onMounted, ref, shallowRef } from "vue";
-import Loading from "./Loading.vue";
+import Loading from "../Loading.vue";
 
 // State
 const loading = ref(true);
