@@ -135,7 +135,7 @@ function render() {
   <div>
     <canvas id="chartOutput" class="max-h-[200px]"></canvas>
     <div class="flex flex-row justify-between">
-      <div class="flex flex-row gap-2 mt-2">
+      <div class="flex flex-row flex-wrap gap-2 mt-2">
         <button
           v-for="p in periods"
           :key="p.value"
@@ -148,7 +148,7 @@ function render() {
 
       <Loading v-if="loading"></Loading>
 
-      <div class="flex flex-row gap-2 mt-2">
+      <div class="flex flex-row flex-wrap gap-2 mt-2 justify-end">
         <button
           v-for="m in metrics"
           :key="m.key"
