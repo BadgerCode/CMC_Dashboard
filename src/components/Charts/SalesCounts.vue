@@ -5,7 +5,10 @@ import "chartjs-adapter-date-fns";
 import { computed, onBeforeUnmount, onMounted, ref, shallowRef } from "vue";
 import Loading from "../Loading.vue";
 
-// TODO: Item type filter
+interface Props {
+  itemType?: string;
+}
+const props = defineProps<Props>();
 
 // Periods
 const periods = [
@@ -16,18 +19,29 @@ const periods = [
   { value: "year", label: "Year" },
 ];
 
-const metrics = [
-  { key: "numSales", label: "Sales", color: "#3e63dd" },
-  { key: "totalQuantity", label: "Items sold", color: "#30a46c" },
-  { key: "totalSpent", label: "Total spent", color: "#e5484d" },
-];
+const metrics = computed(() => {
+  // When there's an itemType, show numSales, totalQuantity and avgPrice
+  if (props.itemType) {
+    return [
+      { key: "numSales", label: "Sales", color: "#3e63dd" },
+      { key: "totalQuantity", label: "Items sold", color: "#30a46c" },
+      { key: "avgPrice", label: "Average price", color: "#f5a623" },
+    ];
+  }
+
+  return [
+    { key: "numSales", label: "Sales", color: "#3e63dd" },
+    { key: "totalQuantity", label: "Items sold", color: "#30a46c" },
+    { key: "totalSpent", label: "Total spent", color: "#e5484d" },
+  ];
+});
 
 // State
 const loading = ref(true);
 const period = ref("week");
 const metricKey = ref("numSales");
 const chart = shallowRef<Chart | null>(null);
-const metric = computed(() => metrics.find((m) => m.key === metricKey.value));
+const metric = computed(() => metrics.value.find((m) => m.key === metricKey.value));
 
 onMounted(async () => {
   await setPeriod("24hours");
@@ -72,11 +86,17 @@ function formatLabel(iso: string, periodValue: string): string {
   return periodValue === "6months" || periodValue === "year" ? `Week of ${text}` : text;
 }
 
-let latestRequest = 0;
 let buckets: SaleCount[] = [];
+let cancellationSource = new AbortController();
 
 async function loadChart() {
-  const res = await fetch(`${Config.APIURL}/api/salesstats?period=${period.value}`);
+  // Cancel any in flight requests
+  cancellationSource.abort();
+  cancellationSource = new AbortController();
+
+  const res = await fetch(`${Config.APIURL}/api/salesstats?period=${period.value}&itemType=${props.itemType || ""}`, {
+    signal: cancellationSource.signal,
+  });
   buckets = (await res.json()).items;
   render();
 }

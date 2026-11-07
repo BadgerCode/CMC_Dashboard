@@ -24,6 +24,7 @@ import { setPageTitle } from "@/router/pageTitle";
 import { userStore } from "@/store/user-state";
 import { normalisePrice, simpleNormalisedPrice } from "@/utilities/normalise-price";
 import CustomDiscStats from "@/components/CustomDiscStats.vue";
+import SalesCounts from "@/components/Charts/SalesCounts.vue";
 
 interface Props {
   itemType: string;
@@ -346,6 +347,11 @@ function getWikiLink() {
           <RouterLink :to="{ name: 'alchemyConversions' }" class="hyperlink">All conversions</RouterLink>
         </p>
       </div>
+    </div>
+
+    <!-- Sales Counts Chart -->
+    <div class="pb-4">
+      <SalesCounts :itemType="props.itemType"></SalesCounts>
     </div>
 
     <!-- Custom disc stats -->
