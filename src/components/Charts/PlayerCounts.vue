@@ -2,28 +2,9 @@
 import { Config } from "@/config";
 import Chart, { type ChartData, type ChartOptions } from "chart.js/auto";
 import "chartjs-adapter-date-fns";
-import { onMounted, ref, shallowRef } from "vue";
+import { onBeforeUnmount, onMounted, ref, shallowRef } from "vue";
 import Loading from "../Loading.vue";
 
-// State
-const loading = ref(true);
-const period = ref("6months"); // "24hours", "week", "month", "6months", "year"
-const chart = shallowRef<Chart | null>(null);
-
-onMounted(async () => {
-  await setPeriod("24hours");
-});
-
-async function setPeriod(newPeriod: string) {
-  if (period.value === newPeriod) return;
-
-  period.value = newPeriod;
-  loading.value = true;
-  await loadChart();
-  loading.value = false;
-}
-
-// Chart rendering
 // Periods
 const periods = [
   { value: "24hours", label: "24 hours" },
@@ -41,6 +22,27 @@ const labelFormats = {
   year: { day: "numeric", month: "short" },
 } as Record<string, Intl.DateTimeFormatOptions>;
 
+// State
+const loading = ref(true);
+const period = ref("6months");
+const chart = shallowRef<Chart | null>(null);
+
+onMounted(async () => {
+  await setPeriod("24hours");
+});
+
+onBeforeUnmount(() => chart.value?.destroy());
+
+async function setPeriod(newPeriod: string) {
+  if (period.value === newPeriod) return;
+
+  period.value = newPeriod;
+  loading.value = true;
+  await loadChart();
+  loading.value = false;
+}
+
+// Chart rendering
 interface PlayerCount {
   bucketStart: string;
   bucketEndExclusive: string;
@@ -131,7 +133,7 @@ async function loadChart() {
 <template>
   <div>
     <canvas id="chartOutput"></canvas>
-    <div class="flex flex-row gap-2 mt-2" id="periodButtons">
+    <div class="flex flex-row gap-2 mt-2">
       <button
         v-for="p in periods"
         :key="p.value"
@@ -144,32 +146,3 @@ async function loadChart() {
     </div>
   </div>
 </template>
-
-<style scoped>
-/* .period-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 12px;
-}
-
-.period-buttons button {
-  padding: 6px 14px;
-  border: 1px solid #c9ced6;
-  border-radius: 6px;
-  background: #fff;
-  color: #333;
-  font: inherit;
-  cursor: pointer;
-}
-
-.period-buttons button:hover {
-  background: #f2f4f7;
-}
-
-.period-buttons button.active {
-  background: #3e63dd;
-  border-color: #3e63dd;
-  color: #fff;
-} */
-</style>

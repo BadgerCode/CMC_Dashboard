@@ -6,6 +6,8 @@ import RecentSales from "@/components/RecentSales.vue";
 import { serverStore } from "@/store/server-state";
 import { formatNumber } from "@/utilities/number-format";
 import ItemTypeCategories from "@/components/ItemTypeCategories.vue";
+import SalesCounts from "@/components/Charts/SalesCounts.vue";
+
 
 const loading = ref(true);
 const recentSales = ref([] as SaleSummary[]);
@@ -67,6 +69,11 @@ async function loadSales() {
       <p class="text-gray-300">Shops and auctions</p>
       <p class="hint-text" v-if="serverStore.loaded">{{ formatNumber(serverStore.numSales, 0) }} total sales</p>
     </div>
+  </div>
+
+  <!-- Sales Counts Chart -->
+  <div class="pb-4">
+    <SalesCounts></SalesCounts>
   </div>
 
   <div class="relative overflow-x-auto">
