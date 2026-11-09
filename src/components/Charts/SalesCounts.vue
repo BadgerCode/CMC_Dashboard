@@ -7,6 +7,7 @@ import Loading from "../Loading.vue";
 
 interface Props {
   itemType?: string;
+  sellerUsername?: string;
 }
 const props = defineProps<Props>();
 
@@ -94,9 +95,12 @@ async function loadChart() {
   cancellationSource.abort();
   cancellationSource = new AbortController();
 
-  const res = await fetch(`${Config.APIURL}/api/salesstats?period=${period.value}&itemType=${props.itemType || ""}`, {
-    signal: cancellationSource.signal,
-  });
+  const res = await fetch(
+    `${Config.APIURL}/api/salesstats?period=${period.value}&itemType=${props.itemType || ""}&sellerUsername=${props.sellerUsername || ""}`,
+    {
+      signal: cancellationSource.signal,
+    },
+  );
   buckets = (await res.json()).items;
   render();
 }
@@ -142,7 +146,7 @@ function render() {
         legend: { display: false },
         tooltip: {
           callbacks: {
-            label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y?.toLocaleString() ?? 'no sales'}`,
+            label: (ctx) => `${ctx.dataset.label}: ${ctx.parsed.y?.toLocaleString() ?? "no sales"}`,
           },
         },
       },

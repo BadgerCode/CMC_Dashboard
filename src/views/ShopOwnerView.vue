@@ -7,6 +7,7 @@ import ShopsList from "@/components/ShopsList.vue";
 import type { ShopData } from "@/api/shops/shopdata";
 import { updateShops } from "@/api/shops/api";
 import type { ShopOverview } from "@/store/shops-state";
+import SalesCounts from "@/components/Charts/SalesCounts.vue";
 
 interface Props {
   username: string;
@@ -64,42 +65,53 @@ async function loadSales() {
 </script>
 
 <template>
-  <div class="flex flex-col mb-2 gap-2">
-    <RouterLink :to="{ name: 'shops' }" class="hyperlink">Back to all shops</RouterLink>
-  </div>
-
-  <div class="mb-8 flex flex-col">
-    <h1 class="text-3xl font-bold">{{ username }}'s Shops & Sale History</h1>
-  </div>
-
-
-  <!-- Shops list -->
-
-  <div class="flex flex-row flex-wrap justify-between items-end">
-    <div class="pb-4">
-      <h2 class="text-2xl font-bold">Shops</h2>
+  <div class="flex flex-col gap-8">
+    <div class="flex flex-colgap-2">
+      <RouterLink :to="{ name: 'shops' }" class="hyperlink">Back to all shops</RouterLink>
     </div>
-  </div>
 
-  <ShopsList :shops="filteredShops" :loading="loading"></ShopsList>
-
-
-  <!-- Sale history -->
-  <div class="flex flex-row flex-wrap justify-between items-end">
-    <div class="pb-4">
-      <h2 class="text-2xl font-bold">Latest Sales</h2>
-      <p class="hint-text mt-2">Note: Sales before 18th June 2026 will be missing if the shop no longer exists.</p>
+    <div class="flex flex-col">
+      <h1 class="text-3xl font-bold">{{ username }}'s Shops & Sale History</h1>
     </div>
-  </div>
 
-  <!-- TODO: Filters -->
+    <!-- Sales Counts Chart -->
+    <div class="pb-4">
+      <SalesCounts :seller-username="username"></SalesCounts>
+    </div>
 
-  <div class="relative overflow-x-auto">
-    <RecentSales :recent-sales="recentSales" :loading="loading" :hide-seller="true"></RecentSales>
-  </div>
+    <!-- Sale history -->
+    <div>
+      <div class="flex flex-row flex-wrap justify-between items-end">
+        <div class="pb-4">
+          <h2 class="text-2xl font-bold">Latest Sales</h2>
+          <p class="hint-text mt-2">Note: Some sales from before 18th June 2026 will be missing.</p>
+        </div>
+      </div>
 
-  <div class="mt-8 text-center" v-if="!loading && recentSales.length > 0">
-    <button type="button" class="button" v-on:click="loadNextPage" v-if="!noMoreResults">More</button>
-    <div v-else>No more results</div>
+      <!-- TODO: Filters -->
+      <div class="max-h-[400px] overflow-y-auto">
+        <div class="relative overflow-x-auto">
+          <RecentSales :recent-sales="recentSales" :loading="loading" :hide-seller="true"></RecentSales>
+        </div>
+
+        <div class="mt-8 text-center" v-if="!loading && recentSales.length > 0">
+          <button type="button" class="button" v-on:click="loadNextPage" v-if="!noMoreResults">More</button>
+          <div v-else>No more results</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Shops list -->
+    <div>
+      <div class="flex flex-row flex-wrap justify-between items-end">
+        <div class="pb-4">
+          <h2 class="text-2xl font-bold">Shops</h2>
+        </div>
+      </div>
+
+      <div class="max-h-[400px] overflow-y-auto">
+        <ShopsList :shops="filteredShops" :loading="loading"></ShopsList>
+      </div>
+    </div>
   </div>
 </template>
