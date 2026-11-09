@@ -17,6 +17,8 @@ import { formatNumber } from "@/utilities/number-format";
 import { setPageTitle } from "@/router/pageTitle";
 import { favouritesStore } from "@/store/favourites-state";
 import { userStore } from "@/store/user-state";
+import { fetchUserInfo } from "@/api/user/api";
+import type { UserResponse } from "@/api/user/user";
 
 interface ArtistSummary {
   id: string;
@@ -31,6 +33,7 @@ interface Props {
 const props = defineProps<Props>();
 const router = useRouter();
 const route = useRoute();
+const userInfo = ref(null as UserResponse | null);
 
 // page properties
 const pageSize = 20;
@@ -95,6 +98,7 @@ onMounted(async () => {
     setPageTitle(`${artistName.value} Art`);
   }
 
+  userInfo.value = await fetchUserInfo();
   await loadArtists();
   await loadGallery();
 });
@@ -195,12 +199,17 @@ async function loadNextPage() {
       <h1 class="text-3xl font-bold" v-else>Recently Created</h1>
 
       <p class="text-gray-300" v-if="!props.authorName && !showFavourites">Paintings created by the players of the server</p>
-      <p class="hint-text mt-2" v-if="!showFavourites">Note: Only paintings sold through shops or auctions since Oct 25th 2025 will be shown.</p>
+      <p class="hint-text mt-2" v-if="!showFavourites">
+        Note: Only paintings sold through shops or auctions since Oct 25th 2025 will be shown.
+      </p>
     </div>
-    <div>
-      <RouterLink v-if="!showFavourites" :to="{ name: 'gallery', query: { favourites: 'true' } }" class="hyperlink"
-        >My Favourites</RouterLink
-      >
+    <div class="flex flex-col">
+      <RouterLink v-if="!showFavourites" :to="{ name: 'gallery', query: { favourites: 'true' } }" class="hyperlink">
+        My Favourites
+      </RouterLink>
+      <RouterLink v-if="userInfo != null" :to="{ name: 'gallery', params: { authorName: userInfo.minecraftUsername } }" class="hyperlink">
+        My Artwork
+      </RouterLink>
     </div>
   </div>
 

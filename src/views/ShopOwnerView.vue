@@ -8,6 +8,8 @@ import type { ShopData } from "@/api/shops/shopdata";
 import { updateShops } from "@/api/shops/api";
 import type { ShopOverview } from "@/store/shops-state";
 import SalesCounts from "@/components/Charts/SalesCounts.vue";
+import { fetchUserInfo } from "@/api/user/api";
+import type { UserResponse } from "@/api/user/user";
 
 interface Props {
   username: string;
@@ -18,11 +20,15 @@ const loading = ref(true);
 const shopData = ref(null as ShopOverview | null);
 const filteredShops = ref([] as ShopData[]);
 const recentSales = ref([] as SaleSummary[]);
+const userInfo = ref(null as UserResponse | null);
 const noMoreResults = ref(false);
 
 let intervalID: number | null = null;
 
 onMounted(async () => {
+  // Load user info
+  userInfo.value = await fetchUserInfo();
+
   // Load shop data
   shopData.value = await updateShops();
   filteredShops.value = shopData.value.shops.filter((s) => s.owner.name == props.username);
@@ -66,8 +72,19 @@ async function loadSales() {
 
 <template>
   <div class="flex flex-col gap-8">
-    <div class="flex flex-colgap-2">
-      <RouterLink :to="{ name: 'shops' }" class="hyperlink">Back to all shops</RouterLink>
+    <div class="flex flex-row flex-wrap justify-between items-start">
+      <div class="flex flex-colgap-2">
+        <RouterLink :to="{ name: 'shops' }" class="hyperlink">Back to all shops</RouterLink>
+      </div>
+
+      <div>
+        <RouterLink
+          v-if="userInfo != null"
+          :to="{ name: 'shopOwnerView', params: { username: userInfo.minecraftUsername } }"
+          class="hyperlink">
+          My Sales
+        </RouterLink>
+      </div>
     </div>
 
     <div class="flex flex-col">
