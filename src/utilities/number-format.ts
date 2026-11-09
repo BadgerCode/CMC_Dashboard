@@ -3,5 +3,5 @@ export function formatNumber(number: number | null | undefined, maxDecimalPlaces
 
   if (number > (1e+21)) return "A LOT";
 
-  return "" + Number(number.toFixed(maxDecimalPlaces));
+  return new Intl.NumberFormat().format(Number(number.toFixed(maxDecimalPlaces)));
 }

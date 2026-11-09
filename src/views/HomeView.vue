@@ -7,15 +7,21 @@ import { serverStore } from "@/store/server-state";
 import { formatNumber } from "@/utilities/number-format";
 import ItemTypeCategories from "@/components/ItemTypeCategories.vue";
 import SalesCounts from "@/components/Charts/SalesCounts.vue";
+import type { UserResponse } from "@/api/user/user";
+import { fetchUserInfo } from "@/api/user/api";
 
 
 const loading = ref(true);
 const recentSales = ref([] as SaleSummary[]);
+const userInfo = ref(null as UserResponse | null);
 const noMoreResults = ref(false);
 
 let intervalID: number | null = null;
 
 onMounted(async () => {
+  // Load user info
+  userInfo.value = await fetchUserInfo();
+
   await loadSales();
   intervalID = window.setInterval(loadNewSales, 30000);
 });
@@ -63,11 +69,19 @@ async function loadSales() {
     <ItemTypeCategories></ItemTypeCategories>
   </div>
 
-  <div class="flex flex-row flex-wrap justify-between items-end">
+  <div class="flex flex-row flex-wrap justify-between items-center">
     <div class="pb-4">
       <h1 class="text-3xl font-bold">Latest Sales</h1>
       <p class="text-gray-300">Shops and auctions</p>
       <p class="hint-text" v-if="serverStore.loaded">{{ formatNumber(serverStore.numSales, 0) }} total sales</p>
+    </div>
+    <div>
+      <RouterLink
+        v-if="userInfo != null"
+        :to="{ name: 'shopOwnerView', params: { username: userInfo.minecraftUsername } }"
+        class="hyperlink">
+        My Sales
+      </RouterLink>
     </div>
   </div>
 

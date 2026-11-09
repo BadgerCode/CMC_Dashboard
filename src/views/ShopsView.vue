@@ -13,9 +13,12 @@ import ShopsList from "@/components/ShopsList.vue";
 import SearchWithResults from "@/components/SearchWithResults.vue";
 import { formatCustomDisc } from "@/utilities/custom-disc-format";
 import { formatEnchantment } from "@/utilities/enchantment-format";
+import type { UserResponse } from "@/api/user/user";
+import { fetchUserInfo } from "@/api/user/api";
 
 const loading = ref(true);
 const shopData = ref(null as ShopOverview | null);
+const userInfo = ref(null as UserResponse | null);
 
 const maxShops = 100;
 const filteredShops = ref([] as ShopData[]);
@@ -71,6 +74,9 @@ onMounted(async () => {
 
   // Load shop data
   shopData.value = await updateShops();
+
+  // Load user info
+  userInfo.value = await fetchUserInfo();
 
   // Populate enchantments filter
   enchantments.value = shopData.value.enchantments
@@ -132,7 +138,7 @@ function applyFilters() {
       if (shopOwner.length > 0 && s.owner.uuid != shopOwner) return false;
 
       return matchesFilters(s.item, itemType) || (s.item.childItems ?? []).some((i) => matchesFilters(i, itemType));
-    })
+    }),
   );
 }
 
@@ -162,10 +168,18 @@ function matchesFilters(item: ShopItem, itemType: string) {
 </script>
 
 <template>
-  <div class="flex flex-row justify-between items-end mb-8">
+  <div class="flex flex-row justify-between items-center mb-8">
     <div>
       <h1 class="text-3xl font-bold">Shop Explorer</h1>
       <p class="text-gray-300">Browse shops selling and buying various items.</p>
+    </div>
+    <div>
+      <RouterLink
+        v-if="userInfo != null"
+        :to="{ name: 'shopOwnerView', params: { username: userInfo.minecraftUsername } }"
+        class="hyperlink">
+        My Shops
+      </RouterLink>
     </div>
   </div>
 
