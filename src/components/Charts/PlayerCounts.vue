@@ -16,7 +16,7 @@ const periods = [
 
 const labelFormats = {
   "24hours": { hour: "2-digit", minute: "2-digit" },
-  week: { weekday: "short", hour: "2-digit" },
+  week: { weekday: "short", hour: "2-digit", minute: "2-digit" },
   month: { day: "numeric", month: "short" },
   "6months": { day: "numeric", month: "short" },
   year: { day: "numeric", month: "short" },

@@ -20,6 +20,14 @@ const periods = [
   { value: "year", label: "Year" },
 ];
 
+const labelFormats = {
+  "24hours": { hour: "2-digit", minute: "2-digit" },
+  week: { weekday: "short", hour: "2-digit", minute: "2-digit" },
+  month: { day: "numeric", month: "short" },
+  "6months": { day: "numeric", month: "short" },
+  year: { day: "numeric", month: "short" },
+} as Record<string, Intl.DateTimeFormatOptions>;
+
 const metrics = computed(() => {
   // When there's an itemType, show numSales, totalQuantity and avgPrice
   if (props.itemType) {
@@ -77,16 +85,6 @@ interface SaleCount {
   totalSpent: number;
 }
 
-function formatLabel(iso: string, periodValue: string): string {
-  const date = new Date(iso);
-  const text = date.toLocaleDateString(undefined, {
-    day: "numeric",
-    month: "short",
-    timeZone: "UTC",
-  });
-  return periodValue === "6months" || periodValue === "year" ? `Week of ${text}` : text;
-}
-
 let buckets: SaleCount[] = [];
 let cancellationSource = new AbortController();
 
@@ -111,7 +109,7 @@ function render() {
 
   // Calculate new data
   const data = {
-    labels: buckets.map((b) => formatLabel(b.bucketStart, period.value)),
+    labels: buckets.map((b) => new Date(b.bucketStart).toLocaleString(undefined, labelFormats[period.value])),
     datasets: [
       {
         label: m.label,
