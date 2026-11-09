@@ -109,6 +109,7 @@ function render() {
   const m = metric.value!;
   const key = m.key as keyof SaleCount;
 
+  // Calculate new data
   const data = {
     labels: buckets.map((b) => formatLabel(b.bucketStart, period.value)),
     datasets: [
@@ -121,8 +122,13 @@ function render() {
     ],
   } as ChartData;
 
+  // Calculate reasonable limit, to avoid one high value dominating the chart
+  const values = buckets.map(b => b[key] as number).filter(v => v != null && v > 0).sort((a, b) => a - b);
+  const p95 = values[Math.floor(values.length * 0.95)] ?? undefined;
+
   if (chart.value) {
     chart.value.data = data;
+    chart.value.options!.scales!.y!.max = p95;
     chart.value.update();
     return;
   }
@@ -140,6 +146,7 @@ function render() {
         y: {
           grid: { color: "rgba(255, 255, 255, 0.15)" },
           beginAtZero: true,
+          max: p95,
         },
       },
       plugins: {
