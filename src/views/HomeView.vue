@@ -9,6 +9,7 @@ import ItemTypeCategories from "@/components/ItemTypeCategories.vue";
 import SalesCounts from "@/components/Charts/SalesCounts.vue";
 import type { UserResponse } from "@/api/user/user";
 import { fetchUserInfo } from "@/api/user/api";
+import TopItemsGraph from "@/components/Charts/TopItemsGraph.vue";
 
 
 const loading = ref(true);
@@ -88,6 +89,10 @@ async function loadSales() {
   <!-- Sales Counts Chart -->
   <div class="pb-4">
     <SalesCounts></SalesCounts>
+  </div>
+
+  <div class="pb-4">
+    <TopItemsGraph></TopItemsGraph>
   </div>
 
   <div class="relative overflow-x-auto">

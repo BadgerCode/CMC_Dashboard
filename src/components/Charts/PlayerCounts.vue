@@ -33,6 +33,7 @@ onMounted(async () => {
 
 onBeforeUnmount(() => chart.value?.destroy());
 
+// Change period
 async function setPeriod(newPeriod: string) {
   if (period.value === newPeriod) return;
 

@@ -58,6 +58,7 @@ onMounted(async () => {
 
 onBeforeUnmount(() => chart.value?.destroy());
 
+// Change period
 async function setPeriod(newPeriod: string) {
   if (period.value === newPeriod) return;
 
@@ -67,7 +68,7 @@ async function setPeriod(newPeriod: string) {
   loading.value = false;
 }
 
-// TODO: Buttons for metric
+// Change metric
 function setMetric(newMetricKey: string) {
   if (metricKey.value === newMetricKey) return;
 
